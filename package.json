@@ -1,0 +1,60 @@
+{
+  "name": "alexa-day-counter",
+  "version": "1.0.0",
+  "description": "Alexa Skill for persistent counting of events per day",
+  "main": "index.js",
+  "scripts": {
+    "invoke": "aws lambda invoke --function-name 'dayCounter' --payload fileb://test/events/alexa-start-session.json test/out.txt && cat test/out.txt",
+    "test": "nyc --reporter=lcov --reporter=text mocha",
+    "deploy": "npm run zip && npm run upload",
+    "upload": "aws lambda update-function-code --function-name 'dayCounter' --zip-file fileb://index.zip",
+    "zip": "npm prune --production && zip -r index.zip node_modules && cd src && zip ../index.zip *"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sgruendel/alexa-day-counter.git"
+  },
+  "author": "Stefan Gründel",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/sgruendel/alexa-day-counter/issues"
+  },
+  "homepage": "https://github.com/sgruendel/alexa-day-counter#readme",
+  "dependencies": {
+    "alexa-sdk": "^1.0.25",
+    "dynasty": "^0.3.9"
+  },
+  "devDependencies": {
+    "aws-lambda-mock-context": "^3.1.1",
+    "chai": "^4.1.2",
+    "eslint": "^4.18.2",
+    "eslint-config-strongloop": "^2.1.0",
+    "mocha": "^5.0.4",
+    "nyc": "^11.4.1"
+  },
+  "eslintConfig": {
+    "extends": "strongloop",
+    "env": {
+      "es6": true,
+      "node": true,
+      "mocha": true
+    },
+    "rules": {
+      "indent": [
+        "error",
+        4
+      ],
+      "max-len": [
+        "error",
+        120,
+        4,
+        {
+          "ignoreComments": true,
+          "ignoreUrls": true,
+          "ignoreStrings": true,
+          "ignorePattern": "^\\s*var\\s.+=\\s*(require\\s*\\()|(/)"
+        }
+      ]
+    }
+  }
+}

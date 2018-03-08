@@ -1,0 +1,21 @@
+SetCounterIntent und setze den Zähler auf {Count}
+SetCounterIntent und setze den Zählerstand auf {Count}
+SetCounterIntent und setze den Zähler auf {Count} für {Date}
+SetCounterIntent und setze den Zählerstand auf {Count} für {Date}
+SetCounterIntent und setze den Zähler von {Date} auf {Count}
+SetCounterIntent und setze den Zählerstand von {Date} auf {Count}
+IncreaseCounterIntent und zähle {Count} dazu 
+IncreaseCounterIntent und zähle um {Count} hoch
+IncreaseCounterIntent und zähle {Count} dazu für {Date}
+IncreaseCounterIntent und zähle um {Count} hoch für {Date}
+IncreaseCounterIntent und zähle für {Date} {Count} dazu
+IncreaseCounterIntent und zähle für {Date} um {Count} hoch
+QueryCounterIntent nach dem Stand
+QueryCounterIntent nach dem Zählerstand
+QueryCounterIntent nach dem Zähler
+QueryCounterIntent nach dem Stand für {Date}
+QueryCounterIntent nach dem Zählerstand für {Date}
+QueryCounterIntent nach dem Zähler für {Date}
+QueryCounterIntent nach dem Stand von {Date}
+QueryCounterIntent nach dem Zählerstand von {Date}
+QueryCounterIntent nach dem Zähler von {Date}
