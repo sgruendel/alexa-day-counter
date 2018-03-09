@@ -12,14 +12,14 @@ const context = require('aws-lambda-mock-context');
 const ctx = context();
 
 const USER_ID = 'amzn1.ask.account.unit_test';
-const TODAY = db.dateKey(new Date());
+const DATE = '2018-03-07';
 
 describe('Testing a session with the SetCounterIntent:', () => {
     var speechResponse = null;
     var speechError = null;
 
     before(function(done) {
-        db.insert(USER_ID, TODAY, 0)
+        db.insert(USER_ID, DATE, 0)
             .then(result => {
                 index.handler({
                     session: {
@@ -41,10 +41,11 @@ describe('Testing a session with the SetCounterIntent:', () => {
                             slots: {
                                 Count: {
                                     name: 'Count',
-                                    value: '3',
+                                    value: '4',
                                 },
                                 Date: {
                                     name: 'Date',
+                                    value: DATE,
                                 },
                             },
                         },
@@ -99,8 +100,8 @@ describe('Testing a session with the SetCounterIntent:', () => {
     });
 
     describe('The db', () => {
-        it('should have a count of 3', () => {
-            return expect(db.find(USER_ID, TODAY)).to.eventually.have.property('count', 3);
+        it('should have a count of 4', () => {
+            return expect(db.find(USER_ID, DATE)).to.eventually.have.property('count', 4);
         });
     });
 });

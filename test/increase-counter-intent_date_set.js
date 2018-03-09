@@ -12,19 +12,19 @@ const context = require('aws-lambda-mock-context');
 const ctx = context();
 
 const USER_ID = 'amzn1.ask.account.unit_test';
-const TODAY = db.dateKey(new Date());
+const DATE = '2018-03-06';
 
-describe('Testing a session with the SetCounterIntent:', () => {
+describe('Testing a session with the IncreaseCounterIntent:', () => {
     var speechResponse = null;
     var speechError = null;
 
     before(function(done) {
-        db.insert(USER_ID, TODAY, 0)
+        db.insert(USER_ID, DATE, 8)
             .then(result => {
                 index.handler({
                     session: {
-                        new: true,
-                        sessionId: 'SessionId.c85188ac-2e7f-4b41-9d46-f71ba235656e',
+                        new: false,
+                        sessionId: 'SessionId.e2daeeeb-624f-4587-ab1b-ba0818b160e5',
                         application: {
                             applicationId: 'amzn1.ask.skill.d3ee5865-d4bb-4076-b13d-fbef1f7e0216',
                         },
@@ -35,21 +35,22 @@ describe('Testing a session with the SetCounterIntent:', () => {
                     },
                     request: {
                         type: 'IntentRequest',
-                        requestId: 'EdwRequestId.6d24279b-78b0-4312-9ddb-4f5e6ac2afca',
+                        requestId: 'EdwRequestId.fdb06d84-ebf1-4bae-b3d4-7b47af6d335b',
                         intent: {
-                            name: 'SetCounterIntent',
+                            name: 'IncreaseCounterIntent',
                             slots: {
                                 Count: {
                                     name: 'Count',
-                                    value: '3',
+                                    value: '1',
                                 },
                                 Date: {
                                     name: 'Date',
+                                    value: DATE,
                                 },
                             },
                         },
                         locale: 'de-DE',
-                        timestamp: '2018-03-08T09:53:05Z',
+                        timestamp: '2018-03-08T11:51:05Z',
                     },
                     context: {
                         AudioPlayer: {
@@ -99,8 +100,8 @@ describe('Testing a session with the SetCounterIntent:', () => {
     });
 
     describe('The db', () => {
-        it('should have a count of 3', () => {
-            return expect(db.find(USER_ID, TODAY)).to.eventually.have.property('count', 3);
+        it('should have a count of 9', () => {
+            return expect(db.find(USER_ID, DATE)).to.eventually.have.property('count', 9);
         });
     });
 });

@@ -2,22 +2,9 @@
 
 const Alexa = require('alexa-sdk');
 
-const dynasty = require('dynasty')({});
-/*
-const localUrl = 'http://localhost:4000';
-const localCredentials = {
-    region: 'us-east-1',
-    accessKeyId: 'fake',
-    secretAccessKey: 'fake'
-};
-const localDynasty = require('dynasty')(localCredentials, localUrl);
-const dynasty = localDynasty;
-*/
+const db = require('./db');
 
 const APP_ID = 'amzn1.ask.skill.d3ee5865-d4bb-4076-b13d-fbef1f7e0216';
-
-const TABLE_NAME = 'dayCounter'; // arn:aws:dynamodb:eu-west-1:467353799488:table/' + TABLE_NAME
-
 
 const languageStrings = {
     de: {
@@ -32,18 +19,6 @@ const languageStrings = {
     },
 };
 
-function dbInsertCount(date, count) {
-    return dynasty.table(TABLE_NAME).insert({ date: date, count: count });
-}
-
-function dbFindCount(date) {
-    return dynasty.table(TABLE_NAME).find(date);
-}
-
-function dateToDbKey(date) {
-    return date.toISOString().split('T')[0];
-}
-
 const handlers = {
     LaunchRequest: function() {
         this.emit('AMAZON.HelpIntent');
@@ -52,15 +27,18 @@ const handlers = {
         this.emit('SetCounter');
     },
     SetCounter: function() {
-        const countSlot = this.event.request.intent.slots.Count;
-        if (countSlot && countSlot.value) {
-            const count = parseInt(countSlot.value, 10);
-            const date = dateToDbKey(new Date());
+        const { userId } = this.event.session.user;
+        // const { slots } = this.event.request.intent;
+        // const countSlot = this.event.request.intent.slots.Count;
+        const { slots } = this.event.request.intent;
+        if (slots.Count.value) {
+            const count = parseInt(slots.Count.value, 10);
+            const date = slots.Date.value || db.dateKey(new Date());
             console.log('setting count to', count, 'for', date);
-            dbInsertCount(date, count)
+            db.insert(userId, date, count)
                 .then(result => {
                     console.log('count successfully updated', result);
-                    this.emit(':tell', 'Der Zähler steht jetzt auf ' + count + '.');
+                    this.emit(':tell', 'Der Zähler steht jetzt auf ' + count + ' für ' + date);
                 })
                 .catch(err => {
                     console.error('Error setting count in db', err);
@@ -75,22 +53,23 @@ const handlers = {
         this.emit('IncreaseCounter');
     },
     IncreaseCounter: function() {
-        const countSlot = this.event.request.intent.slots.Count;
-        if (countSlot && countSlot.value) {
-            const count = parseInt(countSlot.value, 10);
-            const date = dateToDbKey(new Date());
+        const { userId } = this.event.session.user;
+        // const { slots } = this.event.request.intent;
+        // const countSlot = this.event.request.intent.slots.Count;
+        const { slots } = this.event.request.intent;
+        if (slots.Count.value) {
+            const count = parseInt(slots.Count.value, 10);
+            const date = slots.Date.value || db.dateKey(new Date());
             console.log('increasing count by', count, 'for', date);
 
-            dbFindCount(date)
+            db.find(userId, date)
                 .then(result => {
-                    const current = parseInt(result.count, 10);
-                    console.log('current value is', current);
-                    const newCount = current + count;
-                    console.log('setting count to', newCount);
-                    dbInsertCount(date, newCount)
+                    const newCount = result.count + count;
+                    console.log('current value is', result.count, 'setting to', newCount);
+                    db.insert(userId, date, newCount)
                         .then(result => {
                             console.log('count successfully updated', result);
-                            this.emit(':tell', 'Der Zähler steht jetzt auf ' + newCount + '.');
+                            this.emit(':tell', 'Der Zähler steht jetzt auf ' + newCount + ' für ' + date);
                         })
                         .catch(err => {
                             console.error('Error setting count in db', err);
@@ -100,10 +79,10 @@ const handlers = {
                 .catch(TypeError, err => {
                     console.log('current value is not set for', date, err);
                     console.log('setting count to', count);
-                    dbInsertCount(date, count)
+                    db.insert(userId, date, count)
                         .then(result => {
                             console.log('count successfully updated', result);
-                            this.emit(':tell', 'Der Zähler steht jetzt auf ' + count + '.');
+                            this.emit(':tell', 'Der Zähler steht jetzt auf ' + count + ' für ' + date);
                         })
                         .catch(err => {
                             console.error('Error setting count in db', err);
@@ -123,16 +102,17 @@ const handlers = {
         this.emit('QueryCounter');
     },
     QueryCounter: function() {
-        const date = dateToDbKey(new Date());
-        dbFindCount(date)
+        const { userId } = this.event.session.user;
+        const { slots } = this.event.request.intent;
+        const date = slots.Date.value || db.dateKey(new Date());
+        db.find(userId, date)
             .then(result => {
-                const current = parseInt(result.count, 10);
-                console.log('current value is', current, 'for', date);
-                this.emit(':tell', 'Der Zähler steht auf ' + current + '.');
+                console.log('current value is', result.count, 'for', date);
+                this.emit(':tell', 'Der Zähler steht auf ' + result.count + ' für ' + date);
             })
             .catch(TypeError, err => {
                 console.log('current value is not set for', date, err);
-                this.emit(':tell', 'Der Zähler ist nicht gesetzt.');
+                this.emit(':tell', 'Der Zähler ist nicht gesetzt für ' + date);
             })
             .catch(err => {
                 console.error('Error getting count from db', err);
