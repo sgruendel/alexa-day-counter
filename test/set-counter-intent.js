@@ -8,71 +8,78 @@ const expect = chai.expect;
 const index = require('../src/index');
 const db = require('../src/db');
 
-const context = require('aws-lambda-mock-context');
-const ctx = context();
-
 const USER_ID = 'amzn1.ask.account.unit_test';
 const TODAY = db.dateKey(new Date());
 
-describe('Testing a session with the SetCounterIntent:', () => {
+const event = {
+    session: {
+        new: true,
+        sessionId: 'SessionId.c85188ac-2e7f-4b41-9d46-f71ba235656e',
+        application: {
+            applicationId: 'amzn1.ask.skill.d3ee5865-d4bb-4076-b13d-fbef1f7e0216',
+        },
+        attributes: {},
+        user: {
+            userId: USER_ID,
+        },
+    },
+    request: {
+        type: 'IntentRequest',
+        requestId: 'EdwRequestId.6d24279b-78b0-4312-9ddb-4f5e6ac2afca',
+        intent: {
+            name: 'SetCounterIntent',
+            slots: {
+                Count: {
+                    name: 'Count',
+                    value: '3',
+                },
+                Date: {
+                    name: 'Date',
+                },
+            },
+        },
+        locale: 'de-DE',
+        timestamp: '2018-03-08T09:53:05Z',
+    },
+    context: {
+        AudioPlayer: {
+            playerActivity: 'IDLE',
+        },
+        System: {
+            application: {
+                applicationId: 'amzn1.ask.skill.d3ee5865-d4bb-4076-b13d-fbef1f7e0216',
+            },
+            user: {
+                userId: USER_ID,
+            },
+            device: {
+                supportedInterfaces: {},
+            },
+        },
+    },
+    version: '1.0',
+};
+
+describe('Testing a session with the SetCounterIntent (no date given):', () => {
     var speechResponse = null;
     var speechError = null;
 
-    before(function(done) {
-        db.insert(USER_ID, TODAY, 0)
-            .then(result => {
-                index.handler({
-                    session: {
-                        new: true,
-                        sessionId: 'SessionId.c85188ac-2e7f-4b41-9d46-f71ba235656e',
-                        application: {
-                            applicationId: 'amzn1.ask.skill.d3ee5865-d4bb-4076-b13d-fbef1f7e0216',
-                        },
-                        attributes: {},
-                        user: {
-                            userId: USER_ID,
-                        },
-                    },
-                    request: {
-                        type: 'IntentRequest',
-                        requestId: 'EdwRequestId.6d24279b-78b0-4312-9ddb-4f5e6ac2afca',
-                        intent: {
-                            name: 'SetCounterIntent',
-                            slots: {
-                                Count: {
-                                    name: 'Count',
-                                    value: '3',
-                                },
-                                Date: {
-                                    name: 'Date',
-                                },
-                            },
-                        },
-                        locale: 'de-DE',
-                        timestamp: '2018-03-08T09:53:05Z',
-                    },
-                    context: {
-                        AudioPlayer: {
-                            playerActivity: 'IDLE',
-                        },
-                        System: {
-                            application: {
-                                applicationId: 'amzn1.ask.skill.d3ee5865-d4bb-4076-b13d-fbef1f7e0216',
-                            },
-                            user: {
-                                userId: USER_ID,
-                            },
-                            device: {
-                                supportedInterfaces: {},
-                            },
-                        },
-                    },
-                    version: '1.0',
-                }, ctx);
-
-                ctx.Promise
-                    .then(resp => { speechResponse = resp; done(); })
-                    .catch(err => { speechError = err; done(); });
+    before(function() {
+        return db.insert(USER_ID, TODAY, 0)
+            .then(() => {
+                return new Promise((resolve, reject) => {
+                    index.handler(event,
+                        null,
+                        (err, resp) => {
+                            if (err) {
+                                speechError = err;
+                                reject(err);
+                            } else {
+                                speechResponse = resp;
+                                resolve(speechResponse);
+                            }
+                        });
+                });
             });
     });
 
