@@ -98,6 +98,7 @@ describe('Testing a session with the IncreaseCounterIntent (no date given):', ()
 
         it('should have a spoken response', () => {
             expect(speechResponse.response.outputSpeech).to.exist;
+            expect(speechResponse.response.outputSpeech.ssml).to.not.contain(TODAY);
         });
 
         it('should end the alexa session', () => {

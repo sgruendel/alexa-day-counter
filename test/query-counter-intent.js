@@ -1,7 +1,11 @@
 'use strict';
 
-var expect = require('chai').expect;
-var index = require('../src/index');
+const expect = require('chai').expect;
+const index = require('../src/index');
+const db = require('../src/db');
+
+const USER_ID = 'amzn1.ask.account.unit_test';
+const TODAY = db.dateKey(new Date());
 
 const event = {
     session: {
@@ -12,7 +16,7 @@ const event = {
         },
         attributes: {},
         user: {
-            userId: 'amzn1.ask.account.AHDVBE54AMF7LVBF672YHVEKLF3DENJCNDX24244GDR7E3LBFMIRSYIUAMZHXYSWG2VLLNH353RSU4U746D6QJBYVEQUXXEBXA2Z7IVNDB3FIDBQP65RW5SIMUVCQOTQLPDO7YTLL4K6Y23GA36FHM2PU33TQ4SNDAYQFSB4HDR5JUCXPNGOMAQYONUTM3MF36EVEQBRYZC76VI',
+            userId: USER_ID,
         },
     },
     request: {
@@ -38,7 +42,7 @@ const event = {
                 applicationId: 'amzn1.ask.skill.d3ee5865-d4bb-4076-b13d-fbef1f7e0216',
             },
             user: {
-                userId: 'amzn1.ask.account.AHDVBE54AMF7LVBF672YHVEKLF3DENJCNDX24244GDR7E3LBFMIRSYIUAMZHXYSWG2VLLNH353RSU4U746D6QJBYVEQUXXEBXA2Z7IVNDB3FIDBQP65RW5SIMUVCQOTQLPDO7YTLL4K6Y23GA36FHM2PU33TQ4SNDAYQFSB4HDR5JUCXPNGOMAQYONUTM3MF36EVEQBRYZC76VI',
+                userId: USER_ID,
             },
             device: {
                 supportedInterfaces: {},
@@ -83,6 +87,7 @@ describe('Testing a session with the QueryCounterIntent (no date given):', () =>
 
         it('should have a spoken response', () => {
             expect(speechResponse.response.outputSpeech).to.exist;
+            expect(speechResponse.response.outputSpeech.ssml).to.not.contain(TODAY);
         });
 
         it('should end the alexa session', () => {

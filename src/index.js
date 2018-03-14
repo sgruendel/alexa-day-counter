@@ -9,12 +9,16 @@ const APP_ID = 'amzn1.ask.skill.d3ee5865-d4bb-4076-b13d-fbef1f7e0216';
 const languageStrings = {
     de: {
         translation: {
-            CURRENT_WATER_LEVEL_MESSAGE: 'Der Wasserstand bei {station} beträgt {value} {unit}.',
-            NO_RESULT_MESSAGE: 'Ich kann diesen Messwert zur Zeit leider nicht bestimmen.',
-            UNKNOWN_STATION_MESSAGE: 'Ich kenne diese Messstelle leider nicht.',
-            HELP_MESSAGE: 'Du kannst sagen, „Frag Pegel Online nach dem Wasserstand an einer Messstation“, oder du kannst „Beenden“ sagen. Wie kann ich dir helfen?',
+            HELP_MESSAGE: 'Du kannst sagen, „Frag Tageszähler nach dem Stand, oder du kannst „Beenden“ sagen. Wie kann ich dir helfen?',
             HELP_REPROMPT: 'Wie kann ich dir helfen?',
             STOP_MESSAGE: 'Auf Wiedersehen!',
+            COUNTER_IS: 'Der Zähler steht auf {count}.',
+            COUNTER_IS_FOR: 'Der Zähler steht auf {count} für {date}.',
+            COUNTER_IS_NOW: 'Der Zähler steht jetzt auf {count}.',
+            COUNTER_IS_NOW_FOR: 'Der Zähler steht jetzt auf {count} für {date}.',
+            COUNTER_NOT_SET_FOR: 'Der Zähler ist nicht gesetzt für {date}.',
+            NOT_POSSIBLE_NOW: 'Das ist gerade leider nicht möglich.',
+            NO_VALUE_GIVEN: 'Kein Wert angegeben.',
         },
     },
 };
@@ -38,15 +42,24 @@ const handlers = {
             db.insert(userId, date, count)
                 .then(result => {
                     console.log('count successfully updated', result);
-                    this.emit(':tell', 'Der Zähler steht jetzt auf ' + count + ' für ' + date);
+                    var speechOutput;
+                    if (slots.Date.value) {
+                        speechOutput = this.t('COUNTER_IS_NOW_FOR')
+                            .replace('{count}', count)
+                            .replace('{date}', date);
+                    } else {
+                        speechOutput = this.t('COUNTER_IS_NOW')
+                            .replace('{count}', count);
+                    }
+                    this.emit(':tell', speechOutput);
                 })
                 .catch(err => {
                     console.error('Error setting count in db', err);
-                    this.emit(':tell', 'Das ist gerade leider nicht möglich.');
+                    this.emit(':tell', this.t('NOT_POSSIBLE_NOW'));
                 });
         } else {
             console.error('No slot value given for count');
-            this.emit(':tell', 'Kein Wert angegeben.');
+            this.emit(':tell', this.t('NO_VALUE_GIVEN'));
         }
     },
     IncreaseCounterIntent: function() {
@@ -69,11 +82,20 @@ const handlers = {
                     db.insert(userId, date, newCount)
                         .then(result => {
                             console.log('count successfully updated', result);
-                            this.emit(':tell', 'Der Zähler steht jetzt auf ' + newCount + ' für ' + date);
+                            var speechOutput;
+                            if (slots.Date.value) {
+                                speechOutput = this.t('COUNTER_IS_NOW_FOR')
+                                    .replace('{count}', newCount)
+                                    .replace('{date}', date);
+                            } else {
+                                speechOutput = this.t('COUNTER_IS_NOW')
+                                    .replace('{count}', newCount);
+                            }
+                            this.emit(':tell', speechOutput);
                         })
                         .catch(err => {
                             console.error('Error setting count in db', err);
-                            this.emit(':tell', 'Das ist gerade leider nicht möglich.');
+                            this.emit(':tell', this.t('NOT_POSSIBLE_NOW'));
                         });
                 })
                 .catch(TypeError, err => {
@@ -82,20 +104,29 @@ const handlers = {
                     db.insert(userId, date, count)
                         .then(result => {
                             console.log('count successfully updated', result);
-                            this.emit(':tell', 'Der Zähler steht jetzt auf ' + count + ' für ' + date);
+                            var speechOutput;
+                            if (slots.Date.value) {
+                                speechOutput = this.t('COUNTER_IS_NOW_FOR')
+                                    .replace('{count}', count)
+                                    .replace('{date}', date);
+                            } else {
+                                speechOutput = this.t('COUNTER_IS_NOW')
+                                    .replace('{count}', count);
+                            }
+                            this.emit(':tell', speechOutput);
                         })
                         .catch(err => {
                             console.error('Error setting count in db', err);
-                            this.emit(':tell', 'Das ist gerade leider nicht möglich.');
+                            this.emit(':tell', this.t('NOT_POSSIBLE_NOW'));
                         });
                 })
                 .catch(err => {
                     console.error('Error getting count from db', err);
-                    this.emit(':tell', 'Das ist gerade leider nicht möglich.');
+                    this.emit(':tell', this.t('NOT_POSSIBLE_NOW'));
                 });
         } else {
             console.error('No slot value given for count');
-            this.emit(':tell', 'Kein Wert angegeben.');
+            this.emit(':tell', this.t('NO_VALUE_GIVEN'));
         }
     },
     QueryCounterIntent: function() {
@@ -108,15 +139,26 @@ const handlers = {
         db.find(userId, date)
             .then(result => {
                 console.log('current value is', result.count, 'for', date);
-                this.emit(':tell', 'Der Zähler steht auf ' + result.count + ' für ' + date);
+                var speechOutput;
+                if (slots.Date.value) {
+                    speechOutput = this.t('COUNTER_IS_FOR')
+                        .replace('{count}', result.count)
+                        .replace('{date}', date);
+                } else {
+                    speechOutput = this.t('COUNTER_IS')
+                        .replace('{count}', result.count);
+                }
+                this.emit(':tell', speechOutput);
             })
             .catch(TypeError, err => {
                 console.log('current value is not set for', date, err);
-                this.emit(':tell', 'Der Zähler ist nicht gesetzt für ' + date);
+                const speechOutput = this.t('COUNTER_NOT_SET_FOR')
+                    .replace('{date}', date);
+                this.emit(':tell', speechOutput);
             })
             .catch(err => {
                 console.error('Error getting count from db', err);
-                this.emit(':tell', 'Das ist gerade leider nicht möglich.');
+                this.emit(':tell', this.t('NOT_POSSIBLE_NOW'));
             });
     },
     'AMAZON.HelpIntent': function() {
