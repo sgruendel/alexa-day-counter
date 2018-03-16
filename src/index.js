@@ -23,6 +23,28 @@ const languageStrings = {
     },
 };
 
+function insertDbAndEmit(alexa, slots, userId, date, count) {
+    console.log('setting count to', count, 'for', date);
+    db.insert(userId, date, count)
+        .then(result => {
+            console.log('count successfully updated', result);
+            var speechOutput;
+            if (slots.Date.value) {
+                speechOutput = alexa.t('COUNTER_IS_NOW_FOR')
+                    .replace('{count}', count)
+                    .replace('{date}', date);
+            } else {
+                speechOutput = alexa.t('COUNTER_IS_NOW')
+                    .replace('{count}', count);
+            }
+            alexa.emit(':tell', speechOutput);
+        })
+        .catch(err => {
+            console.error('Error setting count in db', err);
+            alexa.emit(':tell', alexa.t('NOT_POSSIBLE_NOW'));
+        });
+}
+
 const handlers = {
     LaunchRequest: function() {
         this.emit('AMAZON.HelpIntent');
@@ -31,32 +53,12 @@ const handlers = {
         this.emit('SetCounter');
     },
     SetCounter: function() {
-        const { userId } = this.event.session.user;
-        // const { slots } = this.event.request.intent;
-        // const countSlot = this.event.request.intent.slots.Count;
-        const { slots } = this.event.request.intent;
+        const slots = this.event.request.intent.slots;
         if (slots.Count.value) {
-            const count = parseInt(slots.Count.value, 10);
+            const userId = this.event.session.user.userId;
             const date = slots.Date.value || db.dateKey(new Date());
-            console.log('setting count to', count, 'for', date);
-            db.insert(userId, date, count)
-                .then(result => {
-                    console.log('count successfully updated', result);
-                    var speechOutput;
-                    if (slots.Date.value) {
-                        speechOutput = this.t('COUNTER_IS_NOW_FOR')
-                            .replace('{count}', count)
-                            .replace('{date}', date);
-                    } else {
-                        speechOutput = this.t('COUNTER_IS_NOW')
-                            .replace('{count}', count);
-                    }
-                    this.emit(':tell', speechOutput);
-                })
-                .catch(err => {
-                    console.error('Error setting count in db', err);
-                    this.emit(':tell', this.t('NOT_POSSIBLE_NOW'));
-                });
+            const count = parseInt(slots.Count.value, 10);
+            insertDbAndEmit(this, slots, userId, date, count);
         } else {
             console.error('No slot value given for count');
             this.emit(':tell', this.t('NO_VALUE_GIVEN'));
@@ -66,59 +68,22 @@ const handlers = {
         this.emit('IncreaseCounter');
     },
     IncreaseCounter: function() {
-        const { userId } = this.event.session.user;
-        // const { slots } = this.event.request.intent;
-        // const countSlot = this.event.request.intent.slots.Count;
-        const { slots } = this.event.request.intent;
+        const slots = this.event.request.intent.slots;
         if (slots.Count.value) {
             const count = parseInt(slots.Count.value, 10);
             const date = slots.Date.value || db.dateKey(new Date());
             console.log('increasing count by', count, 'for', date);
 
+            const userId = this.event.session.user.userId;
             db.find(userId, date)
                 .then(result => {
                     const newCount = result.count + count;
-                    console.log('current value is', result.count, 'setting to', newCount);
-                    db.insert(userId, date, newCount)
-                        .then(result => {
-                            console.log('count successfully updated', result);
-                            var speechOutput;
-                            if (slots.Date.value) {
-                                speechOutput = this.t('COUNTER_IS_NOW_FOR')
-                                    .replace('{count}', newCount)
-                                    .replace('{date}', date);
-                            } else {
-                                speechOutput = this.t('COUNTER_IS_NOW')
-                                    .replace('{count}', newCount);
-                            }
-                            this.emit(':tell', speechOutput);
-                        })
-                        .catch(err => {
-                            console.error('Error setting count in db', err);
-                            this.emit(':tell', this.t('NOT_POSSIBLE_NOW'));
-                        });
+                    console.log('current value is', result.count);
+                    insertDbAndEmit(this, slots, userId, date, newCount);
                 })
                 .catch(TypeError, err => {
                     console.log('current value is not set for', date, err);
-                    console.log('setting count to', count);
-                    db.insert(userId, date, count)
-                        .then(result => {
-                            console.log('count successfully updated', result);
-                            var speechOutput;
-                            if (slots.Date.value) {
-                                speechOutput = this.t('COUNTER_IS_NOW_FOR')
-                                    .replace('{count}', count)
-                                    .replace('{date}', date);
-                            } else {
-                                speechOutput = this.t('COUNTER_IS_NOW')
-                                    .replace('{count}', count);
-                            }
-                            this.emit(':tell', speechOutput);
-                        })
-                        .catch(err => {
-                            console.error('Error setting count in db', err);
-                            this.emit(':tell', this.t('NOT_POSSIBLE_NOW'));
-                        });
+                    insertDbAndEmit(this, slots, userId, date, count);
                 })
                 .catch(err => {
                     console.error('Error getting count from db', err);
@@ -133,8 +98,8 @@ const handlers = {
         this.emit('QueryCounter');
     },
     QueryCounter: function() {
-        const { userId } = this.event.session.user;
-        const { slots } = this.event.request.intent;
+        const userId = this.event.session.user.userId;
+        const slots = this.event.request.intent.slots;
         const date = slots.Date.value || db.dateKey(new Date());
         db.find(userId, date)
             .then(result => {
