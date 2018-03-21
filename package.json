@@ -4,10 +4,10 @@
   "description": "Alexa Skill for persistent counting of events per day",
   "main": "index.js",
   "scripts": {
-    "invoke": "aws lambda invoke --function-name 'dayCounter' --payload fileb://test/events/alexa-start-session.json test/out.txt && cat test/out.txt",
+    "invoke": "aws lambda invoke --function-name dayCounter --payload fileb://test/events/alexa-start-session.json test/out.txt && cat test/out.txt",
     "test": "nyc --reporter=lcov --reporter=text mocha",
     "deploy": "npm run zip && npm run upload",
-    "upload": "aws lambda update-function-code --function-name 'dayCounter' --zip-file fileb://index.zip",
+    "upload": "aws lambda update-function-code --function-name dayCounter --zip-file fileb://index.zip",
     "zip": "npm prune --production && zip -r index.zip node_modules && cd src && zip ../index.zip *"
   },
   "repository": {
