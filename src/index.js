@@ -9,7 +9,10 @@ const APP_ID = 'amzn1.ask.skill.d3ee5865-d4bb-4076-b13d-fbef1f7e0216';
 const languageStrings = {
     de: {
         translation: {
-            HELP_MESSAGE: 'Du kannst sagen, „Frag Tageszähler nach dem Stand, oder du kannst „Beenden“ sagen. Wie kann ich dir helfen?',
+            HELP_MESSAGE: 'Der Tageszähler zählt Ereignisse pro Tag und speichert die Anzahl dauerhaft. '
+                + 'Du kannst sagen „Starte Tageszähler und setze den Wert auf zwei“, oder „Starte Tageszähler und zähle eins dazu“, oder „Frag Tageszähler nach dem Stand“. '
+                + 'Du kannst auch immer einen bestimmten Tag angeben wie „Gestern“ oder „Letzten Sonntag“, z.B. „Frag Tageszähler nach dem Stand von gestern“. '
+                + 'Oder du kannst „Beenden“ sagen. Wie kann ich dir helfen?',
             HELP_REPROMPT: 'Wie kann ich dir helfen?',
             STOP_MESSAGE: 'Auf Wiedersehen!',
             COUNTER_IS: 'Der Zähler steht auf {count}.',
@@ -19,6 +22,7 @@ const languageStrings = {
             COUNTER_NOT_SET_FOR: 'Der Zähler ist nicht gesetzt für {date}.',
             NOT_POSSIBLE_NOW: 'Das ist gerade leider nicht möglich.',
             NO_VALUE_GIVEN: 'Kein Wert angegeben.',
+            NOT_A_NUMBER: 'Das ist kein Wert, den ich setzen kann.',
         },
     },
 };
@@ -55,10 +59,15 @@ const handlers = {
     SetCounter: function() {
         const slots = this.event.request.intent.slots;
         if (slots.Count.value) {
-            const userId = this.event.session.user.userId;
-            const date = slots.Date.value || db.dateKey(new Date());
             const count = parseInt(slots.Count.value, 10);
-            insertDbAndEmit(this, slots, userId, date, count);
+            if (count != count) {
+                console.error('Numeric value expected, got', slots.Count.value, isNaN(count), Number.isNaN(count));
+                this.emit(':tell', this.t('NOT_A_NUMBER'));
+            } else {
+                const userId = this.event.session.user.userId;
+                const date = slots.Date.value || db.dateKey(new Date());
+                insertDbAndEmit(this, slots, userId, date, count);
+            }
         } else {
             console.error('No slot value given for count');
             this.emit(':tell', this.t('NO_VALUE_GIVEN'));
@@ -71,24 +80,29 @@ const handlers = {
         const slots = this.event.request.intent.slots;
         if (slots.Count.value) {
             const count = parseInt(slots.Count.value, 10);
-            const date = slots.Date.value || db.dateKey(new Date());
-            console.log('increasing count by', count, 'for', date);
+            if (count != count) {
+                console.error('Numeric value expected, got', slots.Count.value, isNaN(count), Number.isNaN(count));
+                this.emit(':tell', this.t('NOT_A_NUMBER'));
+            } else {
+                const date = slots.Date.value || db.dateKey(new Date());
+                console.log('increasing count by', count, 'for', date);
 
-            const userId = this.event.session.user.userId;
-            db.find(userId, date)
-                .then(result => {
-                    const newCount = result.count + count;
-                    console.log('current value is', result.count);
-                    insertDbAndEmit(this, slots, userId, date, newCount);
-                })
-                .catch(TypeError, err => {
-                    console.log('current value is not set for', date, err);
-                    insertDbAndEmit(this, slots, userId, date, count);
-                })
-                .catch(err => {
-                    console.error('Error getting count from db', err);
-                    this.emit(':tell', this.t('NOT_POSSIBLE_NOW'));
-                });
+                const userId = this.event.session.user.userId;
+                db.find(userId, date)
+                    .then(result => {
+                        const newCount = result.count + count;
+                        console.log('current value is', result.count);
+                        insertDbAndEmit(this, slots, userId, date, newCount);
+                    })
+                    .catch(TypeError, err => {
+                        console.log('current value is not set for', date, err);
+                        insertDbAndEmit(this, slots, userId, date, count);
+                    })
+                    .catch(err => {
+                        console.error('Error getting count from db', err);
+                        this.emit(':tell', this.t('NOT_POSSIBLE_NOW'));
+                    });
+            }
         } else {
             console.error('No slot value given for count');
             this.emit(':tell', this.t('NO_VALUE_GIVEN'));
