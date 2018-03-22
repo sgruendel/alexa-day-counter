@@ -27,6 +27,18 @@ const languageStrings = {
     },
 };
 
+function calculateDate(slots) {
+    if (!slots.Date.value) {
+        return db.dateKey(new Date());
+    }
+    var date = slots.Date.value;
+    // TODO filter out anything that doesn't give a specific date, see
+    // https://developer.amazon.com/de/docs/custom-skills/slot-type-reference.html#date
+
+    // TODO: Evil hack, Alexa defaults to dates on or after the current date
+    return date.replace('2019', '2018');
+}
+
 function insertDbAndEmit(alexa, slots, userId, date, count) {
     console.log('setting count to', count, 'for', date);
     db.insert(userId, date, count)
@@ -61,7 +73,7 @@ const handlers = {
         if (slots.Count.value) {
             if (!isNaN(slots.Count.value)) {
                 const userId = this.event.session.user.userId;
-                const date = slots.Date.value || db.dateKey(new Date());
+                const date = calculateDate(slots);
                 const count = parseInt(slots.Count.value, 10);
                 insertDbAndEmit(this, slots, userId, date, count);
             } else {
@@ -81,7 +93,7 @@ const handlers = {
         if (slots.Count.value) {
             if (!isNaN(slots.Count.value)) {
                 const count = parseInt(slots.Count.value, 10);
-                const date = slots.Date.value || db.dateKey(new Date());
+                const date = calculateDate(slots);
                 console.log('increasing count by', count, 'for', date);
 
                 const userId = this.event.session.user.userId;
@@ -114,7 +126,7 @@ const handlers = {
     QueryCounter: function() {
         const userId = this.event.session.user.userId;
         const slots = this.event.request.intent.slots;
-        const date = slots.Date.value || db.dateKey(new Date());
+        const date = calculateDate(slots);
         db.find(userId, date)
             .then(result => {
                 console.log('current value is', result.count, 'for', date);
