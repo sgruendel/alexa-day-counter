@@ -59,14 +59,14 @@ const handlers = {
     SetCounter: function() {
         const slots = this.event.request.intent.slots;
         if (slots.Count.value) {
-            const count = parseInt(slots.Count.value, 10);
-            if (count != count) {
-                console.error('Numeric value expected, got', slots.Count.value, isNaN(count), Number.isNaN(count));
-                this.emit(':tell', this.t('NOT_A_NUMBER'));
-            } else {
+            if (!isNaN(slots.Count.value)) {
                 const userId = this.event.session.user.userId;
                 const date = slots.Date.value || db.dateKey(new Date());
+                const count = parseInt(slots.Count.value, 10);
                 insertDbAndEmit(this, slots, userId, date, count);
+            } else {
+                console.error('Numeric value expected, got', slots.Count.value);
+                this.emit(':tell', this.t('NOT_A_NUMBER'));
             }
         } else {
             console.error('No slot value given for count');
@@ -79,11 +79,8 @@ const handlers = {
     IncreaseCounter: function() {
         const slots = this.event.request.intent.slots;
         if (slots.Count.value) {
-            const count = parseInt(slots.Count.value, 10);
-            if (count != count) {
-                console.error('Numeric value expected, got', slots.Count.value, isNaN(count), Number.isNaN(count));
-                this.emit(':tell', this.t('NOT_A_NUMBER'));
-            } else {
+            if (!isNaN(slots.Count.value)) {
+                const count = parseInt(slots.Count.value, 10);
                 const date = slots.Date.value || db.dateKey(new Date());
                 console.log('increasing count by', count, 'for', date);
 
@@ -102,6 +99,9 @@ const handlers = {
                         console.error('Error getting count from db', err);
                         this.emit(':tell', this.t('NOT_POSSIBLE_NOW'));
                     });
+            } else {
+                console.error('Numeric value expected, got', slots.Count.value);
+                this.emit(':tell', this.t('NOT_A_NUMBER'));
             }
         } else {
             console.error('No slot value given for count');
