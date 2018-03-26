@@ -25,6 +25,24 @@ const languageStrings = {
             NOT_A_NUMBER: 'Das ist kein Wert, den ich setzen kann.',
         },
     },
+    en: {
+        translation: {
+            HELP_MESSAGE: 'Daily Counter counts events per day and stores the count persistently. '
+                + 'You can say „Start Daily Counter and set the count to two“, or „Start Daily Counter and add one“, or „Ask Daily Counter for the count“. '
+                + 'You can always give a specific date like „yesterday“ or „last sunday“, e.g. „Ask Daily Counter for the count of yesterday“. '
+                + 'Or you can say „Exit“. What can I help you with?',
+            HELP_REPROMPT: 'What can I help you with?',
+            STOP_MESSAGE: 'Goodbye!',
+            COUNTER_IS: 'The counter is at {count}.',
+            COUNTER_IS_FOR: 'The counter is at {count} for {date}.',
+            COUNTER_IS_NOW: 'The counter is now at {count}.',
+            COUNTER_IS_NOW_FOR: 'The counter is now at {count} for {date}.',
+            COUNTER_NOT_SET_FOR: 'The counter is not set for {date}.',
+            NOT_POSSIBLE_NOW: 'Sorry, this is not possible right now.',
+            NO_VALUE_GIVEN: 'No value given.',
+            NOT_A_NUMBER: 'This is not a value I can set.',
+        },
+    },
 };
 
 function calculateDate(slots) {

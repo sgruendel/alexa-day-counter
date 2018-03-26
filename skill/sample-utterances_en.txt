@@ -1,0 +1,14 @@
+SetCounterIntent and set the counter to {count}
+SetCounterIntent and set the count to {count}
+SetCounterIntent and set the counter to {count} for {date}
+SetCounterIntent and set the count to {count} for {date}
+SetCounterIntent and set the counter von {date} to {count}
+SetCounterIntent and set the count von {date} to {count}
+IncreaseCounterIntent and increase by {count}
+IncreaseCounterIntent and add {count}
+IncreaseCounterIntent and increase by {count} for {date}
+IncreaseCounterIntent and add {count} for {date}
+QueryCounterIntent for the count
+QueryCounterIntent for the counter
+QueryCounterIntent for the count for {date}
+QueryCounterIntent for the counter for {date}

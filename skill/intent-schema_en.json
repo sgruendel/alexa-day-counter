@@ -1,0 +1,88 @@
+{
+  "languageModel": {
+    "intents": [
+      {
+        "name": "AMAZON.CancelIntent",
+        "samples": []
+      },
+      {
+        "name": "AMAZON.HelpIntent",
+        "samples": []
+      },
+      {
+        "name": "AMAZON.StopIntent",
+        "samples": []
+      },
+      {
+        "name": "IncreaseCounterIntent",
+        "samples": [
+          "and increase by {Count}",
+          "and add {Count}",
+          "and increase by {Count} for {Date}",
+          "and add {Count} for {Date}",
+          "and increase by {Count} on {Date}",
+          "and add {Count} on {Date}"
+        ],
+        "slots": [
+          {
+            "name": "Count",
+            "type": "AMAZON.NUMBER"
+          },
+          {
+            "name": "Date",
+            "type": "AMAZON.DATE"
+          }
+        ]
+      },
+      {
+        "name": "QueryCounterIntent",
+        "samples": [
+          "for the count",
+          "for the counter",
+          "for the count for {Date}",
+          "for the counter for {Date}",
+          "for the count of {Date}",
+          "for the counter of {Date}",
+          "for the count on {Date}",
+          "for the counter on {Date}"
+        ],
+        "slots": [
+          {
+            "name": "Date",
+            "type": "AMAZON.DATE"
+          }
+        ]
+      },
+      {
+        "name": "SetCounterIntent",
+        "samples": [
+          "and set the count for {Date} to {Count}",
+          "and set the counter for {Date} to {Count}",
+          "and set the count of {Date} to {Count}",
+          "and set the counter of {Date} to {Count}",
+          "and set the count on {Date} to {Count}",
+          "and set the counter on {Date} to {Count}",
+          "and set the count to {Count} for {Date}",
+          "and set the counter to {Count} for {Date}",
+          "and set the count to {Count} of {Date}",
+          "and set the counter to {Count} of {Date}",
+          "and set the count to {Count} on {Date}",
+          "and set the counter to {Count} on {Date}",
+          "and set the counter to {Count}",
+          "and set the count to {Count}"
+        ],
+        "slots": [
+          {
+            "name": "Count",
+            "type": "AMAZON.NUMBER"
+          },
+          {
+            "name": "Date",
+            "type": "AMAZON.DATE"
+          }
+        ]
+      }
+    ],
+    "invocationName": "daily counter"
+  }
+}
