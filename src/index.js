@@ -15,11 +15,11 @@ const languageStrings = {
                 + 'Oder du kannst „Beenden“ sagen. Wie kann ich dir helfen?',
             HELP_REPROMPT: 'Wie kann ich dir helfen?',
             STOP_MESSAGE: 'Auf Wiedersehen!',
-            COUNTER_IS: 'Der Zähler steht auf {count}.',
-            COUNTER_IS_FOR: 'Der Zähler steht auf {count} für {date}.',
-            COUNTER_IS_NOW: 'Der Zähler steht jetzt auf {count}.',
-            COUNTER_IS_NOW_FOR: 'Der Zähler steht jetzt auf {count} für {date}.',
-            COUNTER_NOT_SET_FOR: 'Der Zähler ist nicht gesetzt für {date}.',
+            COUNTER_IS: 'Der Zähler steht auf {{count}}.',
+            COUNTER_IS_FOR: 'Der Zähler steht auf {{count}} für {{date}}.',
+            COUNTER_IS_NOW: 'Der Zähler steht jetzt auf {{count}}.',
+            COUNTER_IS_NOW_FOR: 'Der Zähler steht jetzt auf {{count}} für {{date}}.',
+            COUNTER_NOT_SET_FOR: 'Der Zähler ist nicht gesetzt für {{date}}.',
             NOT_POSSIBLE_NOW: 'Das ist gerade leider nicht möglich.',
             NO_VALUE_GIVEN: 'Kein Wert angegeben.',
             NOT_A_NUMBER: 'Das ist kein Wert, den ich setzen kann.',
@@ -33,11 +33,11 @@ const languageStrings = {
                 + 'Or you can say „Exit“. What can I help you with?',
             HELP_REPROMPT: 'What can I help you with?',
             STOP_MESSAGE: 'Goodbye!',
-            COUNTER_IS: 'The counter is at {count}.',
-            COUNTER_IS_FOR: 'The counter is at {count} for {date}.',
-            COUNTER_IS_NOW: 'The counter is now at {count}.',
-            COUNTER_IS_NOW_FOR: 'The counter is now at {count} for {date}.',
-            COUNTER_NOT_SET_FOR: 'The counter is not set for {date}.',
+            COUNTER_IS: 'The counter is at {{count}}.',
+            COUNTER_IS_FOR: 'The counter is at {{count}} for {{date}}.',
+            COUNTER_IS_NOW: 'The counter is now at {{count}}.',
+            COUNTER_IS_NOW_FOR: 'The counter is now at {{count}} for {{date}}.',
+            COUNTER_NOT_SET_FOR: 'The counter is not set for {{date}}.',
             NOT_POSSIBLE_NOW: 'Sorry, this is not possible right now.',
             NO_VALUE_GIVEN: 'No value given.',
             NOT_A_NUMBER: 'This is not a value I can set.',
@@ -62,15 +62,8 @@ function insertDbAndEmit(alexa, slots, userId, date, count) {
     db.insert(userId, date, count)
         .then(result => {
             console.log('count successfully updated', result);
-            var speechOutput;
-            if (slots.Date.value) {
-                speechOutput = alexa.t('COUNTER_IS_NOW_FOR')
-                    .replace('{count}', count)
-                    .replace('{date}', date);
-            } else {
-                speechOutput = alexa.t('COUNTER_IS_NOW')
-                    .replace('{count}', count);
-            }
+            const key = slots.Date.value ? 'COUNTER_IS_NOW_FOR' : 'COUNTER_IS_NOW';
+            const speechOutput = alexa.t(key, { count: count, date: date });
             alexa.emit(':tell', speechOutput);
         })
         .catch(err => {
@@ -148,21 +141,13 @@ const handlers = {
         db.find(userId, date)
             .then(result => {
                 console.log('current value is', result.count, 'for', date);
-                var speechOutput;
-                if (slots.Date.value) {
-                    speechOutput = this.t('COUNTER_IS_FOR')
-                        .replace('{count}', result.count)
-                        .replace('{date}', date);
-                } else {
-                    speechOutput = this.t('COUNTER_IS')
-                        .replace('{count}', result.count);
-                }
+                const key = slots.Date.value ? 'COUNTER_IS_FOR' : 'COUNTER_IS';
+                const speechOutput = this.t(key, { count: result.count, date: date });
                 this.emit(':tell', speechOutput);
             })
             .catch(TypeError, err => {
                 console.log('current value is not set for', date, err);
-                const speechOutput = this.t('COUNTER_NOT_SET_FOR')
-                    .replace('{date}', date);
+                const speechOutput = this.t('COUNTER_NOT_SET_FOR', { date: date });
                 this.emit(':tell', speechOutput);
             })
             .catch(err => {
