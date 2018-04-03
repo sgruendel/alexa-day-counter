@@ -7,7 +7,6 @@ const expect = chai.expect;
 
 const index = require('../src/index');
 const db = require('../src/db');
-const util = require('../src/util');
 
 const USER_ID = 'amzn1.ask.account.unit_test';
 
@@ -31,10 +30,11 @@ const event = {
             slots: {
                 Count: {
                     name: 'Count',
-                    value: '3',
+                    value: '1',
                 },
                 Date: {
                     name: 'Date',
+                    value: '2018-03',
                 },
             },
         },
@@ -60,14 +60,14 @@ const event = {
     version: '1.0',
 };
 
-const TODAY = util.calculateDateKey(event.request.intent.slots);
+const DATE_DB = '2018-03-06';
 
-describe('Testing a session with the SetCounterIntent (no date given):', () => {
+describe('Testing a session with the SetCounterIntent (month given):', () => {
     var speechResponse = null;
     var speechError = null;
 
     before(function() {
-        return db.insert(USER_ID, TODAY, 0)
+        return db.insert(USER_ID, DATE_DB, 0)
             .then(() => {
                 return new Promise((resolve, reject) => {
                     index.handler(event,
@@ -100,7 +100,7 @@ describe('Testing a session with the SetCounterIntent (no date given):', () => {
 
         it('should have a spoken response', () => {
             expect(speechResponse.response.outputSpeech).to.exist;
-            expect(speechResponse.response.outputSpeech.ssml).to.not.contain(TODAY);
+            expect(speechResponse.response.outputSpeech.ssml).to.contain('konkrete Tage');
         });
 
         it('should end the alexa session', () => {
@@ -109,8 +109,8 @@ describe('Testing a session with the SetCounterIntent (no date given):', () => {
     });
 
     describe('The db', () => {
-        it('should have a count of 3', () => {
-            return expect(db.find(USER_ID, TODAY)).to.eventually.have.property('count', 3);
+        it('should have a count of 0', () => {
+            return expect(db.find(USER_ID, DATE_DB)).to.eventually.have.property('count', 0);
         });
     });
 });

@@ -3,6 +3,7 @@
 const Alexa = require('alexa-sdk');
 
 const db = require('./db');
+const util = require('./util');
 
 const APP_ID = 'amzn1.ask.skill.d3ee5865-d4bb-4076-b13d-fbef1f7e0216';
 
@@ -23,6 +24,8 @@ const languageStrings = {
             NOT_POSSIBLE_NOW: 'Das ist gerade leider nicht möglich.',
             NO_VALUE_GIVEN: 'Kein Wert angegeben.',
             NOT_A_NUMBER: 'Das ist kein Wert, den ich setzen kann.',
+            NO_SPECIFIC_DAY_GIVEN_SET: 'Ich kann den Zähler nur für konkrete Tage setzen.',
+            NO_SPECIFIC_DAY_GIVEN_QUERY: 'Ich kann den Zähler bisher nur für konkrete Tage abfragen.',
         },
     },
     en: {
@@ -41,21 +44,11 @@ const languageStrings = {
             NOT_POSSIBLE_NOW: 'Sorry, this is not possible right now.',
             NO_VALUE_GIVEN: 'No value given.',
             NOT_A_NUMBER: 'This is not a value I can set.',
+            NO_SPECIFIC_DAY_GIVEN_SET: 'I can only set the counter for specific days.',
+            NO_SPECIFIC_DAY_GIVEN_QUERY: 'I can only query the counter for specific days for now.',
         },
     },
 };
-
-function calculateDate(slots) {
-    if (!slots.Date.value) {
-        return db.dateKey(new Date());
-    }
-    var date = slots.Date.value;
-    // TODO filter out anything that doesn't give a specific date, see
-    // https://developer.amazon.com/de/docs/custom-skills/slot-type-reference.html#date
-
-    // TODO: Evil hack, Alexa defaults to dates on or after the current date
-    return date.replace('2019', '2018');
-}
 
 function insertDbAndEmit(alexa, slots, userId, date, count) {
     console.log('setting count to', count, 'for', date);
@@ -64,11 +57,11 @@ function insertDbAndEmit(alexa, slots, userId, date, count) {
             console.log('count successfully updated', result);
             const key = slots.Date.value ? 'COUNTER_IS_NOW_FOR' : 'COUNTER_IS_NOW';
             const speechOutput = alexa.t(key, { count: count, date: date });
-            alexa.emit(':tell', speechOutput);
+            return alexa.emit(':tell', speechOutput);
         })
         .catch(err => {
             console.error('Error setting count in db', err);
-            alexa.emit(':tell', alexa.t('NOT_POSSIBLE_NOW'));
+            return alexa.emit(':tell', alexa.t('NOT_POSSIBLE_NOW'));
         });
 }
 
@@ -82,18 +75,23 @@ const handlers = {
     SetCounter: function() {
         const slots = this.event.request.intent.slots;
         if (slots.Count.value) {
-            if (!isNaN(slots.Count.value)) {
-                const userId = this.event.session.user.userId;
-                const date = calculateDate(slots);
-                const count = parseInt(slots.Count.value, 10);
-                insertDbAndEmit(this, slots, userId, date, count);
-            } else {
+            if (isNaN(slots.Count.value)) {
                 console.error('Numeric value expected, got', slots.Count.value);
-                this.emit(':tell', this.t('NOT_A_NUMBER'));
+                return this.emit(':tell', this.t('NOT_A_NUMBER'));
             }
+
+            const date = util.calculateDateKey(slots);
+            if (!date) {
+                console.error('invalid date', slots.Date.value);
+                return this.emit(':tell', this.t('NO_SPECIFIC_DAY_GIVEN_SET'));
+            }
+
+            const userId = this.event.session.user.userId;
+            const count = parseInt(slots.Count.value, 10);
+            return insertDbAndEmit(this, slots, userId, date, count);
         } else {
             console.error('No slot value given for count');
-            this.emit(':tell', this.t('NO_VALUE_GIVEN'));
+            return this.emit(':tell', this.t('NO_VALUE_GIVEN'));
         }
     },
     IncreaseCounterIntent: function() {
@@ -102,57 +100,67 @@ const handlers = {
     IncreaseCounter: function() {
         const slots = this.event.request.intent.slots;
         if (slots.Count.value) {
-            if (!isNaN(slots.Count.value)) {
-                const count = parseInt(slots.Count.value, 10);
-                const date = calculateDate(slots);
-                console.log('increasing count by', count, 'for', date);
-
-                const userId = this.event.session.user.userId;
-                db.find(userId, date)
-                    .then(result => {
-                        const newCount = result.count + count;
-                        console.log('current value is', result.count);
-                        insertDbAndEmit(this, slots, userId, date, newCount);
-                    })
-                    .catch(TypeError, err => {
-                        console.log('current value is not set for', date, err);
-                        insertDbAndEmit(this, slots, userId, date, count);
-                    })
-                    .catch(err => {
-                        console.error('Error getting count from db', err);
-                        this.emit(':tell', this.t('NOT_POSSIBLE_NOW'));
-                    });
-            } else {
+            if (isNaN(slots.Count.value)) {
                 console.error('Numeric value expected, got', slots.Count.value);
-                this.emit(':tell', this.t('NOT_A_NUMBER'));
+                return this.emit(':tell', this.t('NOT_A_NUMBER'));
             }
+
+            const date = util.calculateDateKey(slots);
+            if (!date) {
+                console.error('invalid date', slots.Date.value);
+                return this.emit(':tell', this.t('NO_SPECIFIC_DAY_GIVEN_SET'));
+            }
+
+            const count = parseInt(slots.Count.value, 10);
+            console.log('increasing count by', count, 'for', date);
+
+            const userId = this.event.session.user.userId;
+            db.find(userId, date)
+                .then(result => {
+                    const newCount = result.count + count;
+                    console.log('current value is', result.count);
+                    return insertDbAndEmit(this, slots, userId, date, newCount);
+                })
+                .catch(TypeError, err => {
+                    console.log('current value is not set for', date, err);
+                    return insertDbAndEmit(this, slots, userId, date, count);
+                })
+                .catch(err => {
+                    console.error('Error getting count from db', err);
+                    return this.emit(':tell', this.t('NOT_POSSIBLE_NOW'));
+                });
         } else {
             console.error('No slot value given for count');
-            this.emit(':tell', this.t('NO_VALUE_GIVEN'));
+            return this.emit(':tell', this.t('NO_VALUE_GIVEN'));
         }
     },
     QueryCounterIntent: function() {
         this.emit('QueryCounter');
     },
     QueryCounter: function() {
-        const userId = this.event.session.user.userId;
         const slots = this.event.request.intent.slots;
-        const date = calculateDate(slots);
+        const date = util.calculateDateKey(slots);
+        if (!date) {
+            console.error('invalid date', slots.Date.value);
+            return this.emit(':tell', this.t('NO_SPECIFIC_DAY_GIVEN_QUERY'));
+        }
+
+        const userId = this.event.session.user.userId;
         db.find(userId, date)
             .then(result => {
                 console.log('current value is', result.count, 'for', date);
                 const key = slots.Date.value ? 'COUNTER_IS_FOR' : 'COUNTER_IS';
                 const speechOutput = this.t(key, { count: result.count, date: date });
-                this.emit(':tell', speechOutput);
+                return this.emit(':tell', speechOutput);
             })
             .catch(TypeError, err => {
                 console.log('current value is not set for', date, err);
                 const speechOutput = this.t('COUNTER_NOT_SET_FOR', { date: date });
-                this.emit(':tell', speechOutput);
+                return this.emit(':tell', speechOutput);
             })
             .catch(err => {
                 console.error('Error getting count from db', err);
-                this.emit(':tell', this.t('NOT_POSSIBLE_NOW'));
+                return this.emit(':tell', this.t('NOT_POSSIBLE_NOW'));
             });
     },
     'AMAZON.HelpIntent': function() {

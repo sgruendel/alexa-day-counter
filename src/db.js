@@ -21,7 +21,3 @@ exports.findAll = function(userId) {
 exports.remove = function(userId, date) {
     return dynasty.table(TABLE_NAME).remove({ hash: userId, range: date });
 };
-
-exports.dateKey = function(date) {
-    return date.toISOString().split('T')[0];
-};

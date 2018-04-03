@@ -7,9 +7,9 @@ const expect = chai.expect;
 
 const index = require('../src/index');
 const db = require('../src/db');
+const util = require('../src/util');
 
 const USER_ID = 'amzn1.ask.account.unit_test';
-const TODAY = db.dateKey(new Date());
 
 const event = {
     session: {
@@ -59,6 +59,8 @@ const event = {
     },
     version: '1.0',
 };
+
+const TODAY = util.calculateDateKey(event.request.intent.slots);
 
 describe('Testing a session with the SetCounterIntent (NaN):', () => {
     var speechResponse = null;
