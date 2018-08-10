@@ -15,12 +15,15 @@
           }
         ],
         "samples": [
-          "und setze den Zählerstand von {Date} auf {Count}",
-          "und setze den Zähler von {Date} auf {Count}",
-          "und setze den Zählerstand auf {Count} für {Date}",
-          "und setze den Zähler auf {Count} für {Date}",
-          "und setze den Zähler auf {Count}",
-          "und setze den Zählerstand auf {Count}"
+          "setze den Zähler von {Date} auf {Count}",
+          "setze den Zählerstand von {Date} auf {Count}",
+          "setze den Stand von {Date} auf {Count}",
+          "setze den Zähler auf {Count} für {Date}",
+          "setze den Zählerstand auf {Count} für {Date}",
+          "setze den Stand auf {Count} für {Date}",
+          "setze den Zähler auf {Count}",
+          "setze den Zählerstand auf {Count}",
+          "setze den Stand auf {Count}"
         ]
       },
       {
@@ -36,12 +39,12 @@
           }
         ],
         "samples": [
-          "und zähle für {Date} um {Count} hoch",
-          "und zähle für {Date} {Count} dazu",
-          "und zähle um {Count} hoch für {Date}",
-          "und zähle {Count} dazu für {Date}",
-          "und zähle {Count} dazu",
-          "und zähle um {Count} hoch"
+          "zähle für {Date} um {Count} hoch",
+          "zähle für {Date} {Count} dazu",
+          "zähle um {Count} hoch für {Date}",
+          "zähle {Count} dazu für {Date}",
+          "zähle {Count} dazu",
+          "zähle um {Count} hoch"
         ]
       },
       {
@@ -59,9 +62,23 @@
           "nach dem Zähler für {Date}",
           "nach dem Zählerstand für {Date}",
           "nach dem Stand für {Date}",
-          "nach dem Stand",
+          "nach dem Zähler",
           "nach dem Zählerstand",
-          "nach dem Zähler"
+          "nach dem Stand"
+        ]
+      },
+      {
+        "name": "QuerySumIntent",
+        "slots": [
+          {
+            "name": "Date",
+            "type": "AMAZON.DATE"
+          }
+        ],
+        "samples": [
+          "nach der Summe vom {Date}",
+          "nach der Summe von {Date}",
+          "nach der Summe für {Date}"
         ]
       },
       {

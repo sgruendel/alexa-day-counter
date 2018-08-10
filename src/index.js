@@ -21,6 +21,7 @@ const languageStrings = {
             COUNTER_IS_NOW: 'Der Zähler steht jetzt auf {{count}}.',
             COUNTER_IS_NOW_FOR: 'Der Zähler steht jetzt auf {{count}} für {{date}}.',
             COUNTER_NOT_SET_FOR: 'Der Zähler ist nicht gesetzt für {{date}}.',
+            SUM_IS: 'Die Summe ist {{count}} von {{fromDate}} bis {{toDate}}.',
             NOT_POSSIBLE_NOW: 'Das ist gerade leider nicht möglich.',
             NO_VALUE_GIVEN: 'Kein Wert angegeben.',
             NOT_A_NUMBER: 'Das ist kein Wert, den ich setzen kann.',
@@ -41,6 +42,7 @@ const languageStrings = {
             COUNTER_IS_NOW: 'The counter is now at {{count}}.',
             COUNTER_IS_NOW_FOR: 'The counter is now at {{count}} for {{date}}.',
             COUNTER_NOT_SET_FOR: 'The counter is not set for {{date}}.',
+            SUM_IS: 'The sum is {{count}} from {{fromDate}} to {{toDate}}.',
             NOT_POSSIBLE_NOW: 'Sorry, this is not possible right now.',
             NO_VALUE_GIVEN: 'No value given.',
             NOT_A_NUMBER: 'This is not a value I can set.',
@@ -141,6 +143,10 @@ const handlers = {
         const slots = this.event.request.intent.slots;
         const date = util.calculateDateKey(slots);
         if (!date) {
+            const { fromDate, toDate } = util.calculateFromToDateKeys(slots);
+            if (fromDate && toDate) {
+                return this.emit('QuerySum');
+            }
             console.error('invalid date', slots.Date.value);
             return this.emit(':tell', this.t('NO_SPECIFIC_DAY_GIVEN_QUERY'));
         }
@@ -156,6 +162,35 @@ const handlers = {
             .catch(TypeError, err => {
                 console.log('current value is not set for', date, err);
                 const speechOutput = this.t('COUNTER_NOT_SET_FOR', { date: date });
+                return this.emit(':tell', speechOutput);
+            })
+            .catch(err => {
+                console.error('Error getting count from db', err);
+                return this.emit(':tell', this.t('NOT_POSSIBLE_NOW'));
+            });
+    },
+    QuerySumIntent: function() {
+        this.emit('QuerySum');
+    },
+    QuerySum: function() {
+        const slots = this.event.request.intent.slots;
+        const { fromDate, toDate } = util.calculateFromToDateKeys(slots);
+        console.log('from', fromDate, 'to', toDate);
+        if (!fromDate || !toDate) {
+            console.error('invalid date', slots.Date.value);
+            return this.emit(':tell', this.t('NO_SPECIFIC_DAY_GIVEN_QUERY'));
+        }
+
+        const userId = this.event.session.user.userId;
+        db.findAll(userId)
+            .then(result => {
+                console.log('found', result.length, 'results');
+                const count =
+                    result
+                        .filter(row => (row.date >= fromDate && row.date <= toDate))
+                        .reduce((sum, row) => sum + row.count, 0);
+                console.log('sum is', count, 'from', fromDate, 'to', toDate);
+                const speechOutput = this.t('SUM_IS', { count: count, fromDate: fromDate, toDate: toDate });
                 return this.emit(':tell', speechOutput);
             })
             .catch(err => {

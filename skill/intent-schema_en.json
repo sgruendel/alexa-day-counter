@@ -14,14 +14,43 @@
         "samples": []
       },
       {
+        "name": "SetCounterIntent",
+        "samples": [
+          "set the count for {Date} to {Count}",
+          "set the counter for {Date} to {Count}",
+          "set the count of {Date} to {Count}",
+          "set the counter of {Date} to {Count}",
+          "set the count on {Date} to {Count}",
+          "set the counter on {Date} to {Count}",
+          "set the count to {Count} for {Date}",
+          "set the counter to {Count} for {Date}",
+          "set the count to {Count} of {Date}",
+          "set the counter to {Count} of {Date}",
+          "set the count to {Count} on {Date}",
+          "set the counter to {Count} on {Date}",
+          "set the counter to {Count}",
+          "set the count to {Count}"
+        ],
+        "slots": [
+          {
+            "name": "Count",
+            "type": "AMAZON.NUMBER"
+          },
+          {
+            "name": "Date",
+            "type": "AMAZON.DATE"
+          }
+        ]
+      },
+      {
         "name": "IncreaseCounterIntent",
         "samples": [
-          "and increase by {Count}",
-          "and add {Count}",
-          "and increase by {Count} for {Date}",
-          "and add {Count} for {Date}",
-          "and increase by {Count} on {Date}",
-          "and add {Count} on {Date}"
+          "increase by {Count}",
+          "add {Count}",
+          "increase by {Count} for {Date}",
+          "add {Count} for {Date}",
+          "increase by {Count} on {Date}",
+          "add {Count} on {Date}"
         ],
         "slots": [
           {
@@ -54,28 +83,13 @@
         ]
       },
       {
-        "name": "SetCounterIntent",
+        "name": "QuerySumIntent",
         "samples": [
-          "and set the count for {Date} to {Count}",
-          "and set the counter for {Date} to {Count}",
-          "and set the count of {Date} to {Count}",
-          "and set the counter of {Date} to {Count}",
-          "and set the count on {Date} to {Count}",
-          "and set the counter on {Date} to {Count}",
-          "and set the count to {Count} for {Date}",
-          "and set the counter to {Count} for {Date}",
-          "and set the count to {Count} of {Date}",
-          "and set the counter to {Count} of {Date}",
-          "and set the count to {Count} on {Date}",
-          "and set the counter to {Count} on {Date}",
-          "and set the counter to {Count}",
-          "and set the count to {Count}"
+          "for the sum for {Date}",
+          "for the sum of {Date}",
+          "for the sum on {Date}"
         ],
         "slots": [
-          {
-            "name": "Count",
-            "type": "AMAZON.NUMBER"
-          },
           {
             "name": "Date",
             "type": "AMAZON.DATE"
