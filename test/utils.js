@@ -74,6 +74,18 @@ describe('util', () => {
             const result = util.calculateFromToDateKeys(slots, new Date('2018-08-10'));
             expect(result).to.include({ fromDate: '2018-01-01', toDate: '2018-01-31' });
         });
+
+        it('should work with 2018 (English locale)', () => {
+            const slots = { Date: { name: 'Date', value: '2018' } };
+            const result = util.calculateFromToDateKeys(slots);
+            expect(result).to.include({ fromDate: '2018-01-01', toDate: '2018-12-31' });
+        });
+
+        it('should work with 2018 (Non-English locale)', () => {
+            const slots = { Date: { name: 'Date', value: '2018-XX-XX' } };
+            const result = util.calculateFromToDateKeys(slots);
+            expect(result).to.include({ fromDate: '2018-01-01', toDate: '2018-12-31' });
+        });
     });
 
     describe('#calculateDateKey()', () => {

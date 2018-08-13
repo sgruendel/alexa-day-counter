@@ -27,6 +27,7 @@ const languageStrings = {
             NOT_A_NUMBER: 'Das ist kein Wert, den ich setzen kann.',
             NO_SPECIFIC_DAY_GIVEN_SET: 'Ich kann den Zähler nur für konkrete Tage setzen.',
             NO_SPECIFIC_DAY_GIVEN_QUERY: 'Ich kann den Zähler bisher nur für konkrete Tage abfragen.',
+            NO_SPECIFIC_RANGE_GIVEN_QUERY: 'Ich verstehe diesen Zeitraum leider nicht.',
         },
     },
     en: {
@@ -48,6 +49,7 @@ const languageStrings = {
             NOT_A_NUMBER: 'This is not a value I can set.',
             NO_SPECIFIC_DAY_GIVEN_SET: 'I can only set the counter for specific days.',
             NO_SPECIFIC_DAY_GIVEN_QUERY: 'I can only query the counter for specific days for now.',
+            NO_SPECIFIC_RANGE_GIVEN_QUERY: "Sorry, I don't understand this date range.",
         },
     },
 };
@@ -175,10 +177,9 @@ const handlers = {
     QuerySum: function() {
         const slots = this.event.request.intent.slots;
         const { fromDate, toDate } = util.calculateFromToDateKeys(slots);
-        console.log('from', fromDate, 'to', toDate);
         if (!fromDate || !toDate) {
             console.error('invalid date', slots.Date.value);
-            return this.emit(':tell', this.t('NO_SPECIFIC_DAY_GIVEN_QUERY'));
+            return this.emit(':tell', this.t('NO_SPECIFIC_RANGE_GIVEN_QUERY'));
         }
 
         const userId = this.event.session.user.userId;

@@ -38,7 +38,7 @@ exports.dateISOString = function(date) {
 };
 
 // returns a date range as { fromDate, toDate} tuple for an Amazon Date as defined in
-// https://developer.amazon.com/public/solutions/alexa/alexa-skills-kit/docs/built-in-intent-ref/slot-type-reference#date
+// https://developer.amazon.com/docs/custom-skills/slot-type-reference.html#date
 exports.calculateFromToDateKeys = function(slots, today = new Date()) {
     const dateStr = slots.Date.value;
 
@@ -89,6 +89,21 @@ exports.calculateFromToDateKeys = function(slots, today = new Date()) {
         return {
             fromDate: fixFutureDate(exports.dateISOString(startOfMonth), today),
             toDate: fixFutureDate(exports.dateISOString(endOfMonth), today),
+        };
+    }
+
+    // Utterances that map to a year(such as "next year") convert to a date containing just the
+    // year. Note that the date format differs between English and other languages:
+    // * All English locales use the the format YYYY.For example: 2018.
+    // * All other languages(French, German, and Japanese) use the format YYYY - XX - XX.For example: 2018 - XX - XX.
+    if (dateStr.match(/^[0-9]{4}/)) {
+        const re = /([0-9]+)(-XX-XX)?/;
+        const result = re.exec(dateStr);
+        const startOfYear = new Date(result[1] + '-01-01');
+        const endOfYear = new Date(result[1] + '-12-31');
+        return {
+            fromDate: exports.dateISOString(startOfYear),
+            toDate: exports.dateISOString(endOfYear),
         };
     }
 
