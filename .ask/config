@@ -1,0 +1,55 @@
+{
+  "deploy_settings": {
+    "default": {
+      "skill_id": "amzn1.ask.skill.d3ee5865-d4bb-4076-b13d-fbef1f7e0216",
+      "was_cloned": false,
+      "resources": {
+        "manifest": {
+          "eTag": "91e6f9a13a0f5db94dd5495187c67e62"
+        },
+        "interactionModel": {
+          "de-DE": {
+            "eTag": "df429d2902c3d1d928de3c1d9aa14214"
+          },
+          "en-US": {
+            "eTag": "b31bc936256e3a52b07754940e538102"
+          },
+          "en-CA": {
+            "eTag": "b31bc936256e3a52b07754940e538102"
+          },
+          "en-IN": {
+            "eTag": "b31bc936256e3a52b07754940e538102"
+          },
+          "en-AU": {
+            "eTag": "b31bc936256e3a52b07754940e538102"
+          },
+          "en-GB": {
+            "eTag": "b31bc936256e3a52b07754940e538102"
+          }
+        },
+        "lambda": [
+          {
+            "arn": "arn:aws:lambda:eu-west-1:467353799488:function:dayCounter",
+            "awsRegion": "us-east-1",
+            "functionName": "arn:aws:lambda:eu-west-1:467353799488:function:dayCounter",
+            "alexaUsage": [
+              "custom/default"
+            ],
+            "revisionId": "5facf5b8-7b5e-4a83-8e07-50cd183ae681"
+          }
+        ]
+      },
+      "merge": {
+        "manifest": {
+          "apis": {
+            "custom": {
+              "endpoint": {
+                "uri": "arn:aws:lambda:eu-west-1:467353799488:function:dayCounter"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

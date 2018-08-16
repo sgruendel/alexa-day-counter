@@ -1,0 +1,104 @@
+{
+  "interactionModel": {
+    "languageModel": {
+      "invocationName": "daily counter",
+      "intents": [
+        {
+          "name": "AMAZON.CancelIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.HelpIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.StopIntent",
+          "samples": []
+        },
+        {
+          "name": "SetCounterIntent",
+          "slots": [
+            {
+              "name": "Count",
+              "type": "AMAZON.NUMBER"
+            },
+            {
+              "name": "Date",
+              "type": "AMAZON.DATE"
+            }
+          ],
+          "samples": [
+            "set the count to {Count}",
+            "set the counter to {Count}",
+            "set the count to {Count} for {Date}",
+            "set the counter to {Count} for {Date}",
+            "set the count to {Count} of {Date}",
+            "set the counter to {Count} of {Date}",
+            "set the count to {Count} on {Date}",
+            "set the counter to {Count} on {Date}",
+            "set the count for {Date} to {Count}",
+            "set the counter for {Date} to {Count}",
+            "set the count of {Date} to {Count}",
+            "set the counter of {Date} to {Count}",
+            "set the count on {Date} to {Count}",
+            "set the counter on {Date} to {Count}"
+          ]
+        },
+        {
+          "name": "IncreaseCounterIntent",
+          "slots": [
+            {
+              "name": "Count",
+              "type": "AMAZON.NUMBER"
+            },
+            {
+              "name": "Date",
+              "type": "AMAZON.DATE"
+            }
+          ],
+          "samples": [
+            "add {Count}",
+            "increase by {Count}",
+            "add {Count} for {Date}",
+            "increase by {Count} for {Date}",
+            "add {Count} on {Date}",
+            "increase by {Count} on {Date}"
+          ]
+        },
+        {
+          "name": "QueryCounterIntent",
+          "slots": [
+            {
+              "name": "Date",
+              "type": "AMAZON.DATE"
+            }
+          ],
+          "samples": [
+            "for the count",
+            "for the counter",
+            "for the count for {Date}",
+            "for the counter for {Date}",
+            "for the count of {Date}",
+            "for the counter of {Date}",
+            "for the count on {Date}",
+            "for the counter on {Date}"
+          ]
+        },
+        {
+          "name": "QuerySumIntent",
+          "slots": [
+            {
+              "name": "Date",
+              "type": "AMAZON.DATE"
+            }
+          ],
+          "samples": [
+            "for the sum for {Date}",
+            "for the sum on {Date}",
+            "for the sum of {Date}"
+          ]
+        }
+      ]
+    }
+  }
+}

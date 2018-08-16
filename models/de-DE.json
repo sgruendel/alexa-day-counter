@@ -1,0 +1,118 @@
+{
+  "interactionModel": {
+    "languageModel": {
+      "invocationName": "tageszähler",
+      "intents": [
+        {
+          "name": "AMAZON.CancelIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.HelpIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.StopIntent",
+          "samples": []
+        },
+        {
+          "name": "SetCounterIntent",
+          "slots": [
+            {
+              "name": "Count",
+              "type": "AMAZON.NUMBER"
+            },
+            {
+              "name": "Date",
+              "type": "AMAZON.DATE"
+            }
+          ],
+          "samples": [
+            "setze den Stand auf {Count}",
+            "setze den Zähler auf {Count}",
+            "setze den Zählerstand auf {Count}",
+            "setze den Stand auf {Count} für {Date}",
+            "setze den Zähler auf {Count} für {Date}",
+            "setze den Zählerstand auf {Count} für {Date}",
+            "setze den Stand am {Date} auf {Count}",
+            "setze den Zähler am {Date} auf {Count}",
+            "setze den Zählerstand am {Date} auf {Count}",
+            "setze den Stand für {Date} auf {Count}",
+            "setze den Zähler für {Date} auf {Count}",
+            "setze den Zählerstand für {Date} auf {Count}",
+            "setze den Stand vom {Date} auf {Count}",
+            "setze den Zähler vom {Date} auf {Count}",
+            "setze den Zählerstand vom {Date} auf {Count}",
+            "setze den Stand von {Date} auf {Count}",
+            "setze den Zähler von {Date} auf {Count}",
+            "setze den Zählerstand von {Date} auf {Count}"
+          ]
+        },
+        {
+          "name": "IncreaseCounterIntent",
+          "slots": [
+            {
+              "name": "Count",
+              "type": "AMAZON.NUMBER"
+            },
+            {
+              "name": "Date",
+              "type": "AMAZON.DATE"
+            }
+          ],
+          "samples": [
+            "zähle {Count} dazu",
+            "zähle um {Count} hoch",
+            "zähle {Count} dazu am {Date}",
+            "zähle um {Count} hoch am {Date}",
+            "zähle {Count} dazu für {Date}",
+            "zähle um {Count} hoch für {Date}",
+            "zähle für {Date} {Count} dazu",
+            "zähle für {Date} um {Count} hoch"
+          ]
+        },
+        {
+          "name": "QueryCounterIntent",
+          "slots": [
+            {
+              "name": "Date",
+              "type": "AMAZON.DATE"
+            }
+          ],
+          "samples": [
+            "nach dem Stand",
+            "nach dem Zähler",
+            "nach dem Zählerstand",
+            "nach dem Stand am {Date}",
+            "nach dem Zähler am {Date}",
+            "nach dem Zählerstand am {Date}",
+            "nach dem Stand für {Date}",
+            "nach dem Zähler für {Date}",
+            "nach dem Zählerstand für {Date}",
+            "nach dem Stand vom {Date}",
+            "nach dem Zähler vom {Date}",
+            "nach dem Zählerstand vom {Date}",
+            "nach dem Stand von {Date}",
+            "nach dem Zähler von {Date}",
+            "nach dem Zählerstand von {Date}"
+          ]
+        },
+        {
+          "name": "QuerySumIntent",
+          "slots": [
+            {
+              "name": "Date",
+              "type": "AMAZON.DATE"
+            }
+          ],
+          "samples": [
+            "nach der Summe am {Date}",
+            "nach der Summe für {Date}",
+            "nach der Summe vom {Date}",
+            "nach der Summe von {Date}"
+          ]
+        }
+      ]
+    }
+  }
+}

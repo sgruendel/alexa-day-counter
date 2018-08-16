@@ -1,0 +1,124 @@
+{
+  "manifest": {
+    "publishingInformation": {
+      "locales": {
+        "de-DE": {
+          "summary": "Zählt Ereignisse pro Tag und speichert die Anzahl dauerhaft.",
+          "examplePhrases": [
+            "Alexa, starte Tageszähler und zähle eins dazu",
+            "Alexa, starte Tageszähler und setze den Zähler auf drei für gestern",
+            "Alexa, frage Tageszähler nach dem Stand"
+          ],
+          "keywords": [
+            "counting",
+            "counter"
+          ],
+          "name": "Tageszähler",
+          "smallIconUri": "https://s3.amazonaws.com/CAPS-SSE/echo_developer/e540/0a2f0771a66f4d5a895ddd5c092795b5/APP_ICON?versionId=VbjkCFe0rZ92hA6q3f.kjEj9_IY.z.Fh&AWSAccessKeyId=AKIAIEYXX6DHY7O4XWMA&Expires=1534001480&Signature=qYGxtvsv0JlNTosVB8rbICsRCp4%3D",
+          "description": "Wie oft wurde ich bei der Arbeit unterbrochen? Wie oft musste ich niesen? Das kann Alexa jetzt mitzählen und dauerhaft pro Tag speichern. Der Zähler startet jeden neuen Tag bei 0.\n\nVergangene Tage können abgefragt werden mit \"Alexa, frage Tageszähler nach dem Stand von gestern\" oder \"Alexa, frage Tageszähler nach dem Stand vom letzten Sonntag\".",
+          "largeIconUri": "https://s3.amazonaws.com/CAPS-SSE/echo_developer/6674/5cdbc280bede4d8ea97e8ed52aa86fed/APP_ICON_LARGE?versionId=5u9qO4mp.Jv3IXG9YIGqIgSVpWxAXw3R&AWSAccessKeyId=AKIAIEYXX6DHY7O4XWMA&Expires=1534001480&Signature=tv3BS3HSG2HkSv%2F5O6hIFh8XTtU%3D"
+        },
+        "en-US": {
+          "summary": "Counts events per day and stores the count persistently.",
+          "examplePhrases": [
+            "Alexa, start daily counter and increase by one",
+            "Alexa, start daily counter and set the count to three for yesterday",
+            "Alexa, ask daily counter for the count"
+          ],
+          "keywords": [
+            "counting",
+            "counter"
+          ],
+          "name": "Daily Counter",
+          "smallIconUri": "https://s3.amazonaws.com/CAPS-SSE/echo_developer/f76d/4d7b0ccb929b4e4897d0c793aba092af/APP_ICON?versionId=lFqN_xWc0XBad8NY3t.wDwYIensQNVFN&AWSAccessKeyId=AKIAIEYXX6DHY7O4XWMA&Expires=1534001480&Signature=xKSetKm3TMw%2Bvc1NUfxU3NWWrIo%3D",
+          "description": "How often have I been interrupted at work? How often did I sneeze? Now Alexa can count for you and store the number persistently. The counter starts at zero for every day.\n\nPast days can be queried using \"Alexa, ask daily counter for the count of yesterday\" or \"Alexa, ask daily counter for the count of last Sunday\".",
+          "largeIconUri": "https://s3.amazonaws.com/CAPS-SSE/echo_developer/ecc0/f6067433cd624d47abc4c96c985016fa/APP_ICON_LARGE?versionId=osJHME6slNUM_vkZKHFBrbhqL6hs3dhE&AWSAccessKeyId=AKIAIEYXX6DHY7O4XWMA&Expires=1534001480&Signature=WTtkz8PN84hfxtJ45uwAv4mGhrE%3D"
+        },
+        "en-CA": {
+          "summary": "Counts events per day and stores the count persistently.",
+          "examplePhrases": [
+            "Alexa, start daily counter and increase by one",
+            "Alexa, start daily counter and set the count to three for yesterday",
+            "Alexa, ask daily counter for the count"
+          ],
+          "keywords": [
+            "counting",
+            "counter"
+          ],
+          "name": "Daily Counter",
+          "smallIconUri": "https://s3.amazonaws.com/CAPS-SSE/echo_developer/ad51/d5554283c58c4d4eb5684208f5196918/APP_ICON?versionId=sFJ9wM.SFgo1nSremR9qA9nl6.XTKQ_9&AWSAccessKeyId=AKIAIEYXX6DHY7O4XWMA&Expires=1534001480&Signature=tpW%2BNyDfOT5XONDzdTjJJTZfevc%3D",
+          "description": "How often have I been interrupted at work? How often did I sneeze? Now Alexa can count for you and store the number persistently. The counter starts at zero for every day.\n\nPast days can be queried using \"Alexa, ask daily counter for the count of yesterday\" or \"Alexa, ask daily counter for the count of last Sunday\".",
+          "largeIconUri": "https://s3.amazonaws.com/CAPS-SSE/echo_developer/ca6b/0d8b8f08ec8c44a9968555d5228be7ee/APP_ICON_LARGE?versionId=moYW6zNGyx_oChdPOsJbeVdo6izqUOQL&AWSAccessKeyId=AKIAIEYXX6DHY7O4XWMA&Expires=1534001480&Signature=NfQpP2ErduZQNhKTP%2FnSKxpjj5k%3D"
+        },
+        "en-IN": {
+          "summary": "Counts events per day and stores the count persistently.",
+          "examplePhrases": [
+            "Alexa, start daily counter and increase by one",
+            "Alexa, start daily counter and set the count to three for yesterday",
+            "Alexa, ask daily counter for the count"
+          ],
+          "keywords": [
+            "counting",
+            "counter"
+          ],
+          "name": "Daily Counter",
+          "smallIconUri": "https://s3.amazonaws.com/CAPS-SSE/echo_developer/53d2/3b55dfb041a74b05a65b6e3729b1e917/APP_ICON?versionId=TthoM1gYwEYXrwIS38ufEDgjxpMfZOPY&AWSAccessKeyId=AKIAIEYXX6DHY7O4XWMA&Expires=1534001480&Signature=YD9DnIw1zDplp0R9AseB9e7Meco%3D",
+          "description": "How often have I been interrupted at work? How often did I sneeze? Now Alexa can count for you and store the number persistently. The counter starts at zero for every day.\n\nPast days can be queried using \"Alexa, ask daily counter for the count of yesterday\" or \"Alexa, ask daily counter for the count of last Sunday\".",
+          "largeIconUri": "https://s3.amazonaws.com/CAPS-SSE/echo_developer/55a1/f57458f042714e7e80e00d98e7452c44/APP_ICON_LARGE?versionId=Fnir2_c00tAA5nyPf4aPXiWdofUnDWdE&AWSAccessKeyId=AKIAIEYXX6DHY7O4XWMA&Expires=1534001480&Signature=ACBqbf8bUm7NpkOty3OdcQFCVEI%3D"
+        },
+        "en-AU": {
+          "summary": "Counts events per day and stores the count persistently.",
+          "examplePhrases": [
+            "Alexa, start daily counter and increase by one",
+            "Alexa, start daily counter and set the count to three for yesterday",
+            "Alexa, ask daily counter for the count"
+          ],
+          "keywords": [
+            "counting",
+            "counter"
+          ],
+          "name": "Daily Counter",
+          "smallIconUri": "https://s3.amazonaws.com/CAPS-SSE/echo_developer/6071/ccde26fbae804857a301812beac07212/APP_ICON?versionId=0BXYQQ7WlAoJCJpMXHw.Mm3EeyHmCLLB&AWSAccessKeyId=AKIAIEYXX6DHY7O4XWMA&Expires=1534001480&Signature=gDw2iXAyfHB1ky4g1GPRrOEYVE4%3D",
+          "description": "How often have I been interrupted at work? How often did I sneeze? Now Alexa can count for you and store the number persistently. The counter starts at zero for every day.\n\nPast days can be queried using \"Alexa, ask daily counter for the count of yesterday\" or \"Alexa, ask daily counter for the count of last Sunday\".",
+          "largeIconUri": "https://s3.amazonaws.com/CAPS-SSE/echo_developer/495d/aab6e226f68741ba83b59a7b4cf40dc1/APP_ICON_LARGE?versionId=3UtlovsQZhfu1NGjhZ060Dx_bS73DVGg&AWSAccessKeyId=AKIAIEYXX6DHY7O4XWMA&Expires=1534001480&Signature=zLdXYRFQjodYKwYP%2BUz3d%2FEibOA%3D"
+        },
+        "en-GB": {
+          "summary": "Counts events per day and stores the count persistently.",
+          "examplePhrases": [
+            "Alexa, start daily counter and increase by one",
+            "Alexa, start daily counter and set the count to three for yesterday",
+            "Alexa, ask daily counter for the count"
+          ],
+          "keywords": [
+            "counting",
+            "counter"
+          ],
+          "name": "Daily Counter",
+          "smallIconUri": "https://s3.amazonaws.com/CAPS-SSE/echo_developer/1865/7adf3abec860415ba5963434ecdac320/APP_ICON?versionId=2HAAqwzwlTkriruopht6476A1U8RLigl&AWSAccessKeyId=AKIAIEYXX6DHY7O4XWMA&Expires=1534001480&Signature=1EX5Jz47kQkHxle%2B3Mefs6d6QRk%3D",
+          "description": "How often have I been interrupted at work? How often did I sneeze? Now Alexa can count for you and store the number persistently. The counter starts at zero for every day.\n\nPast days can be queried using \"Alexa, ask daily counter for the count of yesterday\" or \"Alexa, ask daily counter for the count of last Sunday\".",
+          "largeIconUri": "https://s3.amazonaws.com/CAPS-SSE/echo_developer/825a/b8aa451f51244e36a86929aa0a3113a6/APP_ICON_LARGE?versionId=qPdhcWpjU2_6OVxG2hXoYDgDKBVX9NsB&AWSAccessKeyId=AKIAIEYXX6DHY7O4XWMA&Expires=1534001480&Signature=dczAGEOmciH5txkgbVuD9MWlMII%3D"
+        }
+      },
+      "isAvailableWorldwide": true,
+      "testingInstructions": "Changes to previous version (Lambda version 6):\n* Giving a non specific date like \"last month\", an error is returned when setting, increasing or querying the counter.",
+      "category": "ORGANIZERS_AND_ASSISTANTS",
+      "distributionCountries": []
+    },
+    "apis": {
+      "custom": {
+        "endpoint": {
+          "sourceDir": ".\\lambda"
+        },
+        "interfaces": []
+      }
+    },
+    "manifestVersion": "1.0",
+    "privacyAndCompliance": {
+      "allowsPurchases": false,
+      "isExportCompliant": true,
+      "containsAds": false,
+      "isChildDirected": false,
+      "usesPersonalInfo": false
+    }
+  }
+}
