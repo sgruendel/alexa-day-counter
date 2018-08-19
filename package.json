@@ -24,6 +24,9 @@
   "homepage": "https://github.com/sgruendel/alexa-day-counter#readme",
   "dependencies": {
     "alexa-sdk": "^1.0.25",
+    "canvas": "^1.6.11",
+    "chart.js": "^2.7.2",
+    "chartjs-node": "^1.7.1",
     "dynasty": "^0.3.9"
   },
   "devDependencies": {

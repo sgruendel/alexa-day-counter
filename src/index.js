@@ -1,6 +1,7 @@
 'use strict';
 
 const Alexa = require('alexa-sdk');
+const ChartjsNode = require('chartjs-node');
 
 const db = require('./db');
 const util = require('./util');
@@ -182,6 +183,50 @@ const handlers = {
             return this.emit(':tell', this.t('NO_SPECIFIC_RANGE_GIVEN_QUERY'));
         }
 
+        var chartNode = new ChartjsNode(600, 600);
+        var chartJsOptions = {
+            type: 'bar',
+            data: [20, 10],
+            options: {
+                scales: {
+                    xAxes: [{
+                        stacked: true,
+                    }],
+                    yAxes: [{
+                        stacked: true,
+                    }],
+                },
+            },
+        };
+        var img = chartNode.drawChart(chartJsOptions)
+            .then(() => {
+                // chart is created
+
+                // get image as png buffer
+                return chartNode.getImageBuffer('image/png');
+            })
+            .then(buffer => {
+                Array.isArray(buffer); // => true
+                // as a stream
+                return chartNode.getImageStream('image/png');
+            })
+            .then(streamResult => {
+                // using the length property you can do things like
+                // directly upload the image to s3 by using the
+                // stream and length properties
+                streamResult.stream; // => Stream object
+                streamResult.length; // => Integer length of stream
+                // write to a file
+                console.log('chart ready');
+                return chartNode.writeImageToFile('image/png', './testimage.png');
+            })
+            .then(() => {
+                // chart is now written to the file path
+                // ./testimage.png
+                console.log('image file ready');
+            });
+        console.log('img', img);
+
         const userId = this.event.session.user.userId;
         db.findAll(userId)
             .then(result => {
@@ -192,6 +237,7 @@ const handlers = {
                         .reduce((sum, row) => sum + row.count, 0);
                 console.log('sum is', count, 'from', fromDate, 'to', toDate);
                 const speechOutput = this.t('SUM_IS', { count: count, fromDate: fromDate, toDate: toDate });
+
                 return this.emit(':tell', speechOutput);
             })
             .catch(err => {
