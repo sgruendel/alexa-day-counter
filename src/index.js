@@ -184,6 +184,17 @@ const handlers = {
         }
 
         var chartNode = new ChartjsNode(600, 600);
+        console.log('chartNode', chartNode);
+        chartNode.on('beforeDraw', function(Chartjs) {
+            console.log('beforeDraw', Chartjs.defaults.defaultFontFamily);
+            //Chartjs.defaults
+            //Chartjs.pluginService
+            //Chartjs.scaleService
+            //Chartjs.layoutService
+            //Chartjs.helpers
+            //Chartjs.controllers
+            //etc
+        });
         var chartJsOptions = {
             type: 'bar',
             data: [20, 10],
@@ -203,11 +214,13 @@ const handlers = {
                 // chart is created
 
                 // get image as png buffer
+                console.log('chart created');
                 return chartNode.getImageBuffer('image/png');
             })
             .then(buffer => {
                 Array.isArray(buffer); // => true
                 // as a stream
+                console.log('chart as a stream');
                 return chartNode.getImageStream('image/png');
             })
             .then(streamResult => {
@@ -218,12 +231,17 @@ const handlers = {
                 streamResult.length; // => Integer length of stream
                 // write to a file
                 console.log('chart ready');
-                return chartNode.writeImageToFile('image/png', './testimage.png');
+                //return chartNode.writeImageToFile('image/png', './testimage.png');
             })
             .then(() => {
                 // chart is now written to the file path
                 // ./testimage.png
-                console.log('image file ready');
+                //console.log('image file ready');
+            })
+            .finally(() => {
+                console.log('destroying chart');
+                chartNode.destroy();
+                console.log('chart destroyed');
             });
         console.log('img', img);
 

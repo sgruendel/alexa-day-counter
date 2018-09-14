@@ -7,7 +7,7 @@
     "invoke": "aws lambda invoke --function-name dayCounter --payload fileb://test/events/alexa-start-session.json test/out.txt && cat test/out.txt",
     "test": "nyc --reporter=lcov --reporter=text mocha",
     "deploy-lambda": "npm prune --production && npm run lambda-zip && npm run lambda-update && npm install",
-    "lambda-zip": "zip -r index.zip node_modules && cd src && zip ../index.zip *",
+    "lambda-zip": "cp -v ami_bin/canvas.node node_modules/canvas/build/Release/ && zip -r index.zip lib node_modules && cd src && zip ../index.zip *",
     "lambda-update": "aws lambda update-function-code --function-name dayCounter --zip-file fileb://index.zip",
     "deploy-skill": "ask deploy --target skill",
     "deploy-model": "ask deploy --target model"
@@ -24,7 +24,7 @@
   "homepage": "https://github.com/sgruendel/alexa-day-counter#readme",
   "dependencies": {
     "alexa-sdk": "^1.0.25",
-    "canvas": "^1.6.11",
+    "canvas": "^1.6.12",
     "chart.js": "^2.7.2",
     "chartjs-node": "^1.7.1",
     "dynasty": "^0.3.9"
@@ -32,10 +32,10 @@
   "devDependencies": {
     "chai": "^4.1.2",
     "chai-as-promised": "^7.1.1",
-    "eslint": "^5.3.0",
+    "eslint": "^5.5.0",
     "eslint-config-strongloop": "^2.1.0",
     "mocha": "^5.2.0",
-    "nyc": "^12.0.2"
+    "nyc": "^13.0.1"
   },
   "eslintConfig": {
     "extends": "strongloop",
