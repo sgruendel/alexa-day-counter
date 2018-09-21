@@ -1,12 +1,14 @@
 'use strict';
 
-const Alexa = require('alexa-sdk');
+const Alexa = require('ask-sdk-core');
+const i18n = require('i18next');
+const sprintf = require('i18next-sprintf-postprocessor');
 const ChartjsNode = require('chartjs-node');
 
 const db = require('./db');
 const util = require('./util');
 
-const APP_ID = 'amzn1.ask.skill.d3ee5865-d4bb-4076-b13d-fbef1f7e0216';
+const SKILL_ID = 'amzn1.ask.skill.d3ee5865-d4bb-4076-b13d-fbef1f7e0216';
 
 const languageStrings = {
     de: {
@@ -55,132 +57,193 @@ const languageStrings = {
     },
 };
 
-function insertDbAndEmit(alexa, slots, userId, date, count) {
+async function insertDbAndGetResponse(handlerInput, slots, userId, date, count) {
+    const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
     console.log('setting count to', count, 'for', date);
-    db.insert(userId, date, count)
-        .then(result => {
-            console.log('count successfully updated', result);
-            const key = slots.Date.value ? 'COUNTER_IS_NOW_FOR' : 'COUNTER_IS_NOW';
-            const speechOutput = alexa.t(key, { count: count, date: date });
-            return alexa.emit(':tell', speechOutput);
-        })
-        .catch(err => {
-            console.error('Error setting count in db', err);
-            return alexa.emit(':tell', alexa.t('NOT_POSSIBLE_NOW'));
-        });
+
+    var speechOutput;
+    try {
+        const result = await db.insert(userId, date, count);
+        console.log('count successfully updated', result);
+        const key = slots.Date.value ? 'COUNTER_IS_NOW_FOR' : 'COUNTER_IS_NOW';
+        speechOutput = requestAttributes.t(key, { count: count, date: date });
+    } catch (err) {
+        // TODO fallback to ErrorHandler?
+        console.error('Error setting count in db', err);
+        speechOutput = requestAttributes.t('NOT_POSSIBLE_NOW');
+    }
+    return handlerInput.responseBuilder
+        .speak(speechOutput)
+        .getResponse();
 }
 
-const handlers = {
-    LaunchRequest: function() {
-        this.emit('AMAZON.HelpIntent');
+const SetCounterIntentHandler = {
+    canHandle(handlerInput) {
+        const request = handlerInput.requestEnvelope.request;
+        return request.type === 'IntentRequest' && request.intent.name === 'SetCounterIntent';
     },
-    SetCounterIntent: function() {
-        this.emit('SetCounter');
-    },
-    SetCounter: function() {
-        const slots = this.event.request.intent.slots;
+    handle(handlerInput) {
+        const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
+        const slots = handlerInput.requestEnvelope.request.intent.slots;
         if (slots.Count.value) {
             if (isNaN(slots.Count.value)) {
                 console.error('Numeric value expected, got', slots.Count.value);
-                return this.emit(':tell', this.t('NOT_A_NUMBER'));
+                const speechOutput = requestAttributes.t('NOT_A_NUMBER');
+                return handlerInput.responseBuilder
+                    .speak(speechOutput)
+                    .getResponse();
             }
 
             const date = util.calculateDateKey(slots);
             if (!date) {
                 console.error('invalid date', slots.Date.value);
-                return this.emit(':tell', this.t('NO_SPECIFIC_DAY_GIVEN_SET'));
+                const speechOutput = requestAttributes.t('NO_SPECIFIC_DAY_GIVEN_SET');
+                return handlerInput.responseBuilder
+                    .speak(speechOutput)
+                    .getResponse();
             }
 
-            const userId = this.event.session.user.userId;
             const count = parseInt(slots.Count.value, 10);
-            return insertDbAndEmit(this, slots, userId, date, count);
+            return insertDbAndGetResponse(handlerInput, slots, handlerInput.requestEnvelope.session.user.userId, date, count);
         } else {
             console.error('No slot value given for count');
-            return this.emit(':tell', this.t('NO_VALUE_GIVEN'));
+            const speechOutput = requestAttributes.t('NO_VALUE_GIVEN');
+            return handlerInput.responseBuilder
+                .speak(speechOutput)
+                .getResponse();
         }
     },
-    IncreaseCounterIntent: function() {
-        this.emit('IncreaseCounter');
+};
+
+const IncreaseCounterIntentHandler = {
+    canHandle(handlerInput) {
+        const request = handlerInput.requestEnvelope.request;
+        return request.type === 'IntentRequest' && request.intent.name === 'IncreaseCounterIntent';
     },
-    IncreaseCounter: function() {
-        const slots = this.event.request.intent.slots;
+    async handle(handlerInput) {
+        const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
+        const slots = handlerInput.requestEnvelope.request.intent.slots;
         if (slots.Count.value) {
             if (isNaN(slots.Count.value)) {
                 console.error('Numeric value expected, got', slots.Count.value);
-                return this.emit(':tell', this.t('NOT_A_NUMBER'));
+                const speechOutput = requestAttributes.t('NOT_A_NUMBER');
+                return handlerInput.responseBuilder
+                    .speak(speechOutput)
+                    .getResponse();
             }
 
             const date = util.calculateDateKey(slots);
             if (!date) {
                 console.error('invalid date', slots.Date.value);
-                return this.emit(':tell', this.t('NO_SPECIFIC_DAY_GIVEN_SET'));
+                const speechOutput = requestAttributes.t('NO_SPECIFIC_DAY_GIVEN_SET');
+                return handlerInput.responseBuilder
+                    .speak(speechOutput)
+                    .getResponse();
             }
 
             const count = parseInt(slots.Count.value, 10);
             console.log('increasing count by', count, 'for', date);
 
-            const userId = this.event.session.user.userId;
-            db.find(userId, date)
-                .then(result => {
+            try {
+                const userId = handlerInput.requestEnvelope.session.user.userId;
+                const result = await db.find(userId, date);
+                if (result) {
                     const newCount = result.count + count;
                     console.log('current value is', result.count);
-                    return insertDbAndEmit(this, slots, userId, date, newCount);
-                })
-                .catch(TypeError, err => {
-                    console.log('current value is not set for', date, err);
-                    return insertDbAndEmit(this, slots, userId, date, count);
-                })
-                .catch(err => {
-                    console.error('Error getting count from db', err);
-                    return this.emit(':tell', this.t('NOT_POSSIBLE_NOW'));
-                });
+                    return insertDbAndGetResponse(handlerInput, slots, userId, date, newCount);
+                } else {
+                    console.log('current value is not set for', date);
+                    return insertDbAndGetResponse(handlerInput, slots, userId, date, count);
+                }
+            } catch (err) {
+                // TODO fallback to ErrorHandler?
+                console.error('Error getting count from db', err);
+                const speechOutput = requestAttributes.t('NOT_POSSIBLE_NOW');
+                return handlerInput.responseBuilder
+                    .speak(speechOutput)
+                    .getResponse();
+            }
         } else {
             console.error('No slot value given for count');
-            return this.emit(':tell', this.t('NO_VALUE_GIVEN'));
+            const speechOutput = requestAttributes.t('NO_VALUE_GIVEN');
+            return handlerInput.responseBuilder
+                .speak(speechOutput)
+                .getResponse();
         }
     },
-    QueryCounterIntent: function() {
-        this.emit('QueryCounter');
-    },
-    QueryCounter: function() {
-        const slots = this.event.request.intent.slots;
+};
+
+const QueryCounterIntentHandler = {
+    canHandle(handlerInput) {
+        /* TODO check date:
         const date = util.calculateDateKey(slots);
         if (!date) {
             const { fromDate, toDate } = util.calculateFromToDateKeys(slots);
             if (fromDate && toDate) {
                 return this.emit('QuerySum');
             }
+        */
+        const request = handlerInput.requestEnvelope.request;
+        return request.type === 'IntentRequest' && request.intent.name === 'QueryCounterIntent';
+    },
+    async handle(handlerInput) {
+        const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
+        const slots = handlerInput.requestEnvelope.request.intent.slots;
+        const date = util.calculateDateKey(slots);
+        if (!date) {
             console.error('invalid date', slots.Date.value);
-            return this.emit(':tell', this.t('NO_SPECIFIC_DAY_GIVEN_QUERY'));
+            const speechOutput = requestAttributes.t('NO_SPECIFIC_DAY_GIVEN_QUERY');
+            return handlerInput.responseBuilder
+                .speak(speechOutput)
+                .getResponse();
         }
 
-        const userId = this.event.session.user.userId;
-        db.find(userId, date)
-            .then(result => {
+        var speechOutput;
+        try {
+            const result = await db.find(handlerInput.requestEnvelope.session.user.userId, date);
+            if (result) {
                 console.log('current value is', result.count, 'for', date);
                 const key = slots.Date.value ? 'COUNTER_IS_FOR' : 'COUNTER_IS';
-                const speechOutput = this.t(key, { count: result.count, date: date });
-                return this.emit(':tell', speechOutput);
-            })
-            .catch(TypeError, err => {
-                console.log('current value is not set for', date, err);
-                const speechOutput = this.t('COUNTER_NOT_SET_FOR', { date: date });
-                return this.emit(':tell', speechOutput);
-            })
-            .catch(err => {
-                console.error('Error getting count from db', err);
-                return this.emit(':tell', this.t('NOT_POSSIBLE_NOW'));
-            });
+                speechOutput = requestAttributes.t(key, { count: result.count, date: date });
+            } else {
+                console.log('current value is not set for', date);
+                speechOutput = requestAttributes.t('COUNTER_NOT_SET_FOR', { date: date });
+            }
+        } catch (err) {
+            // TODO fallback to ErrorHandler?
+            console.error('Error getting count from db', err);
+            speechOutput = requestAttributes.t('NOT_POSSIBLE_NOW');
+        }
+        return handlerInput.responseBuilder
+            .speak(speechOutput)
+            .getResponse();
     },
-    QuerySumIntent: function() {
-        this.emit('QuerySum');
+};
+
+const QuerySumIntentHandler = {
+    canHandle(handlerInput) {
+        /* TODO check date:
+        const date = util.calculateDateKey(slots);
+        if (!date) {
+            const { fromDate, toDate } = util.calculateFromToDateKeys(slots);
+            if (fromDate && toDate) {
+                return this.emit('QuerySum');
+            }
+        */
+        const request = handlerInput.requestEnvelope.request;
+        return request.type === 'IntentRequest'
+            && request.intent.name === 'QuerySumIntent';
     },
-    QuerySum: function() {
-        const slots = this.event.request.intent.slots;
+    async handle(handlerInput) {
+        const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
+        const slots = handlerInput.requestEnvelope.request.intent.slots;
         const { fromDate, toDate } = util.calculateFromToDateKeys(slots);
         if (!fromDate || !toDate) {
             console.error('invalid date', slots.Date.value);
-            return this.emit(':tell', this.t('NO_SPECIFIC_RANGE_GIVEN_QUERY'));
+            const speechOutput = requestAttributes.t('NO_SPECIFIC_RANGE_GIVEN_QUERY');
+            return handlerInput.responseBuilder
+                .speak(speechOutput)
+                .getResponse();
         }
 
         var chartNode = new ChartjsNode(600, 600);
@@ -245,45 +308,98 @@ const handlers = {
             });
         console.log('img', img);
 
-        const userId = this.event.session.user.userId;
-        db.findAll(userId)
-            .then(result => {
-                console.log('found', result.length, 'results');
-                const count =
-                    result
-                        .filter(row => (row.date >= fromDate && row.date <= toDate))
-                        .reduce((sum, row) => sum + row.count, 0);
-                console.log('sum is', count, 'from', fromDate, 'to', toDate);
-                const speechOutput = this.t('SUM_IS', { count: count, fromDate: fromDate, toDate: toDate });
-
-                return this.emit(':tell', speechOutput);
-            })
-            .catch(err => {
-                console.error('Error getting count from db', err);
-                return this.emit(':tell', this.t('NOT_POSSIBLE_NOW'));
-            });
-    },
-    'AMAZON.HelpIntent': function() {
-        const speechOutput = this.t('HELP_MESSAGE');
-        const reprompt = this.t('HELP_REPROMPT');
-        this.emit(':ask', speechOutput, reprompt);
-    },
-    'AMAZON.CancelIntent': function() {
-        this.emit(':tell', this.t('STOP_MESSAGE'));
-    },
-    'AMAZON.StopIntent': function() {
-        this.emit(':tell', this.t('STOP_MESSAGE'));
-    },
-    SessionEndedRequest: function() {
-        this.emit(':tell', this.t('STOP_MESSAGE'));
+        var speechOutput;
+        try {
+            const result = await db.findAll(handlerInput.requestEnvelope.session.user.userId);
+            console.log('found', result.length, 'results');
+            const count =
+                result
+                    .filter(row => (row.date >= fromDate && row.date <= toDate))
+                    .reduce((sum, row) => sum + row.count, 0);
+            console.log('sum is', count, 'from', fromDate, 'to', toDate);
+            speechOutput = requestAttributes.t('SUM_IS', { count: count, fromDate: fromDate, toDate: toDate });
+        } catch (err) {
+            // TODO fallback to ErrorHandler?
+            console.error('Error getting count from db', err);
+            speechOutput = requestAttributes.t('NOT_POSSIBLE_NOW');
+        }
+        return handlerInput.responseBuilder
+            .speak(speechOutput)
+            .getResponse();
     },
 };
 
-exports.handler = (event, context, callback) => {
-    const alexa = Alexa.handler(event, context, callback);
-    alexa.appId = APP_ID;
-    // To enable string internationalization (i18n) features, set a resources object.
-    alexa.resources = languageStrings;
-    alexa.registerHandlers(handlers);
-    alexa.execute();
+const HelpIntentHandler = {
+    canHandle(handlerInput) {
+        return handlerInput.requestEnvelope.request.type === 'LaunchRequest'
+            || (handlerInput.requestEnvelope.request.type === 'IntentRequest'
+                && handlerInput.requestEnvelope.request.intent.name === 'AMAZON.HelpIntent');
+    },
+    handle(handlerInput) {
+        const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
+        const speechOutput = requestAttributes.t('HELP_MESSAGE');
+        const repromptSpeechOutput = requestAttributes.t('HELP_REPROMPT');
+        return handlerInput.responseBuilder
+            .speak(speechOutput)
+            .reprompt(repromptSpeechOutput)
+            .getResponse();
+    },
 };
+
+const CancelAndStopIntentHandler = {
+    canHandle(handlerInput) {
+        return handlerInput.requestEnvelope.request.type === 'IntentRequest'
+            && (handlerInput.requestEnvelope.request.intent.name === 'AMAZON.CancelIntent'
+                || handlerInput.requestEnvelope.request.intent.name === 'AMAZON.StopIntent');
+    },
+    handle(handlerInput) {
+        const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
+        const speechOutput = requestAttributes.t('STOP_MESSAGE');
+        return handlerInput.responseBuilder
+            .speak(speechOutput)
+            .getResponse();
+    },
+};
+
+const ErrorHandler = {
+    canHandle() {
+        return true;
+    },
+    handle(handlerInput, error) {
+        console.log(`Error handled: ${error}`);
+
+        return handlerInput.responseBuilder
+            .speak('Entschuldigung, das verstehe ich nicht. Bitte wiederholen Sie das?')
+            .reprompt('Entschuldigung, das verstehe ich nicht. Bitte wiederholen Sie das?')
+            .getResponse();
+    },
+};
+
+const LocalizationInterceptor = {
+    process(handlerInput) {
+        const localizationClient = i18n.use(sprintf).init({
+            lng: handlerInput.requestEnvelope.request.locale,
+            overloadTranslationOptionHandler: sprintf.overloadTranslationOptionHandler,
+            resources: languageStrings,
+            returnObjects: true,
+        });
+
+        const attributes = handlerInput.attributesManager.getRequestAttributes();
+        attributes.t = (...args) => {
+            return localizationClient.t(...args);
+        };
+    },
+};
+
+exports.handler = Alexa.SkillBuilders.custom()
+    .addRequestHandlers(
+        SetCounterIntentHandler,
+        IncreaseCounterIntentHandler,
+        QueryCounterIntentHandler,
+        QuerySumIntentHandler,
+        HelpIntentHandler,
+        CancelAndStopIntentHandler)
+    .addRequestInterceptors(LocalizationInterceptor)
+    .addErrorHandlers(ErrorHandler)
+    .withSkillId(SKILL_ID)
+    .lambda();
