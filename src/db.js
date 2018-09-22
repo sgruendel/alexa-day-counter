@@ -25,8 +25,9 @@ exports.remove = function(userId, date) {
 exports.removeAll = function(userId) {
     return exports.findAll(userId)
         .then(result => {
-            result.forEach(row => {
-                exports.remove(userId, row.date);
-            });
+            return Promise.all(
+                result.map(row => {
+                    return exports.remove(userId, row.date);
+                }));
         });
 };

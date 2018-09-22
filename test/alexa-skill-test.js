@@ -24,14 +24,15 @@ describe('Daily Counter Skill', () => {
         await db.insert(USER_ID, '2018-03-06', '5');
         result = await db.findAll(USER_ID);
         expect(result).to.have.lengthOf(1);
-        console.log('before done');
     });
 
-    after(async function() {
-        const result = await db.findAll(USER_ID);
-        result.forEach(row => {
-            expect(row.count, 'date ' + row.date).to.be.a('number');
-        });
+    after(() => {
+        return db.findAll(USER_ID)
+            .then(result => {
+                result.forEach(row => {
+                    expect(row.count, 'date ' + row.date).to.be.a('number');
+                });
+            });
     });
 
     describe('LaunchRequest', () => {
