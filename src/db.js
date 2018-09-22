@@ -21,3 +21,12 @@ exports.findAll = function(userId) {
 exports.remove = function(userId, date) {
     return dynasty.table(TABLE_NAME).remove({ hash: userId, range: date });
 };
+
+exports.removeAll = function(userId) {
+    return exports.findAll(userId)
+        .then(result => {
+            result.forEach(row => {
+                exports.remove(userId, row.date);
+            });
+        });
+};

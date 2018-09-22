@@ -2,15 +2,38 @@
 
 // include the testing framework
 const alexaTest = require('alexa-skill-test-framework');
+var expect = require('chai').expect;
+
+const db = require('../src/db');
+
+const USER_ID = 'amzn1.ask.account.unit_test';
 
 // initialize the testing framework
 alexaTest.initialize(
     require('../src/index'),
     'amzn1.ask.skill.d3ee5865-d4bb-4076-b13d-fbef1f7e0216',
-    'amzn1.ask.account.unit_test');
+    USER_ID);
 alexaTest.setLocale('de-DE');
 
 describe('Daily Counter Skill', () => {
+    before(async function() {
+        await db.removeAll(USER_ID);
+        var result = await db.findAll(USER_ID);
+        expect(result).to.have.lengthOf(0);
+
+        await db.insert(USER_ID, '2018-03-06', '5');
+        result = await db.findAll(USER_ID);
+        expect(result).to.have.lengthOf(1);
+        console.log('before done');
+    });
+
+    after(async function() {
+        const result = await db.findAll(USER_ID);
+        result.forEach(row => {
+            expect(row.count, 'date ' + row.date).to.be.a('number');
+        });
+    });
+
     describe('LaunchRequest', () => {
         alexaTest.test([
             {
@@ -91,17 +114,15 @@ describe('Daily Counter Skill', () => {
                 repromptsNothing: true, shouldEndSession: true,
             },
             // date given, value already in db
-            // TODO set to known value before increase
             {
                 request: alexaTest.getIntentRequest('IncreaseCounterIntent', { Date: '2018-03-06', Count: '2' }),
-                saysLike: 'Der Zähler steht jetzt auf ',
+                says: 'Der Zähler steht jetzt auf 7 für 2018-03-06.',
                 repromptsNothing: true, shouldEndSession: true,
             },
             // date given, no value in db yet
-            // TODO remove from db before increase
             {
                 request: alexaTest.getIntentRequest('IncreaseCounterIntent', { Date: '2018-03-05', Count: '3' }),
-                saysLike: 'Der Zähler steht jetzt auf ',
+                says: 'Der Zähler steht jetzt auf 3 für 2018-03-05.',
                 repromptsNothing: true, shouldEndSession: true,
             },
             // month given
@@ -145,10 +166,9 @@ describe('Daily Counter Skill', () => {
     describe('QuerySumIntent', () => {
         alexaTest.test([
             // month given
-            // TODO once IncreaseCounterIntent resets db we can expect a fixed value here
             {
                 request: alexaTest.getIntentRequest('QuerySumIntent', { Date: '2018-03' }),
-                saysLike: 'Die Summe ist ',
+                says: 'Die Summe ist 12 von 2018-03-01 bis 2018-03-31.',
                 repromptsNothing: true, shouldEndSession: true,
             },
             // TODO many more uses cases here

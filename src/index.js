@@ -3,7 +3,7 @@
 const Alexa = require('ask-sdk-core');
 const i18n = require('i18next');
 const sprintf = require('i18next-sprintf-postprocessor');
-const ChartjsNode = require('chartjs-node');
+//const ChartjsNode = require('chartjs-node');
 
 const db = require('./db');
 const util = require('./util');
@@ -148,7 +148,7 @@ const IncreaseCounterIntentHandler = {
                 const userId = handlerInput.requestEnvelope.session.user.userId;
                 const result = await db.find(userId, date);
                 if (result) {
-                    const newCount = result.count + count;
+                    const newCount = parseInt(result.count, 10) + count;
                     console.log('current value is', result.count);
                     return insertDbAndGetResponse(handlerInput, slots, userId, date, newCount);
                 } else {
@@ -246,6 +246,7 @@ const QuerySumIntentHandler = {
                 .getResponse();
         }
 
+        /*
         var chartNode = new ChartjsNode(600, 600);
         console.log('chartNode', chartNode);
         chartNode.on('beforeDraw', function(Chartjs) {
@@ -307,6 +308,7 @@ const QuerySumIntentHandler = {
                 console.log('chart destroyed');
             });
         console.log('img', img);
+        */
 
         var speechOutput;
         try {
@@ -315,7 +317,7 @@ const QuerySumIntentHandler = {
             const count =
                 result
                     .filter(row => (row.date >= fromDate && row.date <= toDate))
-                    .reduce((sum, row) => sum + row.count, 0);
+                    .reduce((sum, row) => sum + parseInt(row.count, 10), 0);
             console.log('sum is', count, 'from', fromDate, 'to', toDate);
             speechOutput = requestAttributes.t('SUM_IS', { count: count, fromDate: fromDate, toDate: toDate });
         } catch (err) {
