@@ -104,7 +104,8 @@ const SetCounterIntentHandler = {
             }
 
             const count = parseInt(slots.Count.value, 10);
-            return insertDbAndGetResponse(handlerInput, slots, handlerInput.requestEnvelope.session.user.userId, date, count);
+            return insertDbAndGetResponse(handlerInput, slots, handlerInput.requestEnvelope.session.user.userId,
+                date, count);
         } else {
             console.error('No slot value given for count');
             const speechOutput = requestAttributes.t('NO_VALUE_GIVEN');
