@@ -9,7 +9,7 @@ describe('util', () => {
         it('should default to null/null when no slot value given', () => {
             const slots = { Date: { name: 'Date' } };
             const result = util.calculateFromToDateKeys(slots);
-            expect(result).to.include({fromDate: null, toDate: null});
+            expect(result).to.include({ fromDate: null, toDate: null });
         });
 
         it('should use slot value for past date', () => {
@@ -45,10 +45,22 @@ describe('util', () => {
             expect(result).to.include({ fromDate: '2018-08-04', toDate: '2018-08-05' });
         });
 
-        it('should work with this weekend', () => {
+        it('should work with this weekend on Saturday', () => {
+            const slots = { Date: { name: 'Date', value: '2018-W31-WE' } };
+            const result = util.calculateFromToDateKeys(slots, new Date('2018-08-04'));
+            expect(result).to.include({ fromDate: '2018-08-04', toDate: '2018-08-05' });
+        });
+
+        it('should work with this weekend on Sunday', () => {
+            const slots = { Date: { name: 'Date', value: '2018-W31-WE' } };
+            const result = util.calculateFromToDateKeys(slots, new Date('2018-08-05'));
+            expect(result).to.include({ fromDate: '2018-08-04', toDate: '2018-08-05' });
+        });
+
+        it('should work with this weekend on Friday', () => {
             const slots = { Date: { name: 'Date', value: '2018-W32-WE' } };
             const result = util.calculateFromToDateKeys(slots, new Date('2018-08-10'));
-            expect(result).to.include({ fromDate: '2018-08-04', toDate: '2018-08-05' });
+            expect(result).to.include({ fromDate: '2018-08-11', toDate: '2018-08-12' });
         });
 
         it('should work with last week', () => {
@@ -60,7 +72,13 @@ describe('util', () => {
         it('should work with this week', () => {
             const slots = { Date: { name: 'Date', value: '2018-W32' } };
             const result = util.calculateFromToDateKeys(slots, new Date('2018-08-10'));
-            expect(result).to.include({ fromDate: '2018-08-06', toDate: '2018-08-10' });
+            expect(result).to.include({ fromDate: '2018-08-06', toDate: '2018-08-12' });
+        });
+
+        it('should work with next week', () => {
+            const slots = { Date: { name: 'Date', value: '2018-W33' } };
+            const result = util.calculateFromToDateKeys(slots, new Date('2018-08-10'));
+            expect(result).to.include({ fromDate: '2018-08-13', toDate: '2018-08-19' });
         });
 
         it('should work with January', () => {
@@ -85,6 +103,36 @@ describe('util', () => {
             const slots = { Date: { name: 'Date', value: '2018-XX-XX' } };
             const result = util.calculateFromToDateKeys(slots);
             expect(result).to.include({ fromDate: '2018-01-01', toDate: '2018-12-31' });
+        });
+
+        it('should not work with a decade', () => {
+            const slots = { Date: { name: 'Date', value: '200X' } };
+            const result = util.calculateFromToDateKeys(slots);
+            expect(result).to.include({ fromDate: null, toDate: null });
+        });
+
+        it('should not work with Spring', () => {
+            const slots = { Date: { name: 'Date', value: '2018-SP' } };
+            const result = util.calculateFromToDateKeys(slots);
+            expect(result).to.include({ fromDate: null, toDate: null });
+        });
+
+        it('should not work with Summer', () => {
+            const slots = { Date: { name: 'Date', value: '2018-SU' } };
+            const result = util.calculateFromToDateKeys(slots);
+            expect(result).to.include({ fromDate: null, toDate: null });
+        });
+
+        it('should not work with Fall', () => {
+            const slots = { Date: { name: 'Date', value: '2018-FA' } };
+            const result = util.calculateFromToDateKeys(slots);
+            expect(result).to.include({ fromDate: null, toDate: null });
+        });
+
+        it('should not work with Winter', () => {
+            const slots = { Date: { name: 'Date', value: '2018-WI' } };
+            const result = util.calculateFromToDateKeys(slots);
+            expect(result).to.include({ fromDate: null, toDate: null });
         });
     });
 

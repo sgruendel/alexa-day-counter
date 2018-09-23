@@ -8,8 +8,8 @@ function getDateOfISOWeek(week, dayInWeek, year) {
 
 function fixFutureDate(dateStr, today) {
     const date = new Date(dateStr);
-    // Alexa defaults to dates on or after the current date, so if on 2018-04-03 someone specifies
-    // yesterday's date, Alexa gives 2019-04-02 as slot value, but in this skill's context we'll use
+    // Alexa defaults to dates on or after the current date, so if on 2018-04-03 someone asks for
+    // "April 2nd", Alexa gives 2019-04-02 as slot value, but in this skill's context we'll use
     // the year before.
     if (date.getFullYear() === today.getFullYear() + 1) {
         var prevYear = new Date(date);
@@ -42,7 +42,7 @@ exports.dateISOString = function(date) {
 exports.calculateFromToDateKeys = function(slots, today = new Date()) {
     const dateStr = slots.Date.value;
 
-    // If no value was given, use today.
+    // Fail if no value was given.
     if (!dateStr) {
         return { fromDate: null, toDate: null };
     }
@@ -64,7 +64,7 @@ exports.calculateFromToDateKeys = function(slots, today = new Date()) {
         const result = re.exec(dateStr);
         const saturday = getDateOfISOWeek(result[2], 6, result[1]);
         const sunday = getDateOfISOWeek(result[2], 7, result[1]);
-        return { fromDate: fixFutureDate(saturday, today), toDate: fixFutureDate(sunday, today) };
+        return { fromDate: saturday, toDate: sunday };
     }
 
     // Utterances that map to just a specific week (such as “this
@@ -75,7 +75,7 @@ exports.calculateFromToDateKeys = function(slots, today = new Date()) {
         const result = re.exec(dateStr);
         const monday = getDateOfISOWeek(result[2], 1, result[1]);
         const sunday = getDateOfISOWeek(result[2], 7, result[1]);
-        return { fromDate: fixFutureDate(monday, today), toDate: fixFutureDate(sunday, today) };
+        return { fromDate: monday, toDate: sunday };
     }
 
     // Utterances that map to a month, but not a specific day (such as
@@ -96,7 +96,7 @@ exports.calculateFromToDateKeys = function(slots, today = new Date()) {
     // year. Note that the date format differs between English and other languages:
     // * All English locales use the the format YYYY.For example: 2018.
     // * All other languages(French, German, and Japanese) use the format YYYY - XX - XX.For example: 2018 - XX - XX.
-    if (dateStr.match(/^[0-9]{4}/)) {
+    if (dateStr.match(/^[0-9]{4}(-XX-XX)?$/)) {
         const re = /([0-9]+)(-XX-XX)?/;
         const result = re.exec(dateStr);
         const startOfYear = new Date(result[1] + '-01-01');
@@ -109,9 +109,6 @@ exports.calculateFromToDateKeys = function(slots, today = new Date()) {
 
     return { fromDate: null, toDate: null };
     // TODO not relevant here
-
-    // Utterances that map to a year (such as “next year”) convert to a
-    // date containing just the year: 2016.
 
     // Utterances that map to a decade convert to a date indicating the
     // decade: 201X.
