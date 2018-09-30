@@ -83,6 +83,7 @@
             "nach dem Stand",
             "nach dem Zähler",
             "nach dem Zählerstand",
+            "nach {Date}",
             "nach dem Stand am {Date}",
             "nach dem Zähler am {Date}",
             "nach dem Zählerstand am {Date}",
