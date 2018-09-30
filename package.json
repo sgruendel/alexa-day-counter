@@ -28,6 +28,7 @@
     "canvas": "^1.6.12",
     "chart.js": "^2.7.2",
     "chartjs-node": "^1.7.1",
+    "dashbot": "^10.1.1",
     "dynasty": "^0.3.12",
     "i18next": "^11.9.0",
     "i18next-sprintf-postprocessor": "^0.2.2"
