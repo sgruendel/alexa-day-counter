@@ -3,6 +3,7 @@
 const Alexa = require('ask-sdk-core');
 const i18n = require('i18next');
 const sprintf = require('i18next-sprintf-postprocessor');
+const dashbot = process.env.DASHBOT_API_KEY ? require('dashbot')(process.env.DASHBOT_API_KEY).alexa : undefined;
 //const ChartjsNode = require('chartjs-node');
 
 const db = require('./db');
@@ -392,3 +393,4 @@ exports.handler = Alexa.SkillBuilders.custom()
     .addErrorHandlers(ErrorHandler)
     .withSkillId(SKILL_ID)
     .lambda();
+if (dashbot) exports.handler = dashbot.handler(exports.handler);

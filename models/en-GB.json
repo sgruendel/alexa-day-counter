@@ -76,6 +76,7 @@
           "samples": [
             "for the count",
             "for the counter",
+            "for {Date}",
             "for the count for {Date}",
             "for the counter for {Date}",
             "for the count of {Date}",
