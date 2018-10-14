@@ -61,17 +61,10 @@ async function insertDbAndGetResponse(handlerInput, slots, userId, date, count) 
     const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
     console.log('setting count to', count, 'for', date);
 
-    var speechOutput;
-    try {
-        const result = await db.insert(userId, date, count);
-        console.log('count successfully updated', result);
-        const key = slots.Date.value ? 'COUNTER_IS_NOW_FOR' : 'COUNTER_IS_NOW';
-        speechOutput = requestAttributes.t(key, { count: count, date: date });
-    } catch (err) {
-        // TODO fallback to ErrorHandler?
-        console.error('Error setting count in db', err);
-        speechOutput = requestAttributes.t('NOT_POSSIBLE_NOW');
-    }
+    const result = await db.insert(userId, date, count);
+    console.log('count successfully updated', result);
+    const key = slots.Date.value ? 'COUNTER_IS_NOW_FOR' : 'COUNTER_IS_NOW';
+    const speechOutput = requestAttributes.t(key, { count: count, date: date });
     return handlerInput.responseBuilder
         .speak(speechOutput)
         .getResponse();
@@ -145,24 +138,15 @@ const IncreaseCounterIntentHandler = {
             const count = parseInt(slots.Count.value, 10);
             console.log('increasing count by', count, 'for', date);
 
-            try {
-                const userId = handlerInput.requestEnvelope.session.user.userId;
-                const result = await db.find(userId, date);
-                if (result) {
-                    const newCount = parseInt(result.count, 10) + count;
-                    console.log('current value is', result.count);
-                    return insertDbAndGetResponse(handlerInput, slots, userId, date, newCount);
-                } else {
-                    console.log('current value is not set for', date);
-                    return insertDbAndGetResponse(handlerInput, slots, userId, date, count);
-                }
-            } catch (err) {
-                // TODO fallback to ErrorHandler?
-                console.error('Error getting count from db', err);
-                const speechOutput = requestAttributes.t('NOT_POSSIBLE_NOW');
-                return handlerInput.responseBuilder
-                    .speak(speechOutput)
-                    .getResponse();
+            const userId = handlerInput.requestEnvelope.session.user.userId;
+            const result = await db.find(userId, date);
+            if (result) {
+                const newCount = parseInt(result.count, 10) + count;
+                console.log('current value is', result.count);
+                return insertDbAndGetResponse(handlerInput, slots, userId, date, newCount);
+            } else {
+                console.log('current value is not set for', date);
+                return insertDbAndGetResponse(handlerInput, slots, userId, date, count);
             }
         } else {
             console.error('No slot value given for count');
@@ -200,20 +184,14 @@ const QueryCounterIntentHandler = {
         }
 
         var speechOutput;
-        try {
-            const result = await db.find(handlerInput.requestEnvelope.session.user.userId, date);
-            if (result) {
-                console.log('current value is', result.count, 'for', date);
-                const key = slots.Date.value ? 'COUNTER_IS_FOR' : 'COUNTER_IS';
-                speechOutput = requestAttributes.t(key, { count: result.count, date: date });
-            } else {
-                console.log('current value is not set for', date);
-                speechOutput = requestAttributes.t('COUNTER_NOT_SET_FOR', { date: date });
-            }
-        } catch (err) {
-            // TODO fallback to ErrorHandler?
-            console.error('Error getting count from db', err);
-            speechOutput = requestAttributes.t('NOT_POSSIBLE_NOW');
+        const result = await db.find(handlerInput.requestEnvelope.session.user.userId, date);
+        if (result) {
+            console.log('current value is', result.count, 'for', date);
+            const key = slots.Date.value ? 'COUNTER_IS_FOR' : 'COUNTER_IS';
+            speechOutput = requestAttributes.t(key, { count: result.count, date: date });
+        } else {
+            console.log('current value is not set for', date);
+            speechOutput = requestAttributes.t('COUNTER_NOT_SET_FOR', { date: date });
         }
         return handlerInput.responseBuilder
             .speak(speechOutput)
@@ -311,21 +289,14 @@ const QuerySumIntentHandler = {
         console.log('img', img);
         */
 
-        var speechOutput;
-        try {
-            const result = await db.findAll(handlerInput.requestEnvelope.session.user.userId);
-            console.log('found', result.length, 'results');
-            const count =
-                result
-                    .filter(row => (row.date >= fromDate && row.date <= toDate))
-                    .reduce((sum, row) => sum + parseInt(row.count, 10), 0);
-            console.log('sum is', count, 'from', fromDate, 'to', toDate);
-            speechOutput = requestAttributes.t('SUM_IS', { count: count, fromDate: fromDate, toDate: toDate });
-        } catch (err) {
-            // TODO fallback to ErrorHandler?
-            console.error('Error getting count from db', err);
-            speechOutput = requestAttributes.t('NOT_POSSIBLE_NOW');
-        }
+        const result = await db.findAll(handlerInput.requestEnvelope.session.user.userId);
+        console.log('found', result.length, 'results');
+        const count =
+            result
+                .filter(row => (row.date >= fromDate && row.date <= toDate))
+                .reduce((sum, row) => sum + parseInt(row.count, 10), 0);
+        console.log('sum is', count, 'from', fromDate, 'to', toDate);
+        const speechOutput = requestAttributes.t('SUM_IS', { count: count, fromDate: fromDate, toDate: toDate });
         return handlerInput.responseBuilder
             .speak(speechOutput)
             .getResponse();
@@ -371,6 +342,21 @@ const ErrorHandler = {
     handle(handlerInput, error) {
         console.log(`Error handled: ${error}`);
 
+        const request = handlerInput.requestEnvelope.request;
+        if (request.type === 'IntentRequest'
+            && (request.intent.name === 'QueryCounterIntent'
+                || request.intent.name === 'SetCounterIntent'
+                || request.intent.name === 'IncreaseCounterIntent'
+                || request.intent.name === 'QuerySumIntent')) {
+
+            //console.error('Error getting count from db', err);
+            //console.error('Error setting count in db', err);
+            const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
+            const speechOutput = requestAttributes.t('NOT_POSSIBLE_NOW');
+            return handlerInput.responseBuilder
+                .speak(speechOutput)
+                .getResponse();
+        }
         return handlerInput.responseBuilder
             .speak('Entschuldigung, das verstehe ich nicht. Bitte wiederholen Sie das?')
             .reprompt('Entschuldigung, das verstehe ich nicht. Bitte wiederholen Sie das?')
