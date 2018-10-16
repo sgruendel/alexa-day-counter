@@ -4,7 +4,6 @@ const Alexa = require('ask-sdk-core');
 const i18n = require('i18next');
 const sprintf = require('i18next-sprintf-postprocessor');
 const dashbot = process.env.DASHBOT_API_KEY ? require('dashbot')(process.env.DASHBOT_API_KEY).alexa : undefined;
-//const ChartjsNode = require('chartjs-node');
 
 const db = require('./db');
 const util = require('./util');
@@ -226,70 +225,6 @@ const QuerySumIntentHandler = {
                 .getResponse();
         }
 
-        /*
-        var chartNode = new ChartjsNode(600, 600);
-        console.log('chartNode', chartNode);
-        chartNode.on('beforeDraw', function(Chartjs) {
-            console.log('beforeDraw', Chartjs.defaults.defaultFontFamily);
-            //Chartjs.defaults
-            //Chartjs.pluginService
-            //Chartjs.scaleService
-            //Chartjs.layoutService
-            //Chartjs.helpers
-            //Chartjs.controllers
-            //etc
-        });
-        var chartJsOptions = {
-            type: 'bar',
-            data: [20, 10],
-            options: {
-                scales: {
-                    xAxes: [{
-                        stacked: true,
-                    }],
-                    yAxes: [{
-                        stacked: true,
-                    }],
-                },
-            },
-        };
-        var img = chartNode.drawChart(chartJsOptions)
-            .then(() => {
-                // chart is created
-
-                // get image as png buffer
-                console.log('chart created');
-                return chartNode.getImageBuffer('image/png');
-            })
-            .then(buffer => {
-                Array.isArray(buffer); // => true
-                // as a stream
-                console.log('chart as a stream');
-                return chartNode.getImageStream('image/png');
-            })
-            .then(streamResult => {
-                // using the length property you can do things like
-                // directly upload the image to s3 by using the
-                // stream and length properties
-                streamResult.stream; // => Stream object
-                streamResult.length; // => Integer length of stream
-                // write to a file
-                console.log('chart ready');
-                //return chartNode.writeImageToFile('image/png', './testimage.png');
-            })
-            .then(() => {
-                // chart is now written to the file path
-                // ./testimage.png
-                //console.log('image file ready');
-            })
-            .finally(() => {
-                console.log('destroying chart');
-                chartNode.destroy();
-                console.log('chart destroyed');
-            });
-        console.log('img', img);
-        */
-
         const result = await db.findAll(handlerInput.requestEnvelope.session.user.userId);
         console.log('found', result.length, 'results');
         const count =
@@ -341,7 +276,7 @@ const ErrorHandler = {
         return true;
     },
     handle(handlerInput, error) {
-        console.log(`Error handled: ${error}`);
+        console.error('Error handled:', error);
 
         const request = handlerInput.requestEnvelope.request;
         if (request.type === 'IntentRequest'
@@ -350,8 +285,6 @@ const ErrorHandler = {
                 || request.intent.name === 'IncreaseCounterIntent'
                 || request.intent.name === 'QuerySumIntent')) {
 
-            //console.error('Error getting count from db', err);
-            //console.error('Error setting count in db', err);
             const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
             const speechOutput = requestAttributes.t('NOT_POSSIBLE_NOW');
             return handlerInput.responseBuilder

@@ -7,7 +7,7 @@
     "invoke": "aws lambda invoke --function-name dayCounter --payload fileb://test/events/alexa-start-session.json test/out.txt && cat test/out.txt",
     "test": "nyc --reporter=lcov --reporter=text mocha",
     "deploy-lambda": "npm prune --production && npm run lambda-zip && npm run lambda-update && npm install",
-    "lambda-zip": "cp -v ami_bin/canvas.node node_modules/canvas/build/Release/ && zip -x 'node_modules/.cache/*' -r index.zip lib node_modules && cd src && zip ../index.zip *",
+    "lambda-zip": "zip -x 'node_modules/.cache/*' -r index.zip lib node_modules && cd src && zip ../index.zip *",
     "lambda-update": "aws lambda update-function-code --function-name dayCounter --zip-file fileb://index.zip",
     "deploy-skill": "ask deploy --target skill",
     "deploy-model": "ask deploy --target model"
@@ -25,9 +25,6 @@
   "dependencies": {
     "ask-sdk-core": "^2.0.9",
     "ask-sdk-model": "^1.5.0",
-    "canvas": "^1.6.12",
-    "chart.js": "^2.7.2",
-    "chartjs-node": "^1.7.1",
     "dashbot": "^10.1.1",
     "dynasty": "^0.3.12",
     "i18next": "^11.9.0",
