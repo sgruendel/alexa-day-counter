@@ -81,25 +81,25 @@ describe('Daily Counter Skill', () => {
         alexaTest.test([
             // no date given
             {
-                request: alexaTest.getIntentRequest('SetCounterIntent', { Date: null, Count: '1' }),
+                request: alexaTest.getIntentRequest('SetCounterIntent', { date: null, count: '1' }),
                 says: 'Der Zähler steht jetzt auf 1.',
                 repromptsNothing: true, shouldEndSession: true,
             },
             // date given
             {
-                request: alexaTest.getIntentRequest('SetCounterIntent', { Date: '2018-03-07', Count: '2' }),
+                request: alexaTest.getIntentRequest('SetCounterIntent', { date: '2018-03-07', count: '2' }),
                 says: 'Der Zähler steht jetzt auf 2 für 2018-03-07.',
                 repromptsNothing: true, shouldEndSession: true,
             },
             // month given
             {
-                request: alexaTest.getIntentRequest('SetCounterIntent', { Date: '2018-03', Count: '3' }),
+                request: alexaTest.getIntentRequest('SetCounterIntent', { date: '2018-03', count: '3' }),
                 says: 'Ich kann den Zähler nur für konkrete Tage setzen.',
                 repromptsNothing: true, shouldEndSession: true,
             },
             // NaN
             {
-                request: alexaTest.getIntentRequest('SetCounterIntent', { Date: null, Count: '?' }),
+                request: alexaTest.getIntentRequest('SetCounterIntent', { date: null, count: '?' }),
                 says: 'Das ist kein Wert, den ich setzen kann.',
                 repromptsNothing: true, shouldEndSession: true,
             },
@@ -110,31 +110,31 @@ describe('Daily Counter Skill', () => {
         alexaTest.test([
             // no date given
             {
-                request: alexaTest.getIntentRequest('IncreaseCounterIntent', { Date: null, Count: '1' }),
+                request: alexaTest.getIntentRequest('IncreaseCounterIntent', { date: null, count: '1' }),
                 says: 'Der Zähler steht jetzt auf 2.',
                 repromptsNothing: true, shouldEndSession: true,
             },
             // date given, value already in db
             {
-                request: alexaTest.getIntentRequest('IncreaseCounterIntent', { Date: '2018-03-06', Count: '2' }),
+                request: alexaTest.getIntentRequest('IncreaseCounterIntent', { date: '2018-03-06', count: '2' }),
                 says: 'Der Zähler steht jetzt auf 7 für 2018-03-06.',
                 repromptsNothing: true, shouldEndSession: true,
             },
             // date given, no value in db yet
             {
-                request: alexaTest.getIntentRequest('IncreaseCounterIntent', { Date: '2018-03-05', Count: '3' }),
+                request: alexaTest.getIntentRequest('IncreaseCounterIntent', { date: '2018-03-05', count: '3' }),
                 says: 'Der Zähler steht jetzt auf 3 für 2018-03-05.',
                 repromptsNothing: true, shouldEndSession: true,
             },
             // month given
             {
-                request: alexaTest.getIntentRequest('IncreaseCounterIntent', { Date: '2018-03', Count: '4' }),
+                request: alexaTest.getIntentRequest('IncreaseCounterIntent', { date: '2018-03', count: '4' }),
                 says: 'Ich kann den Zähler nur für konkrete Tage setzen.',
                 repromptsNothing: true, shouldEndSession: true,
             },
             // NaN
             {
-                request: alexaTest.getIntentRequest('IncreaseCounterIntent', { Date: null, Count: '?' }),
+                request: alexaTest.getIntentRequest('IncreaseCounterIntent', { date: null, count: '?' }),
                 says: 'Das ist kein Wert, den ich setzen kann.',
                 repromptsNothing: true, shouldEndSession: true,
             },
@@ -145,19 +145,19 @@ describe('Daily Counter Skill', () => {
         alexaTest.test([
             // no date given
             {
-                request: alexaTest.getIntentRequest('QueryCounterIntent', {Date: null}),
+                request: alexaTest.getIntentRequest('QueryCounterIntent', {date: null}),
                 says: 'Der Zähler steht auf 2.',
                 repromptsNothing: true, shouldEndSession: true,
             },
             // date given
             {
-                request: alexaTest.getIntentRequest('QueryCounterIntent', { Date: '2018-03-07' }),
+                request: alexaTest.getIntentRequest('QueryCounterIntent', { date: '2018-03-07' }),
                 says: 'Der Zähler steht auf 2 für 2018-03-07.',
                 repromptsNothing: true, shouldEndSession: true,
             },
             // month given
             {
-                request: alexaTest.getIntentRequest('QueryCounterIntent', { Date: '2018-03' }),
+                request: alexaTest.getIntentRequest('QueryCounterIntent', { date: '2018-03' }),
                 says: 'Ich kann den Zähler bisher nur für konkrete Tage abfragen.',
                 repromptsNothing: true, shouldEndSession: true,
             },
@@ -168,7 +168,7 @@ describe('Daily Counter Skill', () => {
         alexaTest.test([
             // month given
             {
-                request: alexaTest.getIntentRequest('QuerySumIntent', { Date: '2018-03' }),
+                request: alexaTest.getIntentRequest('QuerySumIntent', { date: '2018-03' }),
                 says: 'Die Summe ist 12 von 2018-03-01 bis 2018-03-31.',
                 repromptsNothing: true, shouldEndSession: true,
             },

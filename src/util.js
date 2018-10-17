@@ -40,7 +40,7 @@ exports.dateISOString = function(date) {
 // returns a date range as { fromDate, toDate} tuple for an Amazon Date as defined in
 // https://developer.amazon.com/docs/custom-skills/slot-type-reference.html#date
 exports.calculateFromToDateKeys = function(slots, today = new Date()) {
-    const dateStr = slots.Date.value;
+    const dateStr = slots.date.value;
 
     // Fail if no value was given.
     if (!dateStr) {
@@ -122,7 +122,7 @@ exports.calculateFromToDateKeys = function(slots, today = new Date()) {
 };
 
 exports.calculateDateKey = function(slots, today = new Date()) {
-    const dateStr = slots.Date.value;
+    const dateStr = slots.date.value;
 
     // If no value was given, use today.
     if (!dateStr) {

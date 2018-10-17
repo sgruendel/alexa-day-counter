@@ -19,84 +19,84 @@
           "name": "SetCounterIntent",
           "slots": [
             {
-              "name": "Count",
+              "name": "count",
               "type": "AMAZON.NUMBER"
             },
             {
-              "name": "Date",
+              "name": "date",
               "type": "AMAZON.DATE"
             }
           ],
           "samples": [
-            "set the count to {Count}",
-            "set the counter to {Count}",
-            "set the count to {Count} for {Date}",
-            "set the counter to {Count} for {Date}",
-            "set the count to {Count} of {Date}",
-            "set the counter to {Count} of {Date}",
-            "set the count to {Count} on {Date}",
-            "set the counter to {Count} on {Date}",
-            "set the count for {Date} to {Count}",
-            "set the counter for {Date} to {Count}",
-            "set the count of {Date} to {Count}",
-            "set the counter of {Date} to {Count}",
-            "set the count on {Date} to {Count}",
-            "set the counter on {Date} to {Count}"
+            "set the count to {count}",
+            "set the counter to {count}",
+            "set the count to {count} for {date}",
+            "set the counter to {count} for {date}",
+            "set the count to {count} of {date}",
+            "set the counter to {count} of {date}",
+            "set the count to {count} on {date}",
+            "set the counter to {count} on {date}",
+            "set the count for {date} to {count}",
+            "set the counter for {date} to {count}",
+            "set the count of {date} to {count}",
+            "set the counter of {date} to {count}",
+            "set the count on {date} to {count}",
+            "set the counter on {date} to {count}"
           ]
         },
         {
           "name": "IncreaseCounterIntent",
           "slots": [
             {
-              "name": "Count",
+              "name": "count",
               "type": "AMAZON.NUMBER"
             },
             {
-              "name": "Date",
+              "name": "date",
               "type": "AMAZON.DATE"
             }
           ],
           "samples": [
-            "add {Count}",
-            "increase by {Count}",
-            "add {Count} for {Date}",
-            "increase by {Count} for {Date}",
-            "add {Count} on {Date}",
-            "increase by {Count} on {Date}"
+            "add {count}",
+            "increase by {count}",
+            "add {count} for {date}",
+            "increase by {count} for {date}",
+            "add {count} on {date}",
+            "increase by {count} on {date}"
           ]
         },
         {
           "name": "QueryCounterIntent",
           "slots": [
             {
-              "name": "Date",
+              "name": "date",
               "type": "AMAZON.DATE"
             }
           ],
           "samples": [
             "for the count",
             "for the counter",
-            "for {Date}",
-            "for the count for {Date}",
-            "for the counter for {Date}",
-            "for the count of {Date}",
-            "for the counter of {Date}",
-            "for the count on {Date}",
-            "for the counter on {Date}"
+            "for {date}",
+            "for the count for {date}",
+            "for the counter for {date}",
+            "for the count of {date}",
+            "for the counter of {date}",
+            "for the count on {date}",
+            "for the counter on {date}"
           ]
         },
         {
           "name": "QuerySumIntent",
           "slots": [
             {
-              "name": "Date",
+              "name": "date",
               "type": "AMAZON.DATE"
             }
           ],
           "samples": [
-            "for the sum for {Date}",
-            "for the sum on {Date}",
-            "for the sum of {Date}"
+            "for the sum for {date}",
+            "for the sum on {date}",
+            "for the sum of {date}"
           ]
         }
       ]

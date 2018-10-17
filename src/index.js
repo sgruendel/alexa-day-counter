@@ -63,7 +63,7 @@ async function insertDbAndGetResponse(handlerInput, slots, userId, date, count) 
 
     const result = await db.insert(userId, date, count);
     console.log('count successfully updated', result);
-    const key = slots.Date.value ? 'COUNTER_IS_NOW_FOR' : 'COUNTER_IS_NOW';
+    const key = slots.date.value ? 'COUNTER_IS_NOW_FOR' : 'COUNTER_IS_NOW';
     const speechOutput = requestAttributes.t(key, { count: count, date: date });
     return handlerInput.responseBuilder
         .speak(speechOutput)
@@ -78,9 +78,9 @@ const SetCounterIntentHandler = {
     handle(handlerInput) {
         const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
         const slots = handlerInput.requestEnvelope.request.intent.slots;
-        if (slots.Count.value) {
-            if (isNaN(slots.Count.value)) {
-                console.error('Numeric value expected, got', slots.Count.value);
+        if (slots.count.value) {
+            if (isNaN(slots.count.value)) {
+                console.error('Numeric value expected, got', slots.count.value);
                 const speechOutput = requestAttributes.t('NOT_A_NUMBER');
                 return handlerInput.responseBuilder
                     .speak(speechOutput)
@@ -89,14 +89,14 @@ const SetCounterIntentHandler = {
 
             const date = util.calculateDateKey(slots);
             if (!date) {
-                console.error('invalid date', slots.Date.value);
+                console.error('invalid date', slots.date.value);
                 const speechOutput = requestAttributes.t('NO_SPECIFIC_DAY_GIVEN_SET');
                 return handlerInput.responseBuilder
                     .speak(speechOutput)
                     .getResponse();
             }
 
-            const count = parseInt(slots.Count.value, 10);
+            const count = parseInt(slots.count.value, 10);
             return insertDbAndGetResponse(handlerInput, slots, handlerInput.requestEnvelope.session.user.userId,
                 date, count);
         } else {
@@ -117,9 +117,9 @@ const IncreaseCounterIntentHandler = {
     async handle(handlerInput) {
         const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
         const slots = handlerInput.requestEnvelope.request.intent.slots;
-        if (slots.Count.value) {
-            if (isNaN(slots.Count.value)) {
-                console.error('Numeric value expected, got', slots.Count.value);
+        if (slots.count.value) {
+            if (isNaN(slots.count.value)) {
+                console.error('Numeric value expected, got', slots.count.value);
                 const speechOutput = requestAttributes.t('NOT_A_NUMBER');
                 return handlerInput.responseBuilder
                     .speak(speechOutput)
@@ -128,14 +128,14 @@ const IncreaseCounterIntentHandler = {
 
             const date = util.calculateDateKey(slots);
             if (!date) {
-                console.error('invalid date', slots.Date.value);
+                console.error('invalid date', slots.date.value);
                 const speechOutput = requestAttributes.t('NO_SPECIFIC_DAY_GIVEN_SET');
                 return handlerInput.responseBuilder
                     .speak(speechOutput)
                     .getResponse();
             }
 
-            const count = parseInt(slots.Count.value, 10);
+            const count = parseInt(slots.count.value, 10);
             console.log('increasing count by', count, 'for', date);
 
             const userId = handlerInput.requestEnvelope.session.user.userId;
@@ -176,7 +176,7 @@ const QueryCounterIntentHandler = {
         const slots = handlerInput.requestEnvelope.request.intent.slots;
         const date = util.calculateDateKey(slots);
         if (!date) {
-            console.error('invalid date', slots.Date.value);
+            console.error('invalid date', slots.date.value);
             const speechOutput = requestAttributes.t('NO_SPECIFIC_DAY_GIVEN_QUERY');
             return handlerInput.responseBuilder
                 .speak(speechOutput)
@@ -187,7 +187,7 @@ const QueryCounterIntentHandler = {
         const result = await db.find(handlerInput.requestEnvelope.session.user.userId, date);
         if (result) {
             console.log('current value is', result.count, 'for', date);
-            const key = slots.Date.value ? 'COUNTER_IS_FOR' : 'COUNTER_IS';
+            const key = slots.date.value ? 'COUNTER_IS_FOR' : 'COUNTER_IS';
             speechOutput = requestAttributes.t(key, { count: result.count, date: date });
         } else {
             console.log('current value is not set for', date);
@@ -218,7 +218,7 @@ const QuerySumIntentHandler = {
         const slots = handlerInput.requestEnvelope.request.intent.slots;
         const { fromDate, toDate } = util.calculateFromToDateKeys(slots);
         if (!fromDate || !toDate) {
-            console.error('invalid date', slots.Date.value);
+            console.error('invalid date', slots.date.value);
             const speechOutput = requestAttributes.t('NO_SPECIFIC_RANGE_GIVEN_QUERY');
             return handlerInput.responseBuilder
                 .speak(speechOutput)
