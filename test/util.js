@@ -1,7 +1,7 @@
 'use strict';
 
-var expect = require('chai').expect;
-var util = require('../src/util');
+const expect = require('chai').expect;
+const util = require('../src/util');
 
 describe('util', () => {
 

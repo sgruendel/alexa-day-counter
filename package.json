@@ -25,10 +25,12 @@
   "dependencies": {
     "ask-sdk-core": "^2.1.0",
     "ask-sdk-model": "^1.7.1",
+    "chai-as-promised": "^7.1.1",
     "dashbot": "^10.1.1",
-    "dynasty": "^0.3.14",
+    "dynamodb": "^1.1.2",
     "i18next": "^11.9.1",
-    "i18next-sprintf-postprocessor": "^0.2.2"
+    "i18next-sprintf-postprocessor": "^0.2.2",
+    "joi": "^14.0.0"
   },
   "devDependencies": {
     "alexa-skill-test-framework": "^1.2.3",

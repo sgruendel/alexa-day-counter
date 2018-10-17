@@ -61,7 +61,7 @@ async function insertDbAndGetResponse(handlerInput, slots, userId, date, count) 
     const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
     console.log('setting count to', count, 'for', date);
 
-    const result = await db.insert(userId, date, count);
+    const result = await db.create(userId, date, count);
     console.log('count successfully updated', result);
     const key = slots.date.value ? 'COUNTER_IS_NOW_FOR' : 'COUNTER_IS_NOW';
     const speechOutput = requestAttributes.t(key, { count: count, date: date });
@@ -225,7 +225,7 @@ const QuerySumIntentHandler = {
                 .getResponse();
         }
 
-        const result = await db.findAll(handlerInput.requestEnvelope.session.user.userId);
+        const result = await db.findAll(handlerInput.requestEnvelope.session.user.userId, fromDate, toDate);
         console.log('found', result.length, 'results');
         const count =
             result
