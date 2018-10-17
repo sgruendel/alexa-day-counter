@@ -2,11 +2,11 @@
 
 const AWS = require('aws-sdk');
 
-const IAM_USER_KEY = process.env.AWS_ACCESS_KEY || 'AKIAIY5LSX3HD4CBBXPQ';
-const IAM_USER_SECRET = process.env.AWS_SECRET_KEY || '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';
 const s3 = new AWS.S3({
-    accessKeyId: IAM_USER_KEY,
-    secretAccessKey: IAM_USER_SECRET,
+    // TODO: Do we need it at all, or is it picked up automatically, see https://stackoverflow.com/questions/51743555/aws-js-sdk-doesnt-loading-credentials-from-environment-variables
+    region: process.env.AWS_region,
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
 });
 
 const BUCKET_NAME = 'alexa-day-counter';
