@@ -61,8 +61,8 @@ async function insertDbAndGetResponse(handlerInput, slots, userId, date, count) 
     const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
     console.log('setting count to', count, 'for', date);
 
-    const result = await db.create(userId, date, count);
-    console.log('count successfully updated', result);
+    const result = await db.create({ userId: userId, date: date, count: count });
+    console.log('count successfully updated', result.attrs);
     const key = slots.date.value ? 'COUNTER_IS_NOW_FOR' : 'COUNTER_IS_NOW';
     const speechOutput = requestAttributes.t(key, { count: count, date: date });
     return handlerInput.responseBuilder
@@ -139,11 +139,10 @@ const IncreaseCounterIntentHandler = {
             console.log('increasing count by', count, 'for', date);
 
             const userId = handlerInput.requestEnvelope.session.user.userId;
-            const result = await db.find(userId, date);
+            const result = await db.get(userId, date);
             if (result) {
-                const newCount = parseInt(result.count, 10) + count;
-                console.log('current value is', result.count);
-                return insertDbAndGetResponse(handlerInput, slots, userId, date, newCount);
+                console.log('current value is', result.attrs);
+                return insertDbAndGetResponse(handlerInput, slots, userId, date, result.get('count') + count);
             } else {
                 console.log('current value is not set for', date);
                 return insertDbAndGetResponse(handlerInput, slots, userId, date, count);
@@ -184,11 +183,11 @@ const QueryCounterIntentHandler = {
         }
 
         var speechOutput;
-        const result = await db.find(handlerInput.requestEnvelope.session.user.userId, date);
+        const result = await db.get(handlerInput.requestEnvelope.session.user.userId, date);
         if (result) {
-            console.log('current value is', result.count, 'for', date);
+            console.log('current value is', result.attrs);
             const key = slots.date.value ? 'COUNTER_IS_FOR' : 'COUNTER_IS';
-            speechOutput = requestAttributes.t(key, { count: result.count, date: date });
+            speechOutput = requestAttributes.t(key, { count: result.get('count'), date: date });
         } else {
             console.log('current value is not set for', date);
             speechOutput = requestAttributes.t('COUNTER_NOT_SET_FOR', { date: date });
@@ -225,12 +224,9 @@ const QuerySumIntentHandler = {
                 .getResponse();
         }
 
-        const result = await db.findAll(handlerInput.requestEnvelope.session.user.userId, fromDate, toDate);
-        console.log('found', result.length, 'results');
-        const count =
-            result
-                .filter(row => (row.date >= fromDate && row.date <= toDate))
-                .reduce((sum, row) => sum + parseInt(row.count, 10), 0);
+        const rows = await db.queryDateBetween(handlerInput.requestEnvelope.session.user.userId, fromDate, toDate);
+        console.log('found', rows.Count, 'results');
+        const count = rows.Items.reduce((sum, row) => sum + row.get('count'), 0);
         console.log('sum is', count, 'from', fromDate, 'to', toDate);
         const speechOutput = requestAttributes.t('SUM_IS', { count: count, fromDate: fromDate, toDate: toDate });
         return handlerInput.responseBuilder

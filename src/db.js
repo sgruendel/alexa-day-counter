@@ -5,6 +5,7 @@ const TABLE_NAME = 'DayCounter'; // arn:aws:dynamodb:eu-west-1:467353799488:tabl
 const dynamo = require('dynamodb');
 dynamo.AWS.config.update({ region: 'eu-west-1' });
 const Joi = require('joi');
+const util = require('util');
 
 var DayCounter = dynamo.define(TABLE_NAME, {
     hashKey: 'userId',
@@ -19,29 +20,23 @@ DayCounter.config({ tableName: TABLE_NAME }); // table name uses pluralized mode
 
 var exports = module.exports = {};
 
-exports.create = function(userId, date, count) {
+exports.create = util.promisify(DayCounter.create);
+
+exports.get = util.promisify(DayCounter.get);
+
+exports.query = function(userId) {
     return new Promise((resolve, reject) => {
-        DayCounter.create({ userId: userId, date: date, count: count },
-            (err, data) => {
+        DayCounter
+            .query(userId)
+            .loadAll()
+            .exec((err, data) => {
                 if (err) reject(err);
                 resolve(data);
-            }
-        );
+            });
     });
 };
 
-exports.get = function(userId, date) {
-    return new Promise((resolve, reject) => {
-        DayCounter.get({ userId: userId, date: date },
-            (err, data) => {
-                if (err) reject(err);
-                resolve(data);
-            }
-        );
-    });
-};
-
-exports.findAll = function(userId, fromDate, toDate) {
+exports.queryDateBetween = function(userId, fromDate, toDate) {
     return new Promise((resolve, reject) => {
         DayCounter
             .query(userId)
@@ -55,18 +50,21 @@ exports.findAll = function(userId, fromDate, toDate) {
     });
 };
 
-/*
-exports.remove = function(userId, date) {
-    return dynasty.table(TABLE_NAME).remove({ hash: userId, range: date });
-};
-
-exports.removeAll = function(userId) {
-    return exports.findAll(userId)
-        .then(result => {
-            return Promise.all(
-                result.map(row => {
-                    return exports.remove(userId, row.date);
-                }));
+exports.destroyAll = util.promisify((userId, callback) => {
+    DayCounter
+        .query(userId)
+        .loadAll()
+        .exec((err, rows) => {
+            if (err) callback(err);
+            callback(null,
+                Promise.all(rows.Items.map(row => {
+                    return new Promise((resolve, reject) => {
+                        DayCounter.destroy(userId, row.get('date'), (err) => {
+                            if (err) reject(err);
+                            resolve();
+                        });
+                    });
+                }))
+            );
         });
-};
-*/
+});

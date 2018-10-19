@@ -17,20 +17,20 @@ alexaTest.setLocale('de-DE');
 
 describe('Daily Counter Skill', () => {
     before(async function() {
-        await db.removeAll(USER_ID);
-        var result = await db.findAll(USER_ID);
-        expect(result).to.have.lengthOf(0);
+        await db.destroyAll(USER_ID);
+        var result = await db.query(USER_ID);
+        expect(result.Count).to.equal(0);
 
-        await db.insert(USER_ID, '2018-03-06', '5');
-        result = await db.findAll(USER_ID);
-        expect(result).to.have.lengthOf(1);
+        await db.create({ userId: USER_ID, date: '2018-03-06', count: 5 });
+        result = await db.query(USER_ID);
+        expect(result.Count).to.equal(1);
     });
 
     after(() => {
-        return db.findAll(USER_ID)
-            .then(result => {
-                result.forEach(row => {
-                    expect(row.count, 'date ' + row.date).to.be.a('number');
+        return db.query(USER_ID)
+            .then(rows => {
+                rows.Items.forEach(row => {
+                    expect(row.get('count'), row.attrs).to.be.a('number');
                 });
             });
     });
