@@ -109,6 +109,8 @@
           "samples": [
             "nach der Summe am {date}",
             "nach der Summe für {date}",
+            "nach der Summe im {date}",
+            "nach der Summe in {date}",
             "nach der Summe vom {date}",
             "nach der Summe von {date}"
           ]

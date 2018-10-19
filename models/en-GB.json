@@ -95,6 +95,7 @@
           ],
           "samples": [
             "for the sum for {date}",
+            "for the sum in {date}",
             "for the sum on {date}",
             "for the sum of {date}"
           ]
