@@ -103,6 +103,12 @@ describe('Daily Counter Skill', () => {
                 says: 'Das ist kein Wert, den ich setzen kann.',
                 repromptsNothing: true, shouldEndSession: true,
             },
+            // no count given
+            {
+                request: alexaTest.getIntentRequest('SetCounterIntent', { date: null, count: null }),
+                says: 'Kein Wert angegeben.',
+                repromptsNothing: true, shouldEndSession: true,
+            },
         ]);
     });
 
@@ -138,6 +144,12 @@ describe('Daily Counter Skill', () => {
                 says: 'Das ist kein Wert, den ich setzen kann.',
                 repromptsNothing: true, shouldEndSession: true,
             },
+            // no count given
+            {
+                request: alexaTest.getIntentRequest('IncreaseCounterIntent', { date: null, count: null }),
+                says: 'Kein Wert angegeben.',
+                repromptsNothing: true, shouldEndSession: true,
+            },
         ]);
     });
 
@@ -145,7 +157,7 @@ describe('Daily Counter Skill', () => {
         alexaTest.test([
             // no date given
             {
-                request: alexaTest.getIntentRequest('QueryCounterIntent', {date: null}),
+                request: alexaTest.getIntentRequest('QueryCounterIntent', { date: null }),
                 says: 'Der Zähler steht auf 2.',
                 repromptsNothing: true, shouldEndSession: true,
             },
@@ -161,6 +173,12 @@ describe('Daily Counter Skill', () => {
                 says: 'Ich kann den Zähler bisher nur für konkrete Tage abfragen.',
                 repromptsNothing: true, shouldEndSession: true,
             },
+            // no value
+            {
+                request: alexaTest.getIntentRequest('QueryCounterIntent', { date: '2018-03-01' }),
+                says: 'Der Zähler ist nicht gesetzt für 2018-03-01.',
+                repromptsNothing: true, shouldEndSession: true,
+            },
         ]);
     });
 
@@ -172,7 +190,12 @@ describe('Daily Counter Skill', () => {
                 says: 'Die Summe ist 12 von 2018-03-01 bis 2018-03-31.',
                 repromptsNothing: true, shouldEndSession: true,
             },
-            // TODO many more uses cases here
+            // invalid date "last summer"
+            {
+                request: alexaTest.getIntentRequest('QuerySumIntent', { date: '2017-SU' }),
+                says: 'Ich verstehe diesen Zeitraum leider nicht.',
+                repromptsNothing: true, shouldEndSession: true,
+            },
         ]);
     });
 
