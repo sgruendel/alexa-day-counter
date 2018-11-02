@@ -2,7 +2,7 @@
 
 // include the testing framework
 const alexaTest = require('alexa-skill-test-framework');
-var expect = require('chai').expect;
+const expect = require('chai').expect;
 
 const db = require('../src/db');
 

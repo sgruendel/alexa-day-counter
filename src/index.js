@@ -209,8 +209,7 @@ const QuerySumIntentHandler = {
             }
         */
         const request = handlerInput.requestEnvelope.request;
-        return request.type === 'IntentRequest'
-            && request.intent.name === 'QuerySumIntent';
+        return request.type === 'IntentRequest' && request.intent.name === 'QuerySumIntent';
     },
     async handle(handlerInput) {
         const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
@@ -237,9 +236,9 @@ const QuerySumIntentHandler = {
 
 const HelpIntentHandler = {
     canHandle(handlerInput) {
-        return handlerInput.requestEnvelope.request.type === 'LaunchRequest'
-            || (handlerInput.requestEnvelope.request.type === 'IntentRequest'
-                && handlerInput.requestEnvelope.request.intent.name === 'AMAZON.HelpIntent');
+        const request = handlerInput.requestEnvelope.request;
+        return request.type === 'LaunchRequest'
+            || (request.type === 'IntentRequest' && request.intent.name === 'AMAZON.HelpIntent');
     },
     handle(handlerInput) {
         const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
@@ -254,9 +253,9 @@ const HelpIntentHandler = {
 
 const CancelAndStopIntentHandler = {
     canHandle(handlerInput) {
-        return handlerInput.requestEnvelope.request.type === 'IntentRequest'
-            && (handlerInput.requestEnvelope.request.intent.name === 'AMAZON.CancelIntent'
-                || handlerInput.requestEnvelope.request.intent.name === 'AMAZON.StopIntent');
+        const request = handlerInput.requestEnvelope.request;
+        return request.type === 'IntentRequest'
+            && (request.intent.name === 'AMAZON.CancelIntent' || request.intent.name === 'AMAZON.StopIntent');
     },
     handle(handlerInput) {
         const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
