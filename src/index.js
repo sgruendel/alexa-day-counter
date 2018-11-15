@@ -4,6 +4,17 @@ const Alexa = require('ask-sdk-core');
 const i18n = require('i18next');
 const sprintf = require('i18next-sprintf-postprocessor');
 const dashbot = process.env.DASHBOT_API_KEY ? require('dashbot')(process.env.DASHBOT_API_KEY).alexa : undefined;
+const winston = require('winston');
+
+const logger = winston.createLogger({
+    level: process.env.LOG_LEVEL || 'info',
+    transports: [
+        new winston.transports.Console({
+            format: winston.format.simple(),
+        }),
+    ],
+    exitOnError: false,
+});
 
 const db = require('./db');
 const util = require('./util');
@@ -14,11 +25,12 @@ const languageStrings = {
     de: {
         translation: {
             HELP_MESSAGE: 'Der Tageszähler zählt Ereignisse pro Tag und speichert die Anzahl dauerhaft. '
-                + 'Du kannst sagen „Starte Tageszähler und setze den Wert auf zwei“, oder „Starte Tageszähler und zähle eins dazu“, oder „Frag Tageszähler nach dem Stand“. '
-                + 'Du kannst auch immer einen bestimmten Tag angeben wie „Gestern“ oder „Letzten Sonntag“, z.B. „Frag Tageszähler nach dem Stand von gestern“. '
-                + 'Oder du kannst „Beenden“ sagen. Wie kann ich dir helfen?',
-            HELP_REPROMPT: 'Wie kann ich dir helfen?',
+                + 'Du kannst sagen „Setze den Wert auf drei“, oder „Zähle eins dazu“, oder „Frage Tageszähler nach dem Stand“. '
+                + 'Du kannst auch immer einen bestimmten Tag angeben wie „Gestern“ oder „Letzten Sonntag“, z.B. „Frage Tageszähler nach dem Stand von gestern“ oder „Frage Tageszähler nach der Summe von letztem Monat“. '
+                + 'Oder du kannst „Beenden“ sagen. Was soll ich tun?',
+            HELP_REPROMPT: 'Sage „Setze den Wert auf Zahl“, oder „Zähle Zahl dazu für Datum“, oder „Frage Tageszähler nach dem Stand“. Was soll ich tun?',
             STOP_MESSAGE: 'Auf Wiedersehen!',
+            NOT_UNDERSTOOD_MESSAGE: 'Entschuldigung, das verstehe ich nicht. Bitte wiederhole das?',
             COUNTER_IS: 'Der Zähler steht auf {{count}}.',
             COUNTER_IS_FOR: 'Der Zähler steht auf {{count}} für {{date}}.',
             COUNTER_IS_NOW: 'Der Zähler steht jetzt auf {{count}}.',
@@ -36,11 +48,12 @@ const languageStrings = {
     en: {
         translation: {
             HELP_MESSAGE: 'Daily Counter counts events per day and stores the count persistently. '
-                + 'You can say „Start Daily Counter and set the count to two“, or „Start Daily Counter and add one“, or „Ask Daily Counter for the count“. '
-                + 'You can always give a specific date like „yesterday“ or „last sunday“, e.g. „Ask Daily Counter for the count of yesterday“. '
-                + 'Or you can say „Exit“. What can I help you with?',
-            HELP_REPROMPT: 'What can I help you with?',
+                + 'You can say „Set the count to three“, or „Add one“, or „Ask Daily Counter for the count“. '
+                + 'You can always give a specific date like „yesterday“ or „last sunday“, e.g. „Ask Daily Counter for the count of yesterday“ or „Ask Daily Counter for the sum of last month“. '
+                + 'Or you can say „Exit“. What should I do?',
+            HELP_REPROMPT: 'Say „Set the count to number“, or „Add number for date“, or „Ask Daily Counter for the count“. What should I do?',
             STOP_MESSAGE: 'Goodbye!',
+            NOT_UNDERSTOOD_MESSAGE: 'Sorry, I don\'t understand. Please say again?',
             COUNTER_IS: 'The counter is at {{count}}.',
             COUNTER_IS_FOR: 'The counter is at {{count}} for {{date}}.',
             COUNTER_IS_NOW: 'The counter is now at {{count}}.',
@@ -59,10 +72,10 @@ const languageStrings = {
 
 async function insertDbAndGetResponse(handlerInput, slots, userId, date, count) {
     const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
-    console.log('setting count to', count, 'for', date);
+    logger.debug('setting count to ' + count + ' for ' + date);
 
     const result = await db.create({ userId: userId, date: date, count: count });
-    console.log('count successfully updated', result.attrs);
+    logger.debug('count successfully updated', result.attrs);
     const key = slots.date.value ? 'COUNTER_IS_NOW_FOR' : 'COUNTER_IS_NOW';
     const speechOutput = requestAttributes.t(key, { count: count, date: date });
     return handlerInput.responseBuilder
@@ -76,11 +89,14 @@ const SetCounterIntentHandler = {
         return request.type === 'IntentRequest' && request.intent.name === 'SetCounterIntent';
     },
     handle(handlerInput) {
+        const { request } = handlerInput.requestEnvelope;
+        logger.debug('request', request);
+
         const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
-        const slots = handlerInput.requestEnvelope.request.intent.slots;
+        const slots = request.intent.slots;
         if (slots.count.value) {
             if (isNaN(slots.count.value)) {
-                console.error('Numeric value expected, got', slots.count.value);
+                logger.error('Numeric value expected, got ' + slots.count.value);
                 const speechOutput = requestAttributes.t('NOT_A_NUMBER');
                 return handlerInput.responseBuilder
                     .speak(speechOutput)
@@ -89,7 +105,7 @@ const SetCounterIntentHandler = {
 
             const date = util.calculateDateKey(slots);
             if (!date) {
-                console.error('invalid date', slots.date.value);
+                logger.error('invalid date', slots.date);
                 const speechOutput = requestAttributes.t('NO_SPECIFIC_DAY_GIVEN_SET');
                 return handlerInput.responseBuilder
                     .speak(speechOutput)
@@ -100,7 +116,7 @@ const SetCounterIntentHandler = {
             return insertDbAndGetResponse(handlerInput, slots, handlerInput.requestEnvelope.session.user.userId,
                 date, count);
         } else {
-            console.error('No slot value given for count');
+            logger.error('No slot value given for count');
             const speechOutput = requestAttributes.t('NO_VALUE_GIVEN');
             return handlerInput.responseBuilder
                 .speak(speechOutput)
@@ -115,11 +131,14 @@ const IncreaseCounterIntentHandler = {
         return request.type === 'IntentRequest' && request.intent.name === 'IncreaseCounterIntent';
     },
     async handle(handlerInput) {
+        const { request } = handlerInput.requestEnvelope;
+        logger.debug('request', request);
+
         const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
-        const slots = handlerInput.requestEnvelope.request.intent.slots;
+        const slots = request.intent.slots;
         if (slots.count.value) {
             if (isNaN(slots.count.value)) {
-                console.error('Numeric value expected, got', slots.count.value);
+                logger.error('Numeric value expected, got ' + slots.count.value);
                 const speechOutput = requestAttributes.t('NOT_A_NUMBER');
                 return handlerInput.responseBuilder
                     .speak(speechOutput)
@@ -128,7 +147,7 @@ const IncreaseCounterIntentHandler = {
 
             const date = util.calculateDateKey(slots);
             if (!date) {
-                console.error('invalid date', slots.date.value);
+                logger.error('invalid date', slots.date);
                 const speechOutput = requestAttributes.t('NO_SPECIFIC_DAY_GIVEN_SET');
                 return handlerInput.responseBuilder
                     .speak(speechOutput)
@@ -136,19 +155,19 @@ const IncreaseCounterIntentHandler = {
             }
 
             const count = parseInt(slots.count.value, 10);
-            console.log('increasing count by', count, 'for', date);
+            logger.info('increasing count by ' + count + ' for ' + date);
 
             const userId = handlerInput.requestEnvelope.session.user.userId;
             const result = await db.get(userId, date);
             if (result) {
-                console.log('current value is', result.attrs);
+                logger.debug('current value is', result.attrs);
                 return insertDbAndGetResponse(handlerInput, slots, userId, date, result.get('count') + count);
             } else {
-                console.log('current value is not set for', date);
+                logger.debug('current value is not set for ' + date);
                 return insertDbAndGetResponse(handlerInput, slots, userId, date, count);
             }
         } else {
-            console.error('No slot value given for count');
+            logger.error('No slot value given for count');
             const speechOutput = requestAttributes.t('NO_VALUE_GIVEN');
             return handlerInput.responseBuilder
                 .speak(speechOutput)
@@ -171,11 +190,14 @@ const QueryCounterIntentHandler = {
         return request.type === 'IntentRequest' && request.intent.name === 'QueryCounterIntent';
     },
     async handle(handlerInput) {
+        const { request } = handlerInput.requestEnvelope;
+        logger.debug('request', request);
+
         const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
-        const slots = handlerInput.requestEnvelope.request.intent.slots;
+        const slots = request.intent.slots;
         const date = util.calculateDateKey(slots);
         if (!date) {
-            console.error('invalid date', slots.date.value);
+            logger.error('invalid date', slots.date);
             const speechOutput = requestAttributes.t('NO_SPECIFIC_DAY_GIVEN_QUERY');
             return handlerInput.responseBuilder
                 .speak(speechOutput)
@@ -185,11 +207,11 @@ const QueryCounterIntentHandler = {
         var speechOutput;
         const result = await db.get(handlerInput.requestEnvelope.session.user.userId, date);
         if (result) {
-            console.log('current value is', result.attrs);
+            logger.debug('current value is', result.attrs);
             const key = slots.date.value ? 'COUNTER_IS_FOR' : 'COUNTER_IS';
             speechOutput = requestAttributes.t(key, { count: result.get('count'), date: date });
         } else {
-            console.log('current value is not set for', date);
+            logger.debug('current value is not set for ' + date);
             speechOutput = requestAttributes.t('COUNTER_NOT_SET_FOR', { date: date });
         }
         return handlerInput.responseBuilder
@@ -212,11 +234,14 @@ const QuerySumIntentHandler = {
         return request.type === 'IntentRequest' && request.intent.name === 'QuerySumIntent';
     },
     async handle(handlerInput) {
+        const { request } = handlerInput.requestEnvelope;
+        logger.debug('request', request);
+
         const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
-        const slots = handlerInput.requestEnvelope.request.intent.slots;
+        const slots = request.intent.slots;
         const { fromDate, toDate } = util.calculateFromToDateKeys(slots);
         if (!fromDate || !toDate) {
-            console.error('invalid date', slots.date.value);
+            logger.error('invalid date', slots.date);
             const speechOutput = requestAttributes.t('NO_SPECIFIC_RANGE_GIVEN_QUERY');
             return handlerInput.responseBuilder
                 .speak(speechOutput)
@@ -224,9 +249,9 @@ const QuerySumIntentHandler = {
         }
 
         const rows = await db.queryDateBetween(handlerInput.requestEnvelope.session.user.userId, fromDate, toDate);
-        console.log('found', rows.Count, 'results');
+        logger.debug('found ' + rows.Count + ' results');
         const count = rows.Items.reduce((sum, row) => sum + row.get('count'), 0);
-        console.log('sum is', count, 'from', fromDate, 'to', toDate);
+        logger.debug('sum is ' + count + ' from ' + fromDate + ' to ' + toDate);
         const speechOutput = requestAttributes.t('SUM_IS', { count: count, fromDate: fromDate, toDate: toDate });
         return handlerInput.responseBuilder
             .speak(speechOutput)
@@ -236,28 +261,32 @@ const QuerySumIntentHandler = {
 
 const HelpIntentHandler = {
     canHandle(handlerInput) {
-        const request = handlerInput.requestEnvelope.request;
+        const { request } = handlerInput.requestEnvelope;
         return request.type === 'LaunchRequest'
             || (request.type === 'IntentRequest' && request.intent.name === 'AMAZON.HelpIntent');
     },
     handle(handlerInput) {
+        const { request } = handlerInput.requestEnvelope;
+        logger.debug('request', request);
+
         const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
-        const speechOutput = requestAttributes.t('HELP_MESSAGE');
-        const repromptSpeechOutput = requestAttributes.t('HELP_REPROMPT');
         return handlerInput.responseBuilder
-            .speak(speechOutput)
-            .reprompt(repromptSpeechOutput)
+            .speak(requestAttributes.t('HELP_MESSAGE'))
+            .reprompt(requestAttributes.t('HELP_REPROMPT'))
             .getResponse();
     },
 };
 
 const CancelAndStopIntentHandler = {
     canHandle(handlerInput) {
-        const request = handlerInput.requestEnvelope.request;
+        const { request } = handlerInput.requestEnvelope;
         return request.type === 'IntentRequest'
             && (request.intent.name === 'AMAZON.CancelIntent' || request.intent.name === 'AMAZON.StopIntent');
     },
     handle(handlerInput) {
+        const { request } = handlerInput.requestEnvelope;
+        logger.debug('request', request);
+
         const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
         const speechOutput = requestAttributes.t('STOP_MESSAGE');
         return handlerInput.responseBuilder
@@ -266,14 +295,34 @@ const CancelAndStopIntentHandler = {
     },
 };
 
+const SessionEndedRequestHandler = {
+    canHandle(handlerInput) {
+        return handlerInput.requestEnvelope.request.type === 'SessionEndedRequest';
+    },
+    handle(handlerInput) {
+        const { request } = handlerInput.requestEnvelope;
+        try {
+            if (request.reason === 'ERROR') {
+                logger.error(request.error.type + ': ' + request.error.message);
+            }
+        } catch (err) {
+            logger.error(err.stack || err.toString(), request);
+        }
+
+        logger.debug('session ended', request);
+        return handlerInput.responseBuilder.getResponse();
+    },
+};
+
 const ErrorHandler = {
     canHandle() {
         return true;
     },
     handle(handlerInput, error) {
-        console.error('Error handled:', error);
+        const { request } = handlerInput.requestEnvelope;
+        logger.error(error.stack || error.toString(), request);
 
-        const request = handlerInput.requestEnvelope.request;
+        var response;
         if (request.type === 'IntentRequest'
             && (request.intent.name === 'QueryCounterIntent'
                 || request.intent.name === 'SetCounterIntent'
@@ -282,14 +331,18 @@ const ErrorHandler = {
 
             const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
             const speechOutput = requestAttributes.t('NOT_POSSIBLE_NOW');
-            return handlerInput.responseBuilder
+            response = handlerInput.responseBuilder
                 .speak(speechOutput)
                 .getResponse();
+        } else {
+            const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
+            const speechOutput = requestAttributes.t('NOT_UNDERSTOOD_MESSAGE');
+            response = handlerInput.responseBuilder
+                .speak(speechOutput)
+                .reprompt(speechOutput)
+                .getResponse();
         }
-        return handlerInput.responseBuilder
-            .speak('Entschuldigung, das verstehe ich nicht. Bitte wiederholen Sie das?')
-            .reprompt('Entschuldigung, das verstehe ich nicht. Bitte wiederholen Sie das?')
-            .getResponse();
+        return response;
     },
 };
 
@@ -316,7 +369,8 @@ exports.handler = Alexa.SkillBuilders.custom()
         QueryCounterIntentHandler,
         QuerySumIntentHandler,
         HelpIntentHandler,
-        CancelAndStopIntentHandler)
+        CancelAndStopIntentHandler,
+        SessionEndedRequestHandler)
     .addRequestInterceptors(LocalizationInterceptor)
     .addErrorHandlers(ErrorHandler)
     .withSkillId(SKILL_ID)
