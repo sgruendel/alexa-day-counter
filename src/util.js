@@ -1,5 +1,17 @@
 'use strict';
 
+const winston = require('winston');
+
+const logger = winston.createLogger({
+    level: process.env.LOG_LEVEL || 'info',
+    transports: [
+        new winston.transports.Console({
+            format: winston.format.simple(),
+        }),
+    ],
+    exitOnError: false,
+});
+
 var exports = module.exports = {};
 
 function getDateOfISOWeek(week, dayInWeek, year) {
@@ -15,7 +27,7 @@ function fixFutureDate(dateStr, today) {
         var prevYear = new Date(date);
         prevYear.setFullYear(today.getFullYear());
         const result = exports.dateISOString(prevYear);
-        console.log('correcting date by one year from', dateStr, 'to', result);
+        logger.debug('correcting date by one year from ' + dateStr + ' to ' + result);
         return result;
     }
 
@@ -26,7 +38,7 @@ function fixFutureDate(dateStr, today) {
         var oneWeekAgo = new Date(date);
         oneWeekAgo.setDate(date.getDate() - 7);
         const result = exports.dateISOString(oneWeekAgo);
-        console.log('correcting date by one week from', dateStr, 'to', result);
+        logger.debug('correcting date by one week from ' + dateStr + ' to ' + result);
         return result;
     }
 

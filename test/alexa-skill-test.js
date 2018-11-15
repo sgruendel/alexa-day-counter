@@ -2,7 +2,7 @@
 
 // include the testing framework
 const alexaTest = require('alexa-skill-test-framework');
-var expect = require('chai').expect;
+const expect = require('chai').expect;
 
 const db = require('../src/db');
 
@@ -15,7 +15,8 @@ alexaTest.initialize(
     USER_ID);
 alexaTest.setLocale('de-DE');
 
-describe('Daily Counter Skill', () => {
+describe('Tageszähler Skill', () => {
+
     before(async function() {
         await db.destroyAll(USER_ID);
         var result = await db.query(USER_ID);
@@ -35,12 +36,12 @@ describe('Daily Counter Skill', () => {
             });
     });
 
-    describe('LaunchRequest', () => {
+    describe('ErrorHandler', () => {
         alexaTest.test([
             {
-                request: alexaTest.getLaunchRequest(),
-                says: 'Der Tageszähler zählt Ereignisse pro Tag und speichert die Anzahl dauerhaft. Du kannst sagen „Starte Tageszähler und setze den Wert auf zwei“, oder „Starte Tageszähler und zähle eins dazu“, oder „Frag Tageszähler nach dem Stand“. Du kannst auch immer einen bestimmten Tag angeben wie „Gestern“ oder „Letzten Sonntag“, z.B. „Frag Tageszähler nach dem Stand von gestern“. Oder du kannst „Beenden“ sagen. Wie kann ich dir helfen?',
-                reprompts: 'Wie kann ich dir helfen?',
+                request: alexaTest.getIntentRequest(''),
+                says: 'Entschuldigung, das verstehe ich nicht. Bitte wiederhole das?',
+                reprompts: 'Entschuldigung, das verstehe ich nicht. Bitte wiederhole das?',
                 shouldEndSession: false,
             },
         ]);
@@ -50,9 +51,18 @@ describe('Daily Counter Skill', () => {
         alexaTest.test([
             {
                 request: alexaTest.getIntentRequest('AMAZON.HelpIntent'),
-                says: 'Der Tageszähler zählt Ereignisse pro Tag und speichert die Anzahl dauerhaft. Du kannst sagen „Starte Tageszähler und setze den Wert auf zwei“, oder „Starte Tageszähler und zähle eins dazu“, oder „Frag Tageszähler nach dem Stand“. Du kannst auch immer einen bestimmten Tag angeben wie „Gestern“ oder „Letzten Sonntag“, z.B. „Frag Tageszähler nach dem Stand von gestern“. Oder du kannst „Beenden“ sagen. Wie kann ich dir helfen?',
-                reprompts: 'Wie kann ich dir helfen?',
+                says: 'Der Tageszähler zählt Ereignisse pro Tag und speichert die Anzahl dauerhaft. Du kannst sagen „Setze den Wert auf drei“, oder „Zähle eins dazu“, oder „Frage Tageszähler nach dem Stand“. Du kannst auch immer einen bestimmten Tag angeben wie „Gestern“ oder „Letzten Sonntag“, z.B. „Frage Tageszähler nach dem Stand von gestern“ oder „Frage Tageszähler nach der Summe von letztem Monat“. Oder du kannst „Beenden“ sagen. Was soll ich tun?',
+                reprompts: 'Sage „Setze den Wert auf Zahl“, oder „Zähle Zahl dazu für Datum“, oder „Frage Tageszähler nach dem Stand“. Was soll ich tun?',
                 shouldEndSession: false,
+            },
+        ]);
+    });
+
+    describe('SessionEndedRequest', () => {
+        alexaTest.test([
+            {
+                request: alexaTest.getSessionEndedRequest(),
+                saysNothing: true, repromptsNothing: true, shouldEndSession: true,
             },
         ]);
     });
@@ -73,6 +83,17 @@ describe('Daily Counter Skill', () => {
                 request: alexaTest.getIntentRequest('AMAZON.StopIntent'),
                 says: 'Auf Wiedersehen!',
                 repromptsNothing: true, shouldEndSession: true,
+            },
+        ]);
+    });
+
+    describe('LaunchRequest', () => {
+        alexaTest.test([
+            {
+                request: alexaTest.getLaunchRequest(),
+                says: 'Der Tageszähler zählt Ereignisse pro Tag und speichert die Anzahl dauerhaft. Du kannst sagen „Setze den Wert auf drei“, oder „Zähle eins dazu“, oder „Frage Tageszähler nach dem Stand“. Du kannst auch immer einen bestimmten Tag angeben wie „Gestern“ oder „Letzten Sonntag“, z.B. „Frage Tageszähler nach dem Stand von gestern“ oder „Frage Tageszähler nach der Summe von letztem Monat“. Oder du kannst „Beenden“ sagen. Was soll ich tun?',
+                reprompts: 'Sage „Setze den Wert auf Zahl“, oder „Zähle Zahl dazu für Datum“, oder „Frage Tageszähler nach dem Stand“. Was soll ich tun?',
+                shouldEndSession: false,
             },
         ]);
     });
@@ -195,17 +216,6 @@ describe('Daily Counter Skill', () => {
                 request: alexaTest.getIntentRequest('QuerySumIntent', { date: '2017-SU' }),
                 says: 'Ich verstehe diesen Zeitraum leider nicht.',
                 repromptsNothing: true, shouldEndSession: true,
-            },
-        ]);
-    });
-
-    describe('ErrorHandler', () => {
-        alexaTest.test([
-            {
-                request: alexaTest.getIntentRequest(''),
-                says: 'Entschuldigung, das verstehe ich nicht. Bitte wiederholen Sie das?',
-                reprompts: 'Entschuldigung, das verstehe ich nicht. Bitte wiederholen Sie das?',
-                shouldEndSession: false,
             },
         ]);
     });
