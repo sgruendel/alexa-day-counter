@@ -20,7 +20,11 @@
           "slots": [
             {
               "name": "count",
-              "type": "AMAZON.NUMBER"
+              "type": "AMAZON.NUMBER",
+              "samples": [
+                "{count}",
+                "to {count}"
+              ]
             },
             {
               "name": "date",
@@ -49,7 +53,11 @@
           "slots": [
             {
               "name": "count",
-              "type": "AMAZON.NUMBER"
+              "type": "AMAZON.NUMBER",
+              "samples": [
+                "{count}",
+                "by {count}"
+              ]
             },
             {
               "name": "date",
@@ -90,7 +98,14 @@
           "slots": [
             {
               "name": "date",
-              "type": "AMAZON.DATE"
+              "type": "AMAZON.DATE",
+              "samples": [
+                "{date}",
+                "for {date}",
+                "in {date}",
+                "on {date}",
+                "of {date}"
+              ]
             }
           ],
           "samples": [
@@ -100,7 +115,103 @@
             "for the sum of {date}"
           ]
         }
+      ],
+      "types": []
+    },
+    "dialog": {
+      "intents": [
+        {
+          "name": "SetCounterIntent",
+          "confirmationRequired": false,
+          "prompts": {},
+          "slots": [
+            {
+              "name": "count",
+              "type": "AMAZON.NUMBER",
+              "confirmationRequired": false,
+              "elicitationRequired": true,
+              "prompts": {
+                "elicitation": "Elicit.Slot.SetCounterIntent"
+              }
+            },
+            {
+              "name": "date",
+              "type": "AMAZON.DATE",
+              "confirmationRequired": false,
+              "elicitationRequired": false,
+              "prompts": {}
+            }
+          ]
+        },
+        {
+          "name": "IncreaseCounterIntent",
+          "confirmationRequired": false,
+          "prompts": {},
+          "slots": [
+            {
+              "name": "count",
+              "type": "AMAZON.NUMBER",
+              "confirmationRequired": false,
+              "elicitationRequired": true,
+              "prompts": {
+                "elicitation": "Elicit.Slot.IncreaseCounterIntent"
+              }
+            },
+            {
+              "name": "date",
+              "type": "AMAZON.DATE",
+              "confirmationRequired": false,
+              "elicitationRequired": false,
+              "prompts": {}
+            }
+          ]
+        },
+        {
+          "name": "QuerySumIntent",
+          "confirmationRequired": false,
+          "prompts": {},
+          "slots": [
+            {
+              "name": "date",
+              "type": "AMAZON.DATE",
+              "confirmationRequired": false,
+              "elicitationRequired": true,
+              "prompts": {
+                "elicitation": "Elicit.Slot.QuerySumIntent"
+              }
+            }
+          ]
+        }
       ]
-    }
+    },
+    "prompts": [
+      {
+        "id": "Elicit.Slot.SetCounterIntent",
+        "variations": [
+          {
+            "type": "PlainText",
+            "value": "What should I set the count to?"
+          }
+        ]
+      },
+      {
+        "id": "Elicit.Slot.IncreaseCounterIntent",
+        "variations": [
+          {
+            "type": "PlainText",
+            "value": "What should I increase the count by?"
+          }
+        ]
+      },
+      {
+        "id": "Elicit.Slot.QuerySumIntent",
+        "variations": [
+          {
+            "type": "PlainText",
+            "value": "For what date range?"
+          }
+        ]
+      }
+    ]
   }
 }

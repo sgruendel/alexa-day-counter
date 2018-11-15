@@ -2,40 +2,40 @@
   "deploy_settings": {
     "default": {
       "skill_id": "amzn1.ask.skill.d3ee5865-d4bb-4076-b13d-fbef1f7e0216",
-      "was_cloned": true,
+      "was_cloned": false,
       "resources": {
         "manifest": {
-          "eTag": "148f2166c2299cc7774edd8a7e2ccf01"
+          "eTag": "9dbbb65123e0d0d68c6d7106e8a5fed9"
         },
         "interactionModel": {
           "de-DE": {
-            "eTag": "0f30da2cfa1c1d21d934d9e989a4214b"
+            "eTag": "2349efb3e9e01902022d45ffcbd5490f"
           },
           "en-US": {
-            "eTag": "24d393b762e4d80415b2063383e021be"
+            "eTag": "1725c1261022d0c8f194835b28708a22"
           },
           "en-CA": {
-            "eTag": "24d393b762e4d80415b2063383e021be"
+            "eTag": "1725c1261022d0c8f194835b28708a22"
           },
           "en-IN": {
-            "eTag": "24d393b762e4d80415b2063383e021be"
+            "eTag": "1725c1261022d0c8f194835b28708a22"
           },
           "en-AU": {
-            "eTag": "24d393b762e4d80415b2063383e021be"
+            "eTag": "1725c1261022d0c8f194835b28708a22"
           },
           "en-GB": {
-            "eTag": "24d393b762e4d80415b2063383e021be"
+            "eTag": "1725c1261022d0c8f194835b28708a22"
           }
         },
         "lambda": [
           {
-            "arn": "arn:aws:lambda:eu-west-1:467353799488:function:dayCounter:8",
+            "arn": "arn:aws:lambda:eu-west-1:467353799488:function:dayCounter",
             "awsRegion": "eu-west-1",
             "functionName": "dayCounter",
             "alexaUsage": [
               "custom/default"
             ],
-            "revisionId": "fd914e8c-36bf-435a-ba9e-3c47fcb77d62"
+            "revisionId": "06a1d9e2-c22f-4d8a-992d-95b177333e5a"
           }
         ]
       },
@@ -44,7 +44,7 @@
           "apis": {
             "custom": {
               "endpoint": {
-                "uri": "arn:aws:lambda:eu-west-1:467353799488:function:dayCounter:8"
+                "uri": "arn:aws:lambda:eu-west-1:467353799488:function:dayCounter"
               }
             }
           }

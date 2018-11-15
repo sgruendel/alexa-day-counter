@@ -231,8 +231,7 @@ const QuerySumIntentHandler = {
             }
         */
         const request = handlerInput.requestEnvelope.request;
-        return request.type === 'IntentRequest'
-            && request.intent.name === 'QuerySumIntent';
+        return request.type === 'IntentRequest' && request.intent.name === 'QuerySumIntent';
     },
     async handle(handlerInput) {
         const { request } = handlerInput.requestEnvelope;
