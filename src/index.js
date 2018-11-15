@@ -290,6 +290,73 @@ const QuerySumIntentHandler = {
         console.log('img', img);
         */
 
+        /* Example code:
+
+        const chartNode = new ChartjsNode(816, 426, 1);
+        let datasets = [
+            {
+                label: _config.pdftemplate.label,
+                data: dataSet.y,
+                backgroundColor: 'blue',
+                borderColor: 'blue',
+                fill: false,
+                pointRadius: 0,
+                borderWidth: 1,
+                yAxisID: 'y-axis-1',
+            },
+        ];
+
+        let yAxes = [
+            {
+                type: 'linear',
+                display: true,
+                position: 'left',
+                id: 'y-axis-1',
+                scaleLabel: {
+                    display: true,
+                    labelString: title,
+                },
+            },
+        ];
+
+        const chartJsOptions = {
+            type: 'line',
+            data: {
+                labels: dataSet.x,
+                datasets,
+            },
+            options: {
+                legend: {
+                    display: true,
+                    position: 'bottom',
+                    labels: {
+                        fontFamily: "'Helvetica', 'Arial'",
+                        boxWidth: 20,
+                    },
+                },
+                scales: {
+                    yAxes,
+                },
+            },
+        };
+
+        return chartNode
+            .drawChart(chartJsOptions)
+            .then(() => {
+                // chart is created
+
+                // get image as png buffer
+                return chartNode.getImageBuffer('image/png');
+            })
+            .then(buffer => {
+                // Array.isArray(buffer); // => true
+                // as a stream
+                chartNode.destroy();
+                return `data:image/png;base64,${buffer.toString('base64')}`;
+                // return chartNode.getImageStream('image/png');
+            });
+            */
+
         const result = await db.findAll(handlerInput.requestEnvelope.session.user.userId);
         console.log('found', result.length, 'results');
         const count =
