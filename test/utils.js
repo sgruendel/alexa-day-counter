@@ -1,9 +1,9 @@
 'use strict';
 
 const expect = require('chai').expect;
-const util = require('../src/util');
+const util = require('../src/utils');
 
-describe('util', () => {
+describe('utils', () => {
 
     describe('#calculateFromToDateKeys()', () => {
         it('should default to null/null when no slot value given', () => {

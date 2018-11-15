@@ -17,7 +17,7 @@ const logger = winston.createLogger({
 });
 
 const db = require('./db');
-const util = require('./util');
+const utils = require('./utils');
 
 const SKILL_ID = 'amzn1.ask.skill.d3ee5865-d4bb-4076-b13d-fbef1f7e0216';
 
@@ -103,7 +103,7 @@ const SetCounterIntentHandler = {
                     .getResponse();
             }
 
-            const date = util.calculateDateKey(slots);
+            const date = utils.calculateDateKey(slots);
             if (!date) {
                 logger.error('invalid date', slots.date);
                 const speechOutput = requestAttributes.t('NO_SPECIFIC_DAY_GIVEN_SET');
@@ -145,7 +145,7 @@ const IncreaseCounterIntentHandler = {
                     .getResponse();
             }
 
-            const date = util.calculateDateKey(slots);
+            const date = utils.calculateDateKey(slots);
             if (!date) {
                 logger.error('invalid date', slots.date);
                 const speechOutput = requestAttributes.t('NO_SPECIFIC_DAY_GIVEN_SET');
@@ -179,9 +179,9 @@ const IncreaseCounterIntentHandler = {
 const QueryCounterIntentHandler = {
     canHandle(handlerInput) {
         /* TODO check date:
-        const date = util.calculateDateKey(slots);
+        const date = utils.calculateDateKey(slots);
         if (!date) {
-            const { fromDate, toDate } = util.calculateFromToDateKeys(slots);
+            const { fromDate, toDate } = utils.calculateFromToDateKeys(slots);
             if (fromDate && toDate) {
                 return this.emit('QuerySum');
             }
@@ -195,7 +195,7 @@ const QueryCounterIntentHandler = {
 
         const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
         const slots = request.intent.slots;
-        const date = util.calculateDateKey(slots);
+        const date = utils.calculateDateKey(slots);
         if (!date) {
             logger.error('invalid date', slots.date);
             const speechOutput = requestAttributes.t('NO_SPECIFIC_DAY_GIVEN_QUERY');
@@ -223,9 +223,9 @@ const QueryCounterIntentHandler = {
 const QuerySumIntentHandler = {
     canHandle(handlerInput) {
         /* TODO check date:
-        const date = util.calculateDateKey(slots);
+        const date = utils.calculateDateKey(slots);
         if (!date) {
-            const { fromDate, toDate } = util.calculateFromToDateKeys(slots);
+            const { fromDate, toDate } = utils.calculateFromToDateKeys(slots);
             if (fromDate && toDate) {
                 return this.emit('QuerySum');
             }
@@ -239,7 +239,7 @@ const QuerySumIntentHandler = {
 
         const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
         const slots = request.intent.slots;
-        const { fromDate, toDate } = util.calculateFromToDateKeys(slots);
+        const { fromDate, toDate } = utils.calculateFromToDateKeys(slots);
         if (!fromDate || !toDate) {
             logger.error('invalid date', slots.date);
             const speechOutput = requestAttributes.t('NO_SPECIFIC_RANGE_GIVEN_QUERY');
