@@ -5,6 +5,7 @@ const i18n = require('i18next');
 const sprintf = require('i18next-sprintf-postprocessor');
 const dashbot = process.env.DASHBOT_API_KEY ? require('dashbot')(process.env.DASHBOT_API_KEY).alexa : undefined;
 const winston = require('winston');
+const moment = require('moment-timezone');
 
 const logger = winston.createLogger({
     level: process.env.LOG_LEVEL || 'info',
@@ -70,6 +71,22 @@ const languageStrings = {
     },
 };
 
+// Get a moment object for now in user's time zone, so if he says "today" we're not simpy using the server time
+async function getNowWithSystemTimeZone(handlerInput) {
+    // see https://gist.github.com/memodoring/84f19600e1c55f68e24af16535af52b8
+    const upsServiceClient = handlerInput.serviceClientFactory.getUpsServiceClient();
+    const deviceId = handlerInput.requestEnvelope.context.System.device.deviceId;
+    try {
+        const systemTimeZone = await upsServiceClient.getSystemTimeZone(deviceId);
+        const now = moment().tz(systemTimeZone);
+        logger.debug('system TZ is ' + systemTimeZone + ', now is ' + now.format());
+        return now;
+    } catch (err) {
+        logger.error(err.stack || err.toString());
+        return moment();
+    }
+}
+
 async function insertDbAndGetResponse(handlerInput, slots, userId, date, count) {
     const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
     logger.debug('setting count to ' + count + ' for ' + date);
@@ -88,7 +105,7 @@ const SetCounterIntentHandler = {
         const request = handlerInput.requestEnvelope.request;
         return request.type === 'IntentRequest' && request.intent.name === 'SetCounterIntent';
     },
-    handle(handlerInput) {
+    async handle(handlerInput) {
         const { request } = handlerInput.requestEnvelope;
         logger.debug('request', request);
 
@@ -103,7 +120,7 @@ const SetCounterIntentHandler = {
                     .getResponse();
             }
 
-            const date = utils.calculateDateKey(slots);
+            const date = utils.calculateDateKey(slots, await getNowWithSystemTimeZone(handlerInput));
             if (!date) {
                 logger.error('invalid date', slots.date);
                 const speechOutput = requestAttributes.t('NO_SPECIFIC_DAY_GIVEN_SET');
@@ -145,7 +162,7 @@ const IncreaseCounterIntentHandler = {
                     .getResponse();
             }
 
-            const date = utils.calculateDateKey(slots);
+            const date = utils.calculateDateKey(slots, await getNowWithSystemTimeZone(handlerInput));
             if (!date) {
                 logger.error('invalid date', slots.date);
                 const speechOutput = requestAttributes.t('NO_SPECIFIC_DAY_GIVEN_SET');
@@ -195,7 +212,7 @@ const QueryCounterIntentHandler = {
 
         const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
         const slots = request.intent.slots;
-        const date = utils.calculateDateKey(slots);
+        const date = utils.calculateDateKey(slots, await getNowWithSystemTimeZone(handlerInput));
         if (!date) {
             logger.error('invalid date', slots.date);
             const speechOutput = requestAttributes.t('NO_SPECIFIC_DAY_GIVEN_QUERY');
@@ -239,7 +256,7 @@ const QuerySumIntentHandler = {
 
         const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
         const slots = request.intent.slots;
-        const { fromDate, toDate } = utils.calculateFromToDateKeys(slots);
+        const { fromDate, toDate } = utils.calculateFromToDateKeys(slots, await getNowWithSystemTimeZone(handlerInput));
         if (!fromDate || !toDate) {
             logger.error('invalid date', slots.date);
             const speechOutput = requestAttributes.t('NO_SPECIFIC_RANGE_GIVEN_QUERY');
@@ -373,6 +390,7 @@ exports.handler = Alexa.SkillBuilders.custom()
         SessionEndedRequestHandler)
     .addRequestInterceptors(LocalizationInterceptor)
     .addErrorHandlers(ErrorHandler)
+    .withApiClient(new Alexa.DefaultApiClient())
     .withSkillId(SKILL_ID)
     .lambda();
 if (dashbot) exports.handler = dashbot.handler(exports.handler);

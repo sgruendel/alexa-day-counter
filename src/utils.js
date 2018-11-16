@@ -1,5 +1,6 @@
 'use strict';
 
+const moment = require('moment-timezone');
 const winston = require('winston');
 
 const logger = winston.createLogger({
@@ -12,21 +13,21 @@ const logger = winston.createLogger({
     exitOnError: false,
 });
 
+const YYYY_MM_DD = 'YYYY-MM-DD';
+
 var exports = module.exports = {};
 
 function getDateOfISOWeek(week, dayInWeek, year) {
-    return exports.dateISOString(new Date(Date.UTC(year, 0, 1 + (week - 1) * 7 + dayInWeek - 1)));
+    return moment().year(year).dayOfYear(1 + (week - 1) * 7 + dayInWeek - 1).format(YYYY_MM_DD);
 }
 
-function fixFutureDate(dateStr, today) {
+function fixFutureDate(dateStr, now) {
     const date = new Date(dateStr);
     // Alexa defaults to dates on or after the current date, so if on 2018-04-03 someone asks for
     // "April 2nd", Alexa gives 2019-04-02 as slot value, but in this skill's context we'll use
     // the year before.
-    if (date.getFullYear() === today.getFullYear() + 1) {
-        var prevYear = new Date(date);
-        prevYear.setFullYear(today.getFullYear());
-        const result = exports.dateISOString(prevYear);
+    if (date.getFullYear() === now.year() + 1) {
+        const result = moment(date).year(now.year()).format(YYYY_MM_DD);
         logger.debug('correcting date by one year from ' + dateStr + ' to ' + result);
         return result;
     }
@@ -34,10 +35,8 @@ function fixFutureDate(dateStr, today) {
     // Alexa defaults to dates on or after the current date, so if on Thursday someone asks for
     // Wednesday, Alexa gives next week's Wednesday as slot value, but in this skill's context we'll
     // use the week before.
-    if (date > today) {
-        var oneWeekAgo = new Date(date);
-        oneWeekAgo.setDate(date.getDate() - 7);
-        const result = exports.dateISOString(oneWeekAgo);
+    if (now.isBefore(date)) {
+        const result = moment(date).subtract(7, 'days').format(YYYY_MM_DD);
         logger.debug('correcting date by one week from ' + dateStr + ' to ' + result);
         return result;
     }
@@ -45,13 +44,9 @@ function fixFutureDate(dateStr, today) {
     return dateStr;
 }
 
-exports.dateISOString = function(date) {
-    return date.toISOString().split('T')[0];
-};
-
 // returns a date range as { fromDate, toDate} tuple for an Amazon Date as defined in
 // https://developer.amazon.com/docs/custom-skills/slot-type-reference.html#date
-exports.calculateFromToDateKeys = function(slots, today = new Date()) {
+exports.calculateFromToDateKeys = function(slots, now = moment()) {
     const dateStr = slots.date.value;
 
     // Fail if no value was given.
@@ -64,7 +59,7 @@ exports.calculateFromToDateKeys = function(slots, today = new Date()) {
     // 2015-11-25. Note that this defaults to dates on or after the
     // current date (see below for more examples).
     if (dateStr.match(/^[0-9]{4}-[0-9]{2}-[0-9]{2}/)) {
-        const fixedDateStr = fixFutureDate(dateStr, today);
+        const fixedDateStr = fixFutureDate(dateStr, now);
         return { fromDate: fixedDateStr, toDate: fixedDateStr };
     }
 
@@ -94,32 +89,29 @@ exports.calculateFromToDateKeys = function(slots, today = new Date()) {
     // “next month”, or “december”) convert to a date with just the
     // year and month: 2015-12.
     if (dateStr.match(/^[0-9]{4}-[0-9]{2}/)) {
-        const startOfMonth = new Date(dateStr + '-01');
-        const startOfNextMonth = new Date(Date.UTC(startOfMonth.getFullYear(), startOfMonth.getMonth() + 1, 1));
-        const endOfMonth = new Date(startOfNextMonth);
-        endOfMonth.setDate(startOfNextMonth.getDate() - 1);
+        const startOfMonth = dateStr + '-01';
+        const endOfMonth = moment(startOfMonth).add(1, 'month').subtract(1, 'day').format(YYYY_MM_DD);
         return {
-            fromDate: fixFutureDate(exports.dateISOString(startOfMonth), today),
-            toDate: fixFutureDate(exports.dateISOString(endOfMonth), today),
+            fromDate: fixFutureDate(startOfMonth, now),
+            toDate: fixFutureDate(endOfMonth, now),
         };
     }
 
     // Utterances that map to a year(such as "next year") convert to a date containing just the
     // year. Note that the date format differs between English and other languages:
     // * All English locales use the the format YYYY.For example: 2018.
-    // * All other languages(French, German, and Japanese) use the format YYYY - XX - XX.For example: 2018 - XX - XX.
+    // * All other languages(French, German, and Japanese) use the format YYYY-XX-XX.For example: 2018-XX-XX.
     if (dateStr.match(/^[0-9]{4}(-XX-XX)?$/)) {
         const re = /([0-9]+)(-XX-XX)?/;
-        const result = re.exec(dateStr);
-        const startOfYear = new Date(result[1] + '-01-01');
-        const endOfYear = new Date(result[1] + '-12-31');
+        const year = re.exec(dateStr)[1];
         return {
-            fromDate: exports.dateISOString(startOfYear),
-            toDate: exports.dateISOString(endOfYear),
+            fromDate: year + '-01-01',
+            toDate: year + '-12-31',
         };
     }
 
     return { fromDate: null, toDate: null };
+
     // TODO not relevant here
 
     // Utterances that map to a decade convert to a date indicating the
@@ -133,12 +125,12 @@ exports.calculateFromToDateKeys = function(slots, today = new Date()) {
     // than a specific date or time.
 };
 
-exports.calculateDateKey = function(slots, today = new Date()) {
+exports.calculateDateKey = function(slots, now = moment()) {
     const dateStr = slots.date.value;
 
     // If no value was given, use today.
     if (!dateStr) {
-        return exports.dateISOString(today);
+        return now.format(YYYY_MM_DD);
     }
 
     // filter out anything that doesn't give a specific date, see
@@ -147,5 +139,5 @@ exports.calculateDateKey = function(slots, today = new Date()) {
         return null;
     }
 
-    return fixFutureDate(dateStr, today);
+    return fixFutureDate(dateStr, now);
 };
