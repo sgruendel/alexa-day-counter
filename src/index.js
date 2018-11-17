@@ -38,6 +38,7 @@ const languageStrings = {
             COUNTER_IS_NOW_FOR: 'Der Zähler steht jetzt auf {{count}} für {{date}}.',
             COUNTER_NOT_SET_FOR: 'Der Zähler ist nicht gesetzt für {{date}}.',
             SUM_IS: 'Die Summe ist {{count}} von {{fromDate}} bis {{toDate}}.',
+            SUM_FROM_TO: 'Summe von {{fromDate}} bis {{toDate}}',
             NOT_POSSIBLE_NOW: 'Das ist gerade leider nicht möglich.',
             NO_VALUE_GIVEN: 'Kein Wert angegeben.',
             NOT_A_NUMBER: 'Das ist kein Wert, den ich setzen kann.',
@@ -61,6 +62,7 @@ const languageStrings = {
             COUNTER_IS_NOW_FOR: 'The counter is now at {{count}} for {{date}}.',
             COUNTER_NOT_SET_FOR: 'The counter is not set for {{date}}.',
             SUM_IS: 'The sum is {{count}} from {{fromDate}} to {{toDate}}.',
+            SUM_FROM_TO: 'Sum from {{fromDate}} to {{toDate}}',
             NOT_POSSIBLE_NOW: 'Sorry, this is not possible right now.',
             NO_VALUE_GIVEN: 'No value given.',
             NOT_A_NUMBER: 'This is not a value I can set.',
@@ -270,8 +272,11 @@ const QuerySumIntentHandler = {
         const count = rows.Items.reduce((sum, row) => sum + row.get('count'), 0);
         logger.debug('sum is ' + count + ' from ' + fromDate + ' to ' + toDate);
         const speechOutput = requestAttributes.t('SUM_IS', { count: count, fromDate: fromDate, toDate: toDate });
+        var cardContent = '';
+        rows.Items.forEach(row => { cardContent += row.get('date') + ': ' + row.get('count') + '\n'; });
         return handlerInput.responseBuilder
             .speak(speechOutput)
+            .withSimpleCard(requestAttributes.t('SUM_FROM_TO', { fromDate: fromDate, toDate: toDate }), cardContent)
             .getResponse();
     },
 };
