@@ -29,27 +29,19 @@
             {
               "name": "date",
               "type": "AMAZON.DATE"
+            },
+            {
+              "name": "counterNoun",
+              "type": "LIST_OF_COUNTER_NOUNS"
             }
           ],
           "samples": [
-            "setze den Stand auf {count}",
-            "setze den Zähler auf {count}",
-            "setze den Zählerstand auf {count}",
-            "setze den Stand auf {count} für {date}",
-            "setze den Zähler auf {count} für {date}",
-            "setze den Zählerstand auf {count} für {date}",
-            "setze den Stand am {date} auf {count}",
-            "setze den Zähler am {date} auf {count}",
-            "setze den Zählerstand am {date} auf {count}",
-            "setze den Stand für {date} auf {count}",
-            "setze den Zähler für {date} auf {count}",
-            "setze den Zählerstand für {date} auf {count}",
-            "setze den Stand vom {date} auf {count}",
-            "setze den Zähler vom {date} auf {count}",
-            "setze den Zählerstand vom {date} auf {count}",
-            "setze den Stand von {date} auf {count}",
-            "setze den Zähler von {date} auf {count}",
-            "setze den Zählerstand von {date} auf {count}"
+            "setze den {counterNoun} auf {count}",
+            "setze den {counterNoun} auf {count} für {date}",
+            "setze den {counterNoun} am {date} auf {count}",
+            "setze den {counterNoun} für {date} auf {count}",
+            "setze den {counterNoun} vom {date} auf {count}",
+            "setze den {counterNoun} von {date} auf {count}"
           ]
         },
         {
@@ -66,9 +58,21 @@
             {
               "name": "date",
               "type": "AMAZON.DATE"
+            },
+            {
+              "name": "counterNoun",
+              "type": "LIST_OF_COUNTER_NOUNS"
             }
           ],
           "samples": [
+            "erhöhe um {count}",
+            "erhöhe den {counterNoun} um {count}",
+            "erhöhe um {count} am {date}",
+            "erhöhe den {counterNoun} um {count} am {date}",
+            "erhöhe um {count} für {date}",
+            "erhöhe den {counterNoun} um {count} für {date}",
+            "erhöhe für {date} um {count}",
+            "erhöhe den {counterNoun} für {date} um {count}",
             "zähle {count} dazu",
             "zähle um {count} hoch",
             "zähle {count} dazu am {date}",
@@ -85,25 +89,19 @@
             {
               "name": "date",
               "type": "AMAZON.DATE"
+            },
+            {
+              "name": "counterNoun",
+              "type": "LIST_OF_COUNTER_NOUNS"
             }
           ],
           "samples": [
-            "nach dem Stand",
-            "nach dem Zähler",
-            "nach dem Zählerstand",
-            "nach {date}",
-            "nach dem Stand am {date}",
-            "nach dem Zähler am {date}",
-            "nach dem Zählerstand am {date}",
-            "nach dem Stand für {date}",
-            "nach dem Zähler für {date}",
-            "nach dem Zählerstand für {date}",
-            "nach dem Stand vom {date}",
-            "nach dem Zähler vom {date}",
-            "nach dem Zählerstand vom {date}",
-            "nach dem Stand von {date}",
-            "nach dem Zähler von {date}",
-            "nach dem Zählerstand von {date}"
+            "dem {counterNoun}",
+            "{date}",
+            "dem {counterNoun} am {date}",
+            "dem {counterNoun} für {date}",
+            "dem {counterNoun} vom {date}",
+            "dem {counterNoun} von {date}"
           ]
         },
         {
@@ -124,16 +122,42 @@
             }
           ],
           "samples": [
-            "nach der Summe am {date}",
-            "nach der Summe für {date}",
-            "nach der Summe im {date}",
-            "nach der Summe in {date}",
-            "nach der Summe vom {date}",
-            "nach der Summe von {date}"
+            "der Summe am {date}",
+            "der Summe für {date}",
+            "der Summe im {date}",
+            "der Summe in {date}",
+            "der Summe vom {date}",
+            "der Summe von {date}"
           ]
         }
       ],
-      "types": []
+      "types": [
+        {
+          "name": "LIST_OF_COUNTER_NOUNS",
+          "values": [
+            {
+              "name": {
+                "value": "Stand"
+              }
+            },
+            {
+              "name": {
+                "value": "Wert"
+              }
+            },
+            {
+              "name": {
+                "value": "Zähler"
+              }
+            },
+            {
+              "name": {
+                "value": "Zählerstand"
+              }
+            }
+          ]
+        }
+      ]
     },
     "dialog": {
       "intents": [
@@ -157,6 +181,13 @@
               "confirmationRequired": false,
               "elicitationRequired": false,
               "prompts": {}
+            },
+            {
+              "name": "counterNoun",
+              "type": "LIST_OF_COUNTER_NOUNS",
+              "confirmationRequired": false,
+              "elicitationRequired": false,
+              "prompts": {}
             }
           ]
         },
@@ -177,6 +208,13 @@
             {
               "name": "date",
               "type": "AMAZON.DATE",
+              "confirmationRequired": false,
+              "elicitationRequired": false,
+              "prompts": {}
+            },
+            {
+              "name": "counterNoun",
+              "type": "LIST_OF_COUNTER_NOUNS",
               "confirmationRequired": false,
               "elicitationRequired": false,
               "prompts": {}

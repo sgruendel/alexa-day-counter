@@ -5,31 +5,31 @@
       "was_cloned": false,
       "resources": {
         "manifest": {
-          "eTag": "9dbbb65123e0d0d68c6d7106e8a5fed9"
+          "eTag": "05f40cfd3231079384098aa73b4d8203"
         },
         "interactionModel": {
           "de-DE": {
-            "eTag": "2349efb3e9e01902022d45ffcbd5490f"
+            "eTag": "692a86f6a412c404deddbf055d720399"
           },
           "en-US": {
-            "eTag": "1725c1261022d0c8f194835b28708a22"
+            "eTag": "d23dd36daa75d911208854468e20a902"
           },
           "en-CA": {
-            "eTag": "1725c1261022d0c8f194835b28708a22"
+            "eTag": "d23dd36daa75d911208854468e20a902"
           },
           "en-IN": {
-            "eTag": "1725c1261022d0c8f194835b28708a22"
+            "eTag": "d23dd36daa75d911208854468e20a902"
           },
           "en-AU": {
-            "eTag": "1725c1261022d0c8f194835b28708a22"
+            "eTag": "d23dd36daa75d911208854468e20a902"
           },
           "en-GB": {
-            "eTag": "1725c1261022d0c8f194835b28708a22"
+            "eTag": "d23dd36daa75d911208854468e20a902"
           }
         },
         "lambda": [
           {
-            "arn": "arn:aws:lambda:eu-west-1:467353799488:function:dayCounter",
+            "arn": "arn:aws:lambda:eu-west-1:467353799488:function:dayCounter:9",
             "awsRegion": "eu-west-1",
             "functionName": "dayCounter",
             "alexaUsage": [
@@ -44,7 +44,7 @@
           "apis": {
             "custom": {
               "endpoint": {
-                "uri": "arn:aws:lambda:eu-west-1:467353799488:function:dayCounter"
+                "uri": "arn:aws:lambda:eu-west-1:467353799488:function:dayCounter:9"
               }
             }
           }

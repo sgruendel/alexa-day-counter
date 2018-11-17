@@ -82,15 +82,15 @@
             }
           ],
           "samples": [
-            "for the count",
-            "for the counter",
-            "for {date}",
-            "for the count for {date}",
-            "for the counter for {date}",
-            "for the count of {date}",
-            "for the counter of {date}",
-            "for the count on {date}",
-            "for the counter on {date}"
+            "the count",
+            "the counter",
+            "{date}",
+            "the count for {date}",
+            "the counter for {date}",
+            "the count of {date}",
+            "the counter of {date}",
+            "the count on {date}",
+            "the counter on {date}"
           ]
         },
         {
@@ -109,10 +109,10 @@
             }
           ],
           "samples": [
-            "for the sum for {date}",
-            "for the sum in {date}",
-            "for the sum on {date}",
-            "for the sum of {date}"
+            "the sum for {date}",
+            "the sum in {date}",
+            "the sum on {date}",
+            "the sum of {date}"
           ]
         }
       ],
