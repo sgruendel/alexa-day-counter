@@ -100,7 +100,7 @@
         }
       },
       "isAvailableWorldwide": true,
-      "testingInstructions": "Changes to previous version (Lambda version 8):\n* consider user's time zone when calculating 'today'\n* card with count for each day is shown for QuerySumIntent\n* optimized HelpIntent handling",
+      "testingInstructions": "Changes to previous version (Lambda version 9):\n* improve error logging when user's timezone is not supported by module 'moment-timezone'",
       "category": "ORGANIZERS_AND_ASSISTANTS",
       "distributionCountries": []
     },

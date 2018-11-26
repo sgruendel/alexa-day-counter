@@ -5,7 +5,7 @@
       "was_cloned": false,
       "resources": {
         "manifest": {
-          "eTag": "05f40cfd3231079384098aa73b4d8203"
+          "eTag": "1ee6fd21eba28f38a720b80712a3f70f"
         },
         "interactionModel": {
           "de-DE": {
@@ -29,7 +29,7 @@
         },
         "lambda": [
           {
-            "arn": "arn:aws:lambda:eu-west-1:467353799488:function:dayCounter:9",
+            "arn": "arn:aws:lambda:eu-west-1:467353799488:function:dayCounter:10",
             "awsRegion": "eu-west-1",
             "functionName": "dayCounter",
             "alexaUsage": [
@@ -44,7 +44,7 @@
           "apis": {
             "custom": {
               "endpoint": {
-                "uri": "arn:aws:lambda:eu-west-1:467353799488:function:dayCounter:9"
+                "uri": "arn:aws:lambda:eu-west-1:467353799488:function:dayCounter:10"
               }
             }
           }
