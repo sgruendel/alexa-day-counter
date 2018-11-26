@@ -30,7 +30,7 @@ const languageStrings = {
                 + 'Du kannst auch immer einen bestimmten Tag angeben wie „Gestern“ oder „Letzten Sonntag“, z.B. „Frage Tageszähler nach dem Stand von gestern“ oder „Frage Tageszähler nach der Summe von letztem Monat“. '
                 + 'Oder du kannst „Beenden“ sagen. Was soll ich tun?',
             HELP_REPROMPT: 'Sage „Setze den Wert auf Zahl“, oder „Zähle Zahl dazu für Datum“, oder „Frage Tageszähler nach dem Stand“. Was soll ich tun?',
-            STOP_MESSAGE: 'Auf Wiedersehen!',
+            STOP_MESSAGE: '<say-as interpret-as="interjection">bis dann</say-as>',
             NOT_UNDERSTOOD_MESSAGE: 'Entschuldigung, das verstehe ich nicht. Bitte wiederhole das?',
             COUNTER_IS: 'Der Zähler steht auf {{count}}.',
             COUNTER_IS_FOR: 'Der Zähler steht auf {{count}} für {{date}}.',
@@ -54,7 +54,7 @@ const languageStrings = {
                 + 'You can always give a specific date like „yesterday“ or „last sunday“, e.g. „Ask Daily Counter for the count of yesterday“ or „Ask Daily Counter for the sum of last month“. '
                 + 'Or you can say „Exit“. What should I do?',
             HELP_REPROMPT: 'Say „Set the count to number“, or „Add number for date“, or „Ask Daily Counter for the count“. What should I do?',
-            STOP_MESSAGE: 'Goodbye!',
+            STOP_MESSAGE: 'See you soon!',
             NOT_UNDERSTOOD_MESSAGE: 'Sorry, I don\'t understand. Please say again?',
             COUNTER_IS: 'The counter is at {{count}}.',
             COUNTER_IS_FOR: 'The counter is at {{count}} for {{date}}.',
@@ -81,12 +81,16 @@ async function getNowWithSystemTimeZone(handlerInput) {
     try {
         const systemTimeZone = await upsServiceClient.getSystemTimeZone(deviceId);
         const now = moment().tz(systemTimeZone);
-        logger.debug('system TZ is ' + systemTimeZone + ', now is ' + now.format());
-        return now;
+        if (now) {
+            logger.debug('system TZ is ' + systemTimeZone + ', now is ' + now.format());
+            return now;
+        } else {
+            logger.error('unsupported system TZ ' + systemTimeZone);
+        }
     } catch (err) {
         logger.error(err.stack || err.toString());
-        return moment();
     }
+    return moment();
 }
 
 async function insertDbAndGetResponse(handlerInput, slots, userId, date, count) {

@@ -71,7 +71,7 @@ describe('Tageszähler Skill', () => {
         alexaTest.test([
             {
                 request: alexaTest.getIntentRequest('AMAZON.CancelIntent'),
-                says: 'Auf Wiedersehen!',
+                says: '<say-as interpret-as="interjection">bis dann</say-as>',
                 repromptsNothing: true, shouldEndSession: true,
             },
         ]);
@@ -81,7 +81,7 @@ describe('Tageszähler Skill', () => {
         alexaTest.test([
             {
                 request: alexaTest.getIntentRequest('AMAZON.StopIntent'),
-                says: 'Auf Wiedersehen!',
+                says: '<say-as interpret-as="interjection">bis dann</say-as>',
                 repromptsNothing: true, shouldEndSession: true,
             },
         ]);
