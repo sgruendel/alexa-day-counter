@@ -100,7 +100,7 @@
         }
       },
       "isAvailableWorldwide": true,
-      "testingInstructions": "Changes to previous version (Lambda version 9):\n* improve error logging when user's timezone is not supported by module 'moment-timezone'",
+      "testingInstructions": "Changes to previous version (Lambda version 10):\n* querying sum didn't work for weeks/weekends in 2019 yet",
       "category": "ORGANIZERS_AND_ASSISTANTS",
       "distributionCountries": []
     },
