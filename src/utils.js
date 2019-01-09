@@ -17,8 +17,8 @@ const YYYY_MM_DD = 'YYYY-MM-DD';
 
 var exports = module.exports = {};
 
-function getDateOfISOWeek(week, dayInWeek, year) {
-    return moment().year(year).dayOfYear(1 + (week - 1) * 7 + dayInWeek - 1).format(YYYY_MM_DD);
+function getDateOfISOWeek(year, week, dayInWeek) {
+    return moment().year(year).isoWeek(week).isoWeekday(dayInWeek).format(YYYY_MM_DD);
 }
 
 function fixFutureDate(dateStr, now) {
@@ -66,22 +66,22 @@ exports.calculateFromToDateKeys = function(slots, now = moment()) {
     // Utterances that map to the weekend for a specific week (such as
     // “this weekend”) convert to a date indicating the week number
     // and weekend: 2015-W49-WE.
-    if (dateStr.match(/^[0-9]{4}-W[0-9]{2}-WE/)) {
+    if (dateStr.match(/^[0-9]{4}-W[0-9]{1,2}-WE/)) {
         const re = /([0-9]+)-W([0-9]+)-WE/;
         const result = re.exec(dateStr);
-        const saturday = getDateOfISOWeek(result[2], 6, result[1]);
-        const sunday = getDateOfISOWeek(result[2], 7, result[1]);
+        const saturday = getDateOfISOWeek(result[1], result[2], 6);
+        const sunday = getDateOfISOWeek(result[1], result[2], 7);
         return { fromDate: saturday, toDate: sunday };
     }
 
     // Utterances that map to just a specific week (such as “this
     // week” or “next week”), convert a date indicating the week
     // number: 2015-W49.
-    if (dateStr.match(/^[0-9]{4}-W[0-9]{2}/)) {
+    if (dateStr.match(/^[0-9]{4}-W[0-9]{1,2}/)) {
         const re = /([0-9]+)-W([0-9]+)/;
         const result = re.exec(dateStr);
-        const monday = getDateOfISOWeek(result[2], 1, result[1]);
-        const sunday = getDateOfISOWeek(result[2], 7, result[1]);
+        const monday = getDateOfISOWeek(result[1], result[2], 1);
+        const sunday = getDateOfISOWeek(result[1], result[2], 7);
         return { fromDate: monday, toDate: sunday };
     }
 

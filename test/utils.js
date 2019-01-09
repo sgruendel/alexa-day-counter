@@ -64,6 +64,12 @@ describe('utils', () => {
             expect(result).to.include({ fromDate: '2018-08-11', toDate: '2018-08-12' });
         });
 
+        it('should work with 1st weekend of year', () => {
+            const slots = { date: { name: 'date', value: '2019-W1-WE' } };
+            const result = util.calculateFromToDateKeys(slots, moment('2019-01-09'));
+            expect(result).to.include({ fromDate: '2019-01-05', toDate: '2019-01-06' });
+        });
+
         it('should work with last week', () => {
             const slots = { date: { name: 'date', value: '2018-W31' } };
             const result = util.calculateFromToDateKeys(slots, moment('2018-08-10'));
@@ -80,6 +86,12 @@ describe('utils', () => {
             const slots = { date: { name: 'date', value: '2018-W33' } };
             const result = util.calculateFromToDateKeys(slots, moment('2018-08-10'));
             expect(result).to.include({ fromDate: '2018-08-13', toDate: '2018-08-19' });
+        });
+
+        it('should work with 1st week of year', () => {
+            const slots = { date: { name: 'date', value: '2019-W1' } };
+            const result = util.calculateFromToDateKeys(slots, moment('2019-01-08'));
+            expect(result).to.include({ fromDate: '2018-12-31', toDate: '2019-01-06' });
         });
 
         it('should work with January', () => {
