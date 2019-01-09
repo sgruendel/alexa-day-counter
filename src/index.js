@@ -1,7 +1,7 @@
 'use strict';
 
 const Alexa = require('ask-sdk-core');
-const i18n = require('i18next');
+const i18next = require('i18next');
 const sprintf = require('i18next-sprintf-postprocessor');
 const dashbot = process.env.DASHBOT_API_KEY ? require('dashbot')(process.env.DASHBOT_API_KEY).alexa : undefined;
 const winston = require('winston');
@@ -76,8 +76,11 @@ const languageStrings = {
 // Get a moment object for now in user's time zone, so if he says "today" we're not simpy using the server time
 async function getNowWithSystemTimeZone(handlerInput) {
     // see https://gist.github.com/memodoring/84f19600e1c55f68e24af16535af52b8
+    logger.debug('getNowWithSystemTimeZone', handlerInput);
     const upsServiceClient = handlerInput.serviceClientFactory.getUpsServiceClient();
+    logger.debug('upsServiceClient', upsServiceClient);
     const deviceId = handlerInput.requestEnvelope.context.System.device.deviceId;
+    logger.debug('deviceId: ' + deviceId);
     try {
         const systemTimeZone = await upsServiceClient.getSystemTimeZone(deviceId);
         const now = moment().tz(systemTimeZone);
@@ -374,7 +377,7 @@ const ErrorHandler = {
 
 const LocalizationInterceptor = {
     process(handlerInput) {
-        const localizationClient = i18n.use(sprintf).init({
+        i18next.use(sprintf).init({
             lng: handlerInput.requestEnvelope.request.locale,
             overloadTranslationOptionHandler: sprintf.overloadTranslationOptionHandler,
             resources: languageStrings,
@@ -383,7 +386,7 @@ const LocalizationInterceptor = {
 
         const attributes = handlerInput.attributesManager.getRequestAttributes();
         attributes.t = (...args) => {
-            return localizationClient.t(...args);
+            return i18next.t(...args);
         };
     },
 };
