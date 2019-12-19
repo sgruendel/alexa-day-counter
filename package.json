@@ -27,7 +27,7 @@
     "ask-sdk-model": "^1.11.2",
     "dashbot": "^10.2.4",
     "dynamodb": "^1.2.0",
-    "i18next": "^13.1.0",
+    "i18next": "^19.0.2",
     "i18next-sprintf-postprocessor": "^0.2.2",
     "joi": "^14.3.1",
     "moment-timezone": "^0.5.23",
