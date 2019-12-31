@@ -18,7 +18,7 @@ const YYYY_MM_DD = 'YYYY-MM-DD';
 var exports = module.exports = {};
 
 function getDateOfISOWeek(year, week, dayInWeek) {
-    return moment().year(year).isoWeek(week).isoWeekday(dayInWeek).format(YYYY_MM_DD);
+    return moment('1970-01-01').year(year).isoWeek(week).isoWeekday(dayInWeek).format(YYYY_MM_DD);
 }
 
 function fixFutureDate(dateStr, now) {
@@ -71,6 +71,8 @@ exports.calculateFromToDateKeys = function(slots, now = moment()) {
         const result = re.exec(dateStr);
         const saturday = getDateOfISOWeek(result[1], result[2], 6);
         const sunday = getDateOfISOWeek(result[1], result[2], 7);
+        console.log('sat is' + saturday);
+        console.log('sun is' + sunday);
         return { fromDate: saturday, toDate: sunday };
     }
 
