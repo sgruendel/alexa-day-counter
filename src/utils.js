@@ -71,8 +71,6 @@ exports.calculateFromToDateKeys = function(slots, now = moment()) {
         const result = re.exec(dateStr);
         const saturday = getDateOfISOWeek(result[1], result[2], 6);
         const sunday = getDateOfISOWeek(result[1], result[2], 7);
-        console.log('sat is' + saturday);
-        console.log('sun is' + sunday);
         return { fromDate: saturday, toDate: sunday };
     }
 
