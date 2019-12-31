@@ -1,6 +1,6 @@
 {
   "name": "alexa-day-counter",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "description": "Alexa Skill for persistent counting of events per day",
   "main": "index.js",
   "scripts": {
@@ -25,7 +25,7 @@
   "dependencies": {
     "ask-sdk-core": "^2.7.0",
     "ask-sdk-model": "^1.25.1",
-    "dashbot": "^10.2.4",
+    "dashbot": "^10.4.5",
     "dynamodb": "^1.2.0",
     "i18next": "^19.0.2",
     "i18next-sprintf-postprocessor": "^0.2.2",
