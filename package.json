@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "invoke": "aws lambda invoke --function-name dayCounter --payload fileb://test/events/alexa-start-session.json test/out.txt && cat test/out.txt",
-    "test": "nyc --reporter=lcov --reporter=text mocha",
+    "test": "nyc --reporter=lcov --reporter=text mocha --timeout=5000",
     "deploy-lambda": "npm prune --production && npm run lambda-zip && npm run lambda-update && npm install",
     "lambda-zip": "zip -x 'node_modules/.cache/*' -r index.zip lib node_modules && cd src && zip ../index.zip *",
     "lambda-update": "aws lambda update-function-code --function-name dayCounter --zip-file fileb://index.zip",
