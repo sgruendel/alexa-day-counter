@@ -73,25 +73,27 @@ const languageStrings = {
     },
 };
 
-// Get a moment object for now in user's time zone, so if he says "today" we're not simpy using the server time
+// Get a moment object for now in user's time zone, so if he says "today" we're not simpy using the server time.
+// If there's no API Access Toekn, there's no user, i.e. we're in a unit test.
 async function getNowWithSystemTimeZone(handlerInput) {
     // see https://gist.github.com/memodoring/84f19600e1c55f68e24af16535af52b8
-    logger.debug('getNowWithSystemTimeZone', handlerInput);
-    const upsServiceClient = handlerInput.serviceClientFactory.getUpsServiceClient();
-    logger.debug('upsServiceClient', upsServiceClient);
-    const deviceId = handlerInput.requestEnvelope.context.System.device.deviceId;
-    logger.debug('deviceId: ' + deviceId);
-    try {
-        const systemTimeZone = await upsServiceClient.getSystemTimeZone(deviceId);
-        const now = moment().tz(systemTimeZone);
-        if (now) {
-            logger.debug('system TZ is ' + systemTimeZone + ', now is ' + now.format());
-            return now;
-        } else {
-            logger.error('unsupported system TZ ' + systemTimeZone);
+    logger.debug('getNowWithSystemTimeZone', handlerInput.requestEnvelope);
+    const apiAccessToken = Alexa.getApiAccessToken(handlerInput.requestEnvelope);
+    if (apiAccessToken) {
+        const upsServiceClient = handlerInput.serviceClientFactory.getUpsServiceClient();
+        const deviceId = Alexa.getDeviceId(handlerInput.requestEnvelope);
+        try {
+            const systemTimeZone = await upsServiceClient.getSystemTimeZone(deviceId);
+            const now = moment().tz(systemTimeZone);
+            if (now) {
+                logger.debug('system TZ is ' + systemTimeZone + ', now is ' + now.format());
+                return now;
+            } else {
+                logger.error('unsupported system TZ ' + systemTimeZone);
+            }
+        } catch (err) {
+            logger.error(err.stack || err.toString());
         }
-    } catch (err) {
-        logger.error(err.stack || err.toString());
     }
     return moment();
 }
