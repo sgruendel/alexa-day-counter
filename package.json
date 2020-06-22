@@ -27,7 +27,7 @@
     "ask-sdk-model": "1.28.0",
     "dashbot": "10.4.0",
     "dynamodb": "1.2.1",
-    "i18next": "19.4.5",
+    "i18next": "19.5.0",
     "i18next-sprintf-postprocessor": "0.2.2",
     "joi": "14.3.1",
     "moment-timezone": "0.5.31",
@@ -37,10 +37,10 @@
     "alexa-skill-test-framework": "1.2.4",
     "chai": "4.2.0",
     "chai-as-promised": "7.1.1",
-    "eslint": "7.1.0",
+    "eslint": "7.3.0",
     "eslint-config-strongloop": "2.1.0",
-    "mocha": "7.2.0",
-    "nyc": "15.0.1"
+    "mocha": "8.0.1",
+    "nyc": "15.1.0"
   },
   "eslintConfig": {
     "parserOptions": {
