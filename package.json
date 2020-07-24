@@ -23,7 +23,7 @@
   },
   "homepage": "https://github.com/sgruendel/alexa-day-counter#readme",
   "dependencies": {
-    "ask-sdk-core": "2.8.0",
+    "ask-sdk-core": "2.9.0",
     "ask-sdk-model": "1.28.0",
     "dashbot": "10.4.0",
     "dynamodb": "1.2.1",
