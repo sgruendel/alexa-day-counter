@@ -23,24 +23,24 @@
   },
   "homepage": "https://github.com/sgruendel/alexa-day-counter#readme",
   "dependencies": {
-    "ask-sdk-core": "2.9.0",
-    "ask-sdk-model": "1.28.0",
-    "dashbot": "10.4.0",
-    "dynamodb": "1.2.1",
-    "i18next": "19.6.0",
-    "i18next-sprintf-postprocessor": "0.2.2",
+    "ask-sdk-core": "^2.9.0",
+    "ask-sdk-model": "^1.28.0",
+    "dashbot": "^10.4.5",
+    "dynamodb": "^1.2.1",
+    "i18next": "^19.6.3",
+    "i18next-sprintf-postprocessor": "^0.2.2",
     "joi": "14.x",
-    "moment-timezone": "0.5.31",
-    "winston": "3.3.3"
+    "moment-timezone": "^0.5.31",
+    "winston": "^3.3.3"
   },
   "devDependencies": {
-    "alexa-skill-test-framework": "1.2.4",
-    "chai": "4.2.0",
-    "chai-as-promised": "7.1.1",
-    "eslint": "7.4.0",
-    "eslint-config-strongloop": "2.1.0",
-    "mocha": "8.0.1",
-    "nyc": "15.1.0"
+    "alexa-skill-test-framework": "^1.2.4",
+    "chai": "^4.2.0",
+    "chai-as-promised": "^7.1.1",
+    "eslint": "^7.4.0",
+    "eslint-config-strongloop": "^2.1.0",
+    "mocha": "^8.0.1",
+    "nyc": "^15.1.0"
   },
   "eslintConfig": {
     "parserOptions": {
