@@ -29,7 +29,7 @@
     "dynamodb": "^1.2.1",
     "i18next": "^19.6.3",
     "i18next-sprintf-postprocessor": "^0.2.2",
-    "joi": "14.x",
+    "joi": "^17.1.1",
     "moment-timezone": "^0.5.31",
     "winston": "^3.3.3"
   },
