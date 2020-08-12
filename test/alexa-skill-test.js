@@ -2,9 +2,36 @@
 
 // include the testing framework
 const alexaTest = require('alexa-skill-test-framework');
-const expect = require('chai').expect;
 
-const db = require('../src/db');
+const dynamoose = require('dynamoose');
+
+dynamoose.aws.sdk.config.update({ region: 'eu-west-1' });
+const DayCounter = dynamoose.model('DayCounter',
+    new dynamoose.Schema({
+        userId: {
+            type: String,
+            validate: (userId) => userId.length > 0,
+            required: true,
+        },
+        date: {
+            type: String,
+            validate: (date) => date.length > 0,
+            required: true,
+            rangeKey: true,
+        },
+        count: {
+            type: Number,
+            validate: (count) => count >= 0,
+            required: true,
+        },
+    }, {
+        timestamps: true,
+    }),
+    {
+        create: false, // TODO false for prod
+        prefix: '',
+        waitForActive: false,
+    });
 
 const USER_ID = 'amzn1.ask.account.unit_test';
 
@@ -18,22 +45,18 @@ alexaTest.setLocale('de-DE');
 describe('Tageszähler Skill', () => {
 
     before(async function() {
-        await db.destroyAll(USER_ID);
-        var result = await db.query(USER_ID);
-        expect(result.Count).to.equal(0);
-
-        await db.create({ userId: USER_ID, date: '2018-03-06', count: 5 });
-        result = await db.query(USER_ID);
-        expect(result.Count).to.equal(1);
+        // init db so IncreaseCounterIntent can be tested with existing count
+        await DayCounter.create({ userId: USER_ID, date: '2018-03-06', count: 5 });
     });
 
-    after(() => {
-        return db.query(USER_ID)
-            .then(rows => {
-                rows.Items.forEach(row => {
-                    expect(row.get('count'), row.attrs).to.be.a('number');
-                });
-            });
+    after(async function() {
+        const result = await DayCounter.query('userId').eq(USER_ID).exec();
+        for (let i = 0; i < result.count; i++) {
+            console.log('deleting in db', result[i]);
+            // TODO: should work according to docs but doesn't: await result[i].delete();
+            // So delete via Model instead of Document:
+            await DayCounter.delete({ userId: result[i].userId, date: result[i].date });
+        }
     });
 
     describe('ErrorHandler', () => {

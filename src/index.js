@@ -3,8 +3,37 @@
 const Alexa = require('ask-sdk-core');
 const i18next = require('i18next');
 const sprintf = require('i18next-sprintf-postprocessor');
-const winston = require('winston');
+const dynamoose = require('dynamoose');
 const moment = require('moment-timezone');
+const winston = require('winston');
+
+dynamoose.aws.sdk.config.update({ region: 'eu-west-1' });
+const DayCounter = dynamoose.model('DayCounter',
+    new dynamoose.Schema({
+        userId: {
+            type: String,
+            validate: (userId) => userId.length > 0,
+            required: true,
+        },
+        date: {
+            type: String,
+            validate: (date) => date.length > 0,
+            required: true,
+            rangeKey: true,
+        },
+        count: {
+            type: Number,
+            validate: (count) => count >= 0,
+            required: true,
+        },
+    }, {
+        timestamps: true,
+    }),
+    {
+        create: false, // TODO false for prod
+        prefix: '',
+        waitForActive: false,
+    });
 
 const logger = winston.createLogger({
     level: process.env.LOG_LEVEL || 'info',
@@ -16,7 +45,6 @@ const logger = winston.createLogger({
     exitOnError: false,
 });
 
-const db = require('./db');
 const utils = require('./utils');
 
 const SKILL_ID = 'amzn1.ask.skill.d3ee5865-d4bb-4076-b13d-fbef1f7e0216';
@@ -101,8 +129,9 @@ async function insertDbAndGetResponse(handlerInput, slots, userId, date, count) 
     const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
     logger.debug('setting count to ' + count + ' for ' + date);
 
-    const result = await db.create({ userId: userId, date: date, count: count });
-    logger.debug('count successfully updated', result.attrs);
+    const dc = new DayCounter({ userId: userId, date: date, count: count });
+    const result = await dc.save();
+    logger.debug('count successfully updated', result);
     const key = slots.date.value ? 'COUNTER_IS_NOW_FOR' : 'COUNTER_IS_NOW';
     const speechOutput = requestAttributes.t(key, { count: count, date: date });
     return handlerInput.responseBuilder
@@ -185,10 +214,10 @@ const IncreaseCounterIntentHandler = {
             logger.info('increasing count by ' + count + ' for ' + date);
 
             const userId = handlerInput.requestEnvelope.session.user.userId;
-            const result = await db.get(userId, date);
-            if (result) {
-                logger.debug('current value is', result.attrs);
-                return insertDbAndGetResponse(handlerInput, slots, userId, date, result.get('count') + count);
+            const result = await DayCounter.query({ userId: { eq: userId }, date: { eq: date } }).exec();
+            if (result.count > 0) {
+                logger.debug('current value is', result[0]);
+                return insertDbAndGetResponse(handlerInput, slots, userId, date, result[0].count + count);
             } else {
                 logger.debug('current value is not set for ' + date);
                 return insertDbAndGetResponse(handlerInput, slots, userId, date, count);
@@ -231,12 +260,15 @@ const QueryCounterIntentHandler = {
                 .getResponse();
         }
 
-        var speechOutput;
-        const result = await db.get(handlerInput.requestEnvelope.session.user.userId, date);
-        if (result) {
-            logger.debug('current value is', result.attrs);
+        const result = await DayCounter.query({
+            userId: { eq: handlerInput.requestEnvelope.session.user.userId },
+            date: { eq: date },
+        }).exec();
+        let speechOutput;
+        if (result.count > 0) {
+            logger.debug('current value is', result[0]);
             const key = slots.date.value ? 'COUNTER_IS_FOR' : 'COUNTER_IS';
-            speechOutput = requestAttributes.t(key, { count: result.get('count'), date: date });
+            speechOutput = requestAttributes.t(key, { count: result[0].count, date: date });
         } else {
             logger.debug('current value is not set for ' + date);
             speechOutput = requestAttributes.t('COUNTER_NOT_SET_FOR', { date: date });
@@ -275,13 +307,18 @@ const QuerySumIntentHandler = {
                 .getResponse();
         }
 
-        const rows = await db.queryDateBetween(handlerInput.requestEnvelope.session.user.userId, fromDate, toDate);
-        logger.debug('found ' + rows.Count + ' results');
-        const count = rows.Items.reduce((sum, row) => sum + row.get('count'), 0);
-        logger.debug('sum is ' + count + ' from ' + fromDate + ' to ' + toDate);
-        const speechOutput = requestAttributes.t('SUM_IS', { count: count, fromDate: fromDate, toDate: toDate });
-        var cardContent = '';
-        rows.Items.forEach(row => { cardContent += row.get('date') + ': ' + row.get('count') + '\n'; });
+        const result = await DayCounter.query({
+            userId: { eq: handlerInput.requestEnvelope.session.user.userId },
+            date: { between: [fromDate, toDate] },
+        }).exec();
+        let sum = 0;
+        let cardContent = '';
+        for (let i = 0; i < result.count; i++) {
+            sum += result[i].count;
+            cardContent += result[i].date + ': ' + result[i].count + '\n';
+        }
+        logger.debug('sum is ' + sum + ' from ' + fromDate + ' to ' + toDate);
+        const speechOutput = requestAttributes.t('SUM_IS', { count: sum, fromDate: fromDate, toDate: toDate });
         return handlerInput.responseBuilder
             .speak(speechOutput)
             .withSimpleCard(requestAttributes.t('SUM_FROM_TO', { fromDate: fromDate, toDate: toDate }), cardContent)
@@ -352,7 +389,7 @@ const ErrorHandler = {
         const { request } = handlerInput.requestEnvelope;
         logger.error(error.stack || error.toString(), request);
 
-        var response;
+        let response;
         if (request.type === 'IntentRequest'
             && (request.intent.name === 'QueryCounterIntent'
                 || request.intent.name === 'SetCounterIntent'

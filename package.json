@@ -1,6 +1,6 @@
 {
   "name": "alexa-day-counter",
-  "version": "2.0.4",
+  "version": "2.1.0",
   "description": "Alexa Skill for persistent counting of events per day",
   "main": "index.js",
   "scripts": {
@@ -25,10 +25,9 @@
   "dependencies": {
     "ask-sdk-core": "^2.9.0",
     "ask-sdk-model": "^1.28.0",
-    "dynamodb": "^1.2.1",
+    "dynamoose": "^2.3.0",
     "i18next": "^19.6.3",
     "i18next-sprintf-postprocessor": "^0.2.2",
-    "joi": "14.x",
     "moment-timezone": "^0.5.31",
     "winston": "^3.3.3"
   },
@@ -36,9 +35,9 @@
     "alexa-skill-test-framework": "^1.2.4",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
-    "eslint": "^7.4.0",
+    "eslint": "^7.6.0",
     "eslint-config-strongloop": "^2.1.0",
-    "mocha": "^8.0.1",
+    "mocha": "^8.1.1",
     "nyc": "^15.1.0"
   },
   "eslintConfig": {
