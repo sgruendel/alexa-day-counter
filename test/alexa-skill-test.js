@@ -3,35 +3,7 @@
 // include the testing framework
 const alexaTest = require('alexa-skill-test-framework');
 
-const dynamoose = require('dynamoose');
-
-dynamoose.aws.sdk.config.update({ region: 'eu-west-1' });
-const DayCounter = dynamoose.model('DayCounter',
-    new dynamoose.Schema({
-        userId: {
-            type: String,
-            validate: (userId) => userId.length > 0,
-            required: true,
-        },
-        date: {
-            type: String,
-            validate: (date) => date.length > 0,
-            required: true,
-            rangeKey: true,
-        },
-        count: {
-            type: Number,
-            validate: (count) => count >= 0,
-            required: true,
-        },
-    }, {
-        timestamps: true,
-    }),
-    {
-        create: false, // TODO false for prod
-        prefix: '',
-        waitForActive: false,
-    });
+const db = require('../src/db');
 
 const USER_ID = 'amzn1.ask.account.unit_test';
 
@@ -46,16 +18,15 @@ describe('Tageszähler Skill', () => {
 
     before(async function() {
         // init db so IncreaseCounterIntent can be tested with existing count
-        await DayCounter.create({ userId: USER_ID, date: '2018-03-06', count: 5 });
+        await db.Count.create({ userId: USER_ID, date: '2018-03-06', count: 5 });
     });
 
     after(async function() {
-        const result = await DayCounter.query('userId').eq(USER_ID).exec();
+        const result = await db.Count.query('userId').eq(USER_ID).exec();
         for (let i = 0; i < result.count; i++) {
-            console.log('deleting in db', result[i]);
             // TODO: should work according to docs but doesn't: await result[i].delete();
             // So delete via Model instead of Document:
-            await DayCounter.delete({ userId: result[i].userId, date: result[i].date });
+            await db.Count.delete({ userId: result[i].userId, date: result[i].date });
         }
     });
 

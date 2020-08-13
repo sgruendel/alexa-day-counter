@@ -3,37 +3,8 @@
 const Alexa = require('ask-sdk-core');
 const i18next = require('i18next');
 const sprintf = require('i18next-sprintf-postprocessor');
-const dynamoose = require('dynamoose');
 const moment = require('moment-timezone');
 const winston = require('winston');
-
-dynamoose.aws.sdk.config.update({ region: 'eu-west-1' });
-const DayCounter = dynamoose.model('DayCounter',
-    new dynamoose.Schema({
-        userId: {
-            type: String,
-            validate: (userId) => userId.length > 0,
-            required: true,
-        },
-        date: {
-            type: String,
-            validate: (date) => date.length > 0,
-            required: true,
-            rangeKey: true,
-        },
-        count: {
-            type: Number,
-            validate: (count) => count >= 0,
-            required: true,
-        },
-    }, {
-        timestamps: true,
-    }),
-    {
-        create: false, // TODO false for prod
-        prefix: '',
-        waitForActive: false,
-    });
 
 const logger = winston.createLogger({
     level: process.env.LOG_LEVEL || 'info',
@@ -45,6 +16,7 @@ const logger = winston.createLogger({
     exitOnError: false,
 });
 
+const db = require('./db');
 const utils = require('./utils');
 
 const SKILL_ID = 'amzn1.ask.skill.d3ee5865-d4bb-4076-b13d-fbef1f7e0216';
@@ -129,7 +101,7 @@ async function insertDbAndGetResponse(handlerInput, slots, userId, date, count) 
     const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
     logger.debug('setting count to ' + count + ' for ' + date);
 
-    const dc = new DayCounter({ userId: userId, date: date, count: count });
+    const dc = new db.Count({ userId: userId, date: date, count: count });
     const result = await dc.save();
     logger.debug('count successfully updated', result);
     const key = slots.date.value ? 'COUNTER_IS_NOW_FOR' : 'COUNTER_IS_NOW';
@@ -214,7 +186,7 @@ const IncreaseCounterIntentHandler = {
             logger.info('increasing count by ' + count + ' for ' + date);
 
             const userId = handlerInput.requestEnvelope.session.user.userId;
-            const result = await DayCounter.query({ userId: { eq: userId }, date: { eq: date } }).exec();
+            const result = await db.Count.query({ userId: { eq: userId }, date: { eq: date } }).exec();
             if (result.count > 0) {
                 logger.debug('current value is', result[0]);
                 return insertDbAndGetResponse(handlerInput, slots, userId, date, result[0].count + count);
@@ -260,7 +232,7 @@ const QueryCounterIntentHandler = {
                 .getResponse();
         }
 
-        const result = await DayCounter.query({
+        const result = await db.Count.query({
             userId: { eq: handlerInput.requestEnvelope.session.user.userId },
             date: { eq: date },
         }).exec();
@@ -307,7 +279,7 @@ const QuerySumIntentHandler = {
                 .getResponse();
         }
 
-        const result = await DayCounter.query({
+        const result = await db.Count.query({
             userId: { eq: handlerInput.requestEnvelope.session.user.userId },
             date: { between: [fromDate, toDate] },
         }).exec();
