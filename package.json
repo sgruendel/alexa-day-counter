@@ -24,7 +24,7 @@
   "homepage": "https://github.com/sgruendel/alexa-day-counter#readme",
   "dependencies": {
     "ask-sdk-core": "^2.9.0",
-    "ask-sdk-model": "^1.28.0",
+    "ask-sdk-model": "^1.29.0",
     "dynamoose": "^2.3.0",
     "i18next": "^19.6.3",
     "i18next-sprintf-postprocessor": "^0.2.2",
