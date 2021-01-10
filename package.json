@@ -1,6 +1,6 @@
 {
   "name": "alexa-day-counter",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Alexa Skill for persistent counting of events per day",
   "main": "index.js",
   "scripts": {
