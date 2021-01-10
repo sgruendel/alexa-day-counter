@@ -100,14 +100,14 @@
         }
       },
       "isAvailableWorldwide": true,
-      "testingInstructions": "Changes to previous version (Lambda version 12):\n* Update libraries, no functional changes.",
+      "testingInstructions": "Changes to previous version (Lambda version 13):\n* Fix handling of 2021-W1.",
       "category": "ORGANIZERS_AND_ASSISTANTS",
       "distributionCountries": []
     },
     "apis": {
       "custom": {
         "endpoint": {
-          "uri": "arn:aws:lambda:eu-west-1:467353799488:function:dayCounter:13",
+          "uri": "arn:aws:lambda:eu-west-1:467353799488:function:dayCounter:14",
           "sourceDir": "./src"
         },
         "interfaces": []

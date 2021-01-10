@@ -6,7 +6,7 @@
       "merge": {},
       "resources": {
         "manifest": {
-          "eTag": "fb7cdbc29c9200abca6b4af7785a60ab"
+          "eTag": "f12a287713bdb5be0b1e648c5260e40b"
         },
         "interactionModel": {
           "de-DE": {
@@ -30,7 +30,7 @@
         },
         "lambda": [
           {
-            "arn": "arn:aws:lambda:eu-west-1:467353799488:function:dayCounter:13",
+            "arn": "arn:aws:lambda:eu-west-1:467353799488:function:dayCounter:14",
             "awsRegion": "eu-west-1",
             "functionName": "dayCounter",
             "alexaUsage": [
