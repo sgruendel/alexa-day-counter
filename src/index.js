@@ -73,7 +73,7 @@ const languageStrings = {
 };
 
 // Get a moment object for now in user's time zone, so if he says "today" we're not simpy using the server time.
-// If there's no API Access Toekn, there's no user, i.e. we're in a unit test.
+// If there's no API Access Token, there's no user, i.e. we're in a unit test.
 async function getNowWithSystemTimeZone(handlerInput) {
     // see https://gist.github.com/memodoring/84f19600e1c55f68e24af16535af52b8
     logger.debug('getNowWithSystemTimeZone', handlerInput.requestEnvelope);
