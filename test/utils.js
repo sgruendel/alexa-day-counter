@@ -154,6 +154,24 @@ describe('utils', () => {
             expect(result).to.include({ fromDate: '2018-01-01', toDate: '2018-12-31' });
         });
 
+        it('should work with 2020-W53', () => {
+            const slots = { date: { name: 'date', value: '2020-W53' } };
+            const result = util.calculateFromToDateKeys(slots, moment('2021-01-08'));
+            expect(result).to.include({ fromDate: '2020-12-28', toDate: '2021-01-03' });
+        });
+
+        it('should work with 2021-W1', () => {
+            const slots = { date: { name: 'date', value: '2021-W1' } };
+            const result = util.calculateFromToDateKeys(slots, moment('2021-01-08'));
+            expect(result).to.include({ fromDate: '2021-01-04', toDate: '2021-01-10' });
+        });
+
+        it('should work with 2021-W2', () => {
+            const slots = { date: { name: 'date', value: '2021-W2' } };
+            const result = util.calculateFromToDateKeys(slots, moment('2021-01-15'));
+            expect(result).to.include({ fromDate: '2021-01-11', toDate: '2021-01-17' });
+        });
+
         it('should not work with a decade', () => {
             const slots = { date: { name: 'date', value: '200X' } };
             const result = util.calculateFromToDateKeys(slots);
