@@ -25,10 +25,10 @@
   "dependencies": {
     "ask-sdk-core": "2.10.1",
     "ask-sdk-model": "1.34.1",
-    "dynamoose": "2.6.0",
+    "dynamoose": "2.7.0",
     "i18next": "19.8.7",
     "i18next-sprintf-postprocessor": "0.2.2",
-    "moment-timezone": "0.5.32",
+    "moment-timezone": "0.5.33",
     "winston": "3.3.3"
   },
   "devDependencies": {
