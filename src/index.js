@@ -71,6 +71,11 @@ const languageStrings = {
         },
     },
 };
+i18next.use(sprintf).init({
+    overloadTranslationOptionHandler: sprintf.overloadTranslationOptionHandler,
+    resources: languageStrings,
+    returnObjects: true,
+});
 
 // Get a moment object for now in user's time zone, so if he says "today" we're not simpy using the server time.
 // If there's no API Access Token, there's no user, i.e. we're in a unit test.
@@ -387,12 +392,7 @@ const ErrorHandler = {
 
 const LocalizationInterceptor = {
     process(handlerInput) {
-        i18next.use(sprintf).init({
-            lng: handlerInput.requestEnvelope.request.locale,
-            overloadTranslationOptionHandler: sprintf.overloadTranslationOptionHandler,
-            resources: languageStrings,
-            returnObjects: true,
-        });
+        i18next.changeLanguage(Alexa.getLocale(handlerInput.requestEnvelope));
 
         const attributes = handlerInput.attributesManager.getRequestAttributes();
         attributes.t = (...args) => {
