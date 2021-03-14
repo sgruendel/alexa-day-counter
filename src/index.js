@@ -83,12 +83,13 @@ async function getNowWithSystemTimeZone(handlerInput) {
     // see https://gist.github.com/memodoring/84f19600e1c55f68e24af16535af52b8
     logger.debug('getNowWithSystemTimeZone', handlerInput.requestEnvelope);
     const apiAccessToken = Alexa.getApiAccessToken(handlerInput.requestEnvelope);
+    const locale = Alexa.getLocale(handlerInput.requestEnvelope);
     if (apiAccessToken) {
         const upsServiceClient = handlerInput.serviceClientFactory.getUpsServiceClient();
         const deviceId = Alexa.getDeviceId(handlerInput.requestEnvelope);
         try {
             const systemTimeZone = await upsServiceClient.getSystemTimeZone(deviceId);
-            const now = moment().tz(systemTimeZone);
+            const now = moment().tz(systemTimeZone).locale(locale);
             if (now) {
                 logger.debug('system TZ is ' + systemTimeZone + ', now is ' + now.format());
                 return now;
@@ -99,7 +100,7 @@ async function getNowWithSystemTimeZone(handlerInput) {
             logger.error(err.stack || err.toString());
         }
     }
-    return moment();
+    return moment().locale(locale);
 }
 
 async function insertDbAndGetResponse(handlerInput, slots, userId, date, count) {
