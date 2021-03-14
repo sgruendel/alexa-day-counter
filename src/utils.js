@@ -18,11 +18,7 @@ const YYYY_MM_DD = 'YYYY-MM-DD';
 var exports = module.exports = {};
 
 function getDateOfISOWeek(year, week, dayOfWeek) {
-    if (week >= 52) {
-        // see test case for "2020-W53"
-        return moment().isoWeekYear(year).isoWeek(week).isoWeekday(dayOfWeek).format(YYYY_MM_DD);
-    }
-    return moment().isoWeekday(dayOfWeek).isoWeek(week).isoWeekYear(year).format(YYYY_MM_DD);
+    return moment().year(year).isoWeek(week).isoWeekday(dayOfWeek).format(YYYY_MM_DD);
 }
 
 function fixFutureDate(dateStr, now) {

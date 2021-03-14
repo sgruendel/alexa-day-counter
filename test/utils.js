@@ -154,7 +154,37 @@ describe('utils', () => {
             expect(result).to.include({ fromDate: '2018-01-01', toDate: '2018-12-31' });
         });
 
-        it('should work with 2020-W53', () => {
+        it('should work with 2019-W52 in 2019', () => {
+            const slots = { date: { name: 'date', value: '2019-W52' } };
+            const result = util.calculateFromToDateKeys(slots, moment('2019-12-30'));
+            expect(result).to.include({ fromDate: '2019-12-23', toDate: '2019-12-29' });
+        });
+
+        it('should work with 2019-W52 in 2020', () => {
+            const slots = { date: { name: 'date', value: '2019-W52' } };
+            const result = util.calculateFromToDateKeys(slots, moment('2020-01-03'));
+            expect(result).to.include({ fromDate: '2019-12-23', toDate: '2019-12-29' });
+        });
+
+        it('should work with 2020-W1 in 2019', () => {
+            const slots = { date: { name: 'date', value: '2020-W1' } };
+            const result = util.calculateFromToDateKeys(slots, moment('2019-12-31'));
+            expect(result).to.include({ fromDate: '2019-12-30', toDate: '2020-01-05' });
+        });
+
+        it('should work with 2020-W1 in 2020', () => {
+            const slots = { date: { name: 'date', value: '2020-W1' } };
+            const result = util.calculateFromToDateKeys(slots, moment('2020-01-04'));
+            expect(result).to.include({ fromDate: '2019-12-30', toDate: '2020-01-05' });
+        });
+
+        it('should work with 2020-W53 in 2020', () => {
+            const slots = { date: { name: 'date', value: '2020-W53' } };
+            const result = util.calculateFromToDateKeys(slots, moment('2020-12-30'));
+            expect(result).to.include({ fromDate: '2020-12-28', toDate: '2021-01-03' });
+        });
+
+        it('should work with 2020-W53 in 2021', () => {
             const slots = { date: { name: 'date', value: '2020-W53' } };
             const result = util.calculateFromToDateKeys(slots, moment('2021-01-08'));
             expect(result).to.include({ fromDate: '2020-12-28', toDate: '2021-01-03' });
