@@ -23,10 +23,10 @@
   },
   "homepage": "https://github.com/sgruendel/alexa-day-counter#readme",
   "dependencies": {
-    "ask-sdk-core": "2.10.2",
-    "ask-sdk-model": "1.35.1",
+    "ask-sdk-core": "2.11.0",
+    "ask-sdk-model": "1.36.1",
     "dynamoose": "2.7.3",
-    "i18next": "20.3.3",
+    "i18next": "20.3.4",
     "i18next-sprintf-postprocessor": "0.2.2",
     "moment-timezone": "0.5.33",
     "winston": "3.3.3"
