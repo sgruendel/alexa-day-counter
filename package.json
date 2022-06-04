@@ -26,7 +26,7 @@
     "ask-sdk-core": "2.12.1",
     "ask-sdk-model": "1.38.2",
     "dynamoose": "2.8.5",
-    "i18next": "21.8.4",
+    "i18next": "21.8.5",
     "i18next-sprintf-postprocessor": "0.2.2",
     "moment-timezone": "0.5.34",
     "winston": "3.7.2"
