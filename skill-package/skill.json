@@ -70,7 +70,6 @@
           "summary": "Counts events per day and stores the count persistently.",
           "examplePhrases": [
             "Alexa, start daily counter and increase by one",
-            "Alexa, start daily counter and set the count to three for yesterday",
             "Alexa, ask daily counter for the count"
           ],
           "keywords": [
