@@ -3,13 +3,13 @@
 // include the testing framework
 const alexaTest = require('alexa-skill-test-framework');
 
-const db = require('../src/db');
+const db = require('../db');
 
 const USER_ID = 'amzn1.ask.account.unit_test';
 
 // initialize the testing framework
 alexaTest.initialize(
-    require('../src/index'),
+    require('../index'),
     'amzn1.ask.skill.d3ee5865-d4bb-4076-b13d-fbef1f7e0216',
     USER_ID);
 alexaTest.setLocale('de-DE');

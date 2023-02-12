@@ -2,7 +2,7 @@
 
 const expect = require('chai').expect;
 const moment = require('moment-timezone');
-const util = require('../src/utils');
+const util = require('../utils');
 
 describe('utils', () => {
 
