@@ -24,12 +24,12 @@
     "i18next": "^22.5.1",
     "i18next-sprintf-postprocessor": "^0.2.2",
     "moment-timezone": "^0.5.43",
-    "winston": "^3.9.0"
+    "winston": "^3.10.0"
   },
   "devDependencies": {
     "alexa-skill-test-framework": "^1.2.4",
     "chai": "^4.3.7",
-    "eslint": "^8.44.0",
+    "eslint": "^8.45.0",
     "eslint-config-strongloop": "^2.1.0",
     "mocha": "^10.2.0",
     "nyc": "^15.1.0"
