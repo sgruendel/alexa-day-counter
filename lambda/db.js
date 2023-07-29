@@ -1,7 +1,8 @@
 'use strict';
 
 const dynamoose = require('dynamoose');
-dynamoose.aws.sdk.config.update({ region: 'eu-west-1' });
+const ddb = new dynamoose.aws.ddb.DynamoDB({ region: 'eu-west-1' });
+dynamoose.aws.ddb.set(ddb);
 
 var exports = module.exports = {};
 
