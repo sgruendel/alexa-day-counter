@@ -20,8 +20,8 @@
   "dependencies": {
     "ask-sdk-core": "^2.14.0",
     "ask-sdk-model": "^1.86.0",
-    "dynamoose": "^3.2.0",
-    "i18next": "^23.4.9",
+    "dynamoose": "^3.2.1",
+    "i18next": "^23.5.1",
     "i18next-sprintf-postprocessor": "^0.2.2",
     "moment-timezone": "^0.5.43",
     "winston": "^3.10.0"
@@ -29,7 +29,7 @@
   "devDependencies": {
     "alexa-skill-test-framework": "^1.2.4",
     "chai": "^4.3.8",
-    "eslint": "^8.48.0",
+    "eslint": "^8.49.0",
     "eslint-config-strongloop": "^2.1.0",
     "mocha": "^10.2.0",
     "nyc": "^15.1.0"
