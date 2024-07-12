@@ -24,7 +24,7 @@
     "i18next": "^23.11.5",
     "i18next-sprintf-postprocessor": "^0.2.2",
     "moment-timezone": "^0.5.45",
-    "winston": "^3.13.0"
+    "winston": "^3.13.1"
   },
   "devDependencies": {
     "alexa-skill-test-framework": "^1.2.4",
