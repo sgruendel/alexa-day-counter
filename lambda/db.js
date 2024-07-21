@@ -1,12 +1,8 @@
-'use strict';
-
-const dynamoose = require('dynamoose');
+import dynamoose from 'dynamoose';
 const ddb = new dynamoose.aws.ddb.DynamoDB({ region: 'eu-west-1' });
 dynamoose.aws.ddb.set(ddb);
 
-var exports = module.exports = {};
-
-exports.Count = dynamoose.model('Count',
+export const Count = dynamoose.model('Count',
     new dynamoose.Schema({
         userId: {
             type: String,

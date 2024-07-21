@@ -1,7 +1,5 @@
-'use strict';
-
-const moment = require('moment-timezone');
-const winston = require('winston');
+import moment from 'moment-timezone';
+import winston from 'winston';
 
 const logger = winston.createLogger({
     level: process.env.LOG_LEVEL || 'info',
@@ -14,8 +12,6 @@ const logger = winston.createLogger({
 });
 
 const YYYY_MM_DD = 'YYYY-MM-DD';
-
-var exports = module.exports = {};
 
 function getDateOfISOWeek(year, week, dayOfWeek) {
     return moment().year(year).isoWeek(week).isoWeekday(dayOfWeek).format(YYYY_MM_DD);
@@ -46,7 +42,7 @@ function fixFutureDate(dateStr, now) {
 
 // returns a date range as { fromDate, toDate} tuple for an Amazon Date as defined in
 // https://developer.amazon.com/docs/custom-skills/slot-type-reference.html#date
-exports.calculateFromToDateKeys = function(slots, now = moment()) {
+export function calculateFromToDateKeys(slots, now = moment()) {
     const dateStr = slots.date.value;
 
     // Fail if no value was given.
@@ -123,9 +119,9 @@ exports.calculateFromToDateKeys = function(slots, now = moment()) {
 
     // The utterance “now” resolves to the indicator PRESENT_REF rather
     // than a specific date or time.
-};
+}
 
-exports.calculateDateKey = function(slots, now = moment()) {
+export function calculateDateKey(slots, now = moment()) {
     const dateStr = slots.date.value;
 
     // If no value was given, use today.
@@ -140,4 +136,4 @@ exports.calculateDateKey = function(slots, now = moment()) {
     }
 
     return fixFutureDate(dateStr, now);
-};
+}

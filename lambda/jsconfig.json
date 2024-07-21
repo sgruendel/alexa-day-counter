@@ -1,0 +1,8 @@
+{
+    "compilerOptions": {
+        "target": "ES6",
+        "module": "Node16",
+        "checkJs": true
+    },
+    "exclude": ["node_modules", "**/node_modules/*"]
+}

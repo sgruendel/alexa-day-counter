@@ -1,66 +1,71 @@
 {
-  "name": "alexa-day-counter",
-  "version": "2.2.1",
-  "description": "Alexa Skill for persistent counting of events per day",
-  "main": "index.js",
-  "scripts": {
-    "reinstall": "rm -rf ./node_modules && npm install",
-    "test": "nyc --reporter=lcov --reporter=text mocha --timeout 5000"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/sgruendel/alexa-day-counter.git"
-  },
-  "author": "Stefan Gründel",
-  "license": "GPL-3.0",
-  "bugs": {
-    "url": "https://github.com/sgruendel/alexa-day-counter/issues"
-  },
-  "homepage": "https://github.com/sgruendel/alexa-day-counter#readme",
-  "dependencies": {
-    "ask-sdk-core": "^2.14.0",
-    "ask-sdk-model": "^1.86.0",
-    "dynamoose": "^4.0.1",
-    "i18next": "^23.12.1",
-    "i18next-sprintf-postprocessor": "^0.2.2",
-    "moment-timezone": "^0.5.45",
-    "winston": "^3.13.1"
-  },
-  "devDependencies": {
-    "alexa-skill-test-framework": "^1.2.4",
-    "chai": "^5.1.1",
-    "eslint": "^9.7.0",
-    "eslint-config-strongloop": "^2.1.0",
-    "mocha": "^10.6.0",
-    "nyc": "^17.0.0"
-  },
-  "eslintConfig": {
-    "parserOptions": {
-      "ecmaVersion": 2020
+    "name": "alexa-day-counter",
+    "version": "2.3.0",
+    "description": "Alexa Skill for persistent counting of events per day",
+    "main": "index.js",
+    "type": "module",
+    "scripts": {
+        "reinstall": "rm -rf ./node_modules && npm install",
+        "test": "c8 --reporter=lcov --reporter=text mocha --timeout 5000"
     },
-    "extends": "strongloop",
-    "env": {
-      "commonjs": true,
-      "es6": true,
-      "node": true,
-      "mocha": true
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/sgruendel/alexa-day-counter.git"
     },
-    "rules": {
-      "indent": [
-        "error",
-        4
-      ],
-      "max-len": [
-        "error",
-        120,
-        4,
-        {
-          "ignoreComments": true,
-          "ignoreUrls": true,
-          "ignoreStrings": true,
-          "ignorePattern": "^\\s*var\\s.+=\\s*(require\\s*\\()|(/)"
+    "author": "Stefan Gründel",
+    "license": "GPL-3.0",
+    "bugs": {
+        "url": "https://github.com/sgruendel/alexa-day-counter/issues"
+    },
+    "homepage": "https://github.com/sgruendel/alexa-day-counter#readme",
+    "dependencies": {
+        "ask-sdk-core": "^2.14.0",
+        "ask-sdk-model": "^1.86.0",
+        "dynamoose": "^4.0.1",
+        "i18next": "^23.12.1",
+        "i18next-sprintf-postprocessor": "^0.2.2",
+        "moment-timezone": "^0.5.45",
+        "winston": "^3.13.1"
+    },
+    "devDependencies": {
+        "@types/chai": "^4.3.16",
+        "@types/mocha": "^10.0.7",
+        "@types/node": "^20.14.11",
+        "alexa-skill-test-framework": "^1.2.4",
+        "c8": "^10.1.2",
+        "chai": "^5.1.1",
+        "eslint": "^9.7.0",
+        "eslint-config-strongloop": "^2.1.0",
+        "mocha": "^10.6.0"
+    },
+    "eslintConfig": {
+        "parserOptions": {
+            "ecmaVersion": 2023,
+            "sourceType": "module"
+        },
+        "extends": "strongloop",
+        "env": {
+            "es6": true,
+            "node": true,
+            "mocha": true
+        },
+        "rules": {
+            "indent": [
+                "error",
+                4
+            ],
+            "max-len": [
+                "error",
+                120,
+                4,
+                {
+                    "ignoreComments": true,
+                    "ignoreUrls": true,
+                    "ignoreStrings": true,
+                    "ignorePattern": "^\\s*var\\s.+=\\s*(require\\s*\\()|(/)"
+                }
+            ],
+            "space-before-function-paren": 0
         }
-      ]
     }
-  }
 }
