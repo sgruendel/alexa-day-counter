@@ -22,7 +22,7 @@
         "ask-sdk-core": "^2.14.0",
         "ask-sdk-model": "^1.86.0",
         "dynamoose": "^4.0.1",
-        "i18next": "^23.12.1",
+        "i18next": "^23.12.2",
         "i18next-sprintf-postprocessor": "^0.2.2",
         "moment-timezone": "^0.5.45",
         "winston": "^3.13.1"
@@ -30,13 +30,13 @@
     "devDependencies": {
         "@types/chai": "^4.3.16",
         "@types/mocha": "^10.0.7",
-        "@types/node": "^20.14.11",
+        "@types/node": "^20.14.12",
         "alexa-skill-test-framework": "^1.2.4",
         "c8": "^10.1.2",
         "chai": "^5.1.1",
         "eslint": "^9.7.0",
         "eslint-config-strongloop": "^2.1.0",
-        "mocha": "^10.6.0"
+        "mocha": "^10.7.0"
     },
     "eslintConfig": {
         "parserOptions": {
