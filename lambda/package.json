@@ -22,10 +22,10 @@
         "ask-sdk-core": "^2.14.0",
         "ask-sdk-model": "^1.86.0",
         "dynamoose": "^4.0.2",
-        "i18next": "^23.16.4",
+        "i18next": "^23.16.5",
         "i18next-sprintf-postprocessor": "^0.2.2",
         "moment-timezone": "^0.5.46",
-        "winston": "^3.16.0"
+        "winston": "^3.17.0"
     },
     "devDependencies": {
         "@types/chai": "^4.3.20",
