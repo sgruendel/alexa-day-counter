@@ -22,7 +22,7 @@
         "ask-sdk-core": "^2.14.0",
         "ask-sdk-model": "^1.86.0",
         "dynamoose": "^4.0.2",
-        "i18next": "^24.1.0",
+        "i18next": "^24.1.2",
         "i18next-sprintf-postprocessor": "^0.2.2",
         "moment-timezone": "^0.5.46",
         "winston": "^3.17.0"
@@ -34,7 +34,7 @@
         "alexa-skill-test-framework": "^1.2.4",
         "c8": "^10.1.3",
         "chai": "^5.1.2",
-        "eslint": "^9.16.0",
+        "eslint": "^9.17.0",
         "eslint-config-strongloop": "^2.1.0",
         "mocha": "^11.0.1"
     },
