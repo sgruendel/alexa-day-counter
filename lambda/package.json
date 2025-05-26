@@ -24,7 +24,7 @@
         "dynamoose": "^4.0.4",
         "i18next": "^25.2.0",
         "i18next-sprintf-postprocessor": "^0.2.2",
-        "moment-timezone": "^0.5.48",
+        "moment-timezone": "^0.6.0",
         "winston": "^3.17.0"
     },
     "devDependencies": {
