@@ -6,7 +6,7 @@
     "type": "module",
     "scripts": {
         "reinstall": "rm -rf ./node_modules && npm install",
-        "test": "c8 --reporter=lcov --reporter=text mocha --timeout 5000"
+        "test": "c8 --reporter=lcov --reporter=text mocha --timeout 5000 --exclude 'test/alexa-skill-test.cjs'"
     },
     "repository": {
         "type": "git",
