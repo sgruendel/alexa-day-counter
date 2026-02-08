@@ -28,6 +28,7 @@
         "winston": "^3.19.0"
     },
     "devDependencies": {
+        "@eslint/js": "^10.0.1",
         "@types/chai": "^5.2.3",
         "@types/mocha": "^10.0.9",
         "@types/node": "^24.10.11",
@@ -36,36 +37,7 @@
         "chai": "^6.2.2",
         "eslint": "^10.0.0",
         "eslint-config-strongloop": "^2.1.0",
+        "globals": "^17.3.0",
         "mocha": "^11.7.5"
-    },
-    "eslintConfig": {
-        "parserOptions": {
-            "ecmaVersion": 2023,
-            "sourceType": "module"
-        },
-        "extends": "strongloop",
-        "env": {
-            "es6": true,
-            "node": true,
-            "mocha": true
-        },
-        "rules": {
-            "indent": [
-                "error",
-                4
-            ],
-            "max-len": [
-                "error",
-                120,
-                4,
-                {
-                    "ignoreComments": true,
-                    "ignoreUrls": true,
-                    "ignoreStrings": true,
-                    "ignorePattern": "^\\s*var\\s.+=\\s*(require\\s*\\()|(/)"
-                }
-            ],
-            "space-before-function-paren": 0
-        }
     }
 }
