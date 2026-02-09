@@ -1,7 +1,8 @@
-const Alexa = require('ask-sdk-core');
-const i18next = require('i18next');
-const sprintf = require('i18next-sprintf-postprocessor');
-const winston = require('winston');
+import Alexa from 'ask-sdk-core';
+import i18next from 'i18next';
+import sprintf from 'i18next-sprintf-postprocessor';
+import winston from 'winston';
+import * as handlers from './handlers.js';
 
 const logger = winston.createLogger({
     level: process.env.LOG_LEVEL || 'info',
@@ -13,19 +14,18 @@ const logger = winston.createLogger({
     exitOnError: false,
 });
 
-// as index.cjs is CommonJS, we need to use the asynchronous import()
-const handlersPromise = import('./handlers.js');
-
 const SKILL_ID = 'amzn1.ask.skill.d3ee5865-d4bb-4076-b13d-fbef1f7e0216';
 
 const languageStrings = {
     de: {
         translation: {
-            HELP_MESSAGE: 'Der Tageszähler zählt Ereignisse pro Tag und speichert die Anzahl dauerhaft. '
-                + 'Du kannst sagen „Setze den Wert auf drei“, oder „Zähle eins dazu“, oder „Frage Tageszähler nach dem Stand“. '
-                + 'Du kannst auch immer einen bestimmten Tag angeben wie „Gestern“ oder „Letzten Sonntag“, z.B. „Frage Tageszähler nach dem Stand von gestern“ oder „Frage Tageszähler nach der Summe von letztem Monat“. '
-                + 'Oder du kannst „Beenden“ sagen. Was soll ich tun?',
-            HELP_REPROMPT: 'Sage „Setze den Wert auf Zahl“, oder „Zähle Zahl dazu für Datum“, oder „Frage Tageszähler nach dem Stand“. Was soll ich tun?',
+            HELP_MESSAGE:
+                'Der Tageszähler zählt Ereignisse pro Tag und speichert die Anzahl dauerhaft. ' +
+                'Du kannst sagen „Setze den Wert auf drei“, oder „Zähle eins dazu“, oder „Frage Tageszähler nach dem Stand“. ' +
+                'Du kannst auch immer einen bestimmten Tag angeben wie „Gestern“ oder „Letzten Sonntag“, z.B. „Frage Tageszähler nach dem Stand von gestern“ oder „Frage Tageszähler nach der Summe von letztem Monat“. ' +
+                'Oder du kannst „Beenden“ sagen. Was soll ich tun?',
+            HELP_REPROMPT:
+                'Sage „Setze den Wert auf Zahl“, oder „Zähle Zahl dazu für Datum“, oder „Frage Tageszähler nach dem Stand“. Was soll ich tun?',
             STOP_MESSAGE: '<say-as interpret-as="interjection">bis dann</say-as>',
             NOT_UNDERSTOOD_MESSAGE: 'Entschuldigung, das verstehe ich nicht. Bitte wiederhole das?',
             COUNTER_IS: 'Der Zähler steht auf {{count}}.',
@@ -45,13 +45,15 @@ const languageStrings = {
     },
     en: {
         translation: {
-            HELP_MESSAGE: 'Daily Counter counts events per day and stores the count persistently. '
-                + 'You can say „Set the count to three“, or „Add one“, or „Ask Daily Counter for the count“. '
-                + 'You can always give a specific date like „yesterday“ or „last sunday“, e.g. „Ask Daily Counter for the count of yesterday“ or „Ask Daily Counter for the sum of last month“. '
-                + 'Or you can say „Exit“. What should I do?',
-            HELP_REPROMPT: 'Say „Set the count to number“, or „Add number for date“, or „Ask Daily Counter for the count“. What should I do?',
+            HELP_MESSAGE:
+                'Daily Counter counts events per day and stores the count persistently. ' +
+                'You can say „Set the count to three“, or „Add one“, or „Ask Daily Counter for the count“. ' +
+                'You can always give a specific date like „yesterday“ or „last sunday“, e.g. „Ask Daily Counter for the count of yesterday“ or „Ask Daily Counter for the sum of last month“. ' +
+                'Or you can say „Exit“. What should I do?',
+            HELP_REPROMPT:
+                'Say „Set the count to number“, or „Add number for date“, or „Ask Daily Counter for the count“. What should I do?',
             STOP_MESSAGE: 'See you soon!',
-            NOT_UNDERSTOOD_MESSAGE: 'Sorry, I don\'t understand. Please say again?',
+            NOT_UNDERSTOOD_MESSAGE: "Sorry, I don't understand. Please say again?",
             COUNTER_IS: 'The counter is at {{count}}.',
             COUNTER_IS_FOR: 'The counter is at {{count}} for {{date}}.',
             COUNTER_IS_NOW: 'The counter is now at {{count}}.',
@@ -81,7 +83,7 @@ const SetCounterIntentHandler = {
         return request.type === 'IntentRequest' && request.intent.name === 'SetCounterIntent';
     },
     async handle(handlerInput) {
-        return (await handlersPromise).handleSetCounterIntent(handlerInput);
+        return handlers.handleSetCounterIntent(handlerInput);
     },
 };
 
@@ -91,7 +93,7 @@ const IncreaseCounterIntentHandler = {
         return request.type === 'IntentRequest' && request.intent.name === 'IncreaseCounterIntent';
     },
     async handle(handlerInput) {
-        return (await handlersPromise).handleIncreaseCounterIntent(handlerInput);
+        return handlers.handleIncreaseCounterIntent(handlerInput);
     },
 };
 
@@ -109,7 +111,7 @@ const QueryCounterIntentHandler = {
         return request.type === 'IntentRequest' && request.intent.name === 'QueryCounterIntent';
     },
     async handle(handlerInput) {
-        return (await handlersPromise).handleQueryCounterIntent(handlerInput);
+        return handlers.handleQueryCounterIntent(handlerInput);
     },
 };
 
@@ -127,15 +129,17 @@ const QuerySumIntentHandler = {
         return request.type === 'IntentRequest' && request.intent.name === 'QuerySumIntent';
     },
     async handle(handlerInput) {
-        return (await handlersPromise).handleQuerySumIntent(handlerInput);
+        return handlers.handleQuerySumIntent(handlerInput);
     },
 };
 
 const HelpIntentHandler = {
     canHandle(handlerInput) {
         const { request } = handlerInput.requestEnvelope;
-        return request.type === 'LaunchRequest'
-            || (request.type === 'IntentRequest' && request.intent.name === 'AMAZON.HelpIntent');
+        return (
+            request.type === 'LaunchRequest' ||
+            (request.type === 'IntentRequest' && request.intent.name === 'AMAZON.HelpIntent')
+        );
     },
     handle(handlerInput) {
         const { request } = handlerInput.requestEnvelope;
@@ -152,8 +156,10 @@ const HelpIntentHandler = {
 const CancelAndStopIntentHandler = {
     canHandle(handlerInput) {
         const { request } = handlerInput.requestEnvelope;
-        return request.type === 'IntentRequest'
-            && (request.intent.name === 'AMAZON.CancelIntent' || request.intent.name === 'AMAZON.StopIntent');
+        return (
+            request.type === 'IntentRequest' &&
+            (request.intent.name === 'AMAZON.CancelIntent' || request.intent.name === 'AMAZON.StopIntent')
+        );
     },
     handle(handlerInput) {
         const { request } = handlerInput.requestEnvelope;
@@ -161,9 +167,7 @@ const CancelAndStopIntentHandler = {
 
         const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
         const speechOutput = requestAttributes.t('STOP_MESSAGE');
-        return handlerInput.responseBuilder
-            .speak(speechOutput)
-            .getResponse();
+        return handlerInput.responseBuilder.speak(speechOutput).getResponse();
     },
 };
 
@@ -195,24 +199,20 @@ const ErrorHandler = {
         logger.error(error.stack || error.toString(), request);
 
         let response;
-        if (request.type === 'IntentRequest'
-            && (request.intent.name === 'QueryCounterIntent'
-                || request.intent.name === 'SetCounterIntent'
-                || request.intent.name === 'IncreaseCounterIntent'
-                || request.intent.name === 'QuerySumIntent')) {
-
+        if (
+            request.type === 'IntentRequest' &&
+            (request.intent.name === 'QueryCounterIntent' ||
+                request.intent.name === 'SetCounterIntent' ||
+                request.intent.name === 'IncreaseCounterIntent' ||
+                request.intent.name === 'QuerySumIntent')
+        ) {
             const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
             const speechOutput = requestAttributes.t('NOT_POSSIBLE_NOW');
-            response = handlerInput.responseBuilder
-                .speak(speechOutput)
-                .getResponse();
+            response = handlerInput.responseBuilder.speak(speechOutput).getResponse();
         } else {
             const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
             const speechOutput = requestAttributes.t('NOT_UNDERSTOOD_MESSAGE');
-            response = handlerInput.responseBuilder
-                .speak(speechOutput)
-                .reprompt(speechOutput)
-                .getResponse();
+            response = handlerInput.responseBuilder.speak(speechOutput).reprompt(speechOutput).getResponse();
         }
         return response;
     },
@@ -230,17 +230,26 @@ const LocalizationInterceptor = {
     },
 };
 
-exports.handler = Alexa.SkillBuilders.custom()
-    .addRequestHandlers(
-        SetCounterIntentHandler,
-        IncreaseCounterIntentHandler,
-        QueryCounterIntentHandler,
-        QuerySumIntentHandler,
-        HelpIntentHandler,
-        CancelAndStopIntentHandler,
-        SessionEndedRequestHandler)
-    .addRequestInterceptors(LocalizationInterceptor)
-    .addErrorHandlers(ErrorHandler)
-    .withApiClient(new Alexa.DefaultApiClient())
-    .withSkillId(SKILL_ID)
-    .lambda();
+let skill;
+
+export const handler = async function (event, context) {
+    if (!skill) {
+        skill = Alexa.SkillBuilders.custom()
+            .addRequestHandlers(
+                SetCounterIntentHandler,
+                IncreaseCounterIntentHandler,
+                QueryCounterIntentHandler,
+                QuerySumIntentHandler,
+                HelpIntentHandler,
+                CancelAndStopIntentHandler,
+                SessionEndedRequestHandler,
+            )
+            .addRequestInterceptors(LocalizationInterceptor)
+            .addErrorHandlers(ErrorHandler)
+            .withApiClient(new Alexa.DefaultApiClient())
+            .withSkillId(SKILL_ID)
+            .create();
+    }
+
+    return skill.invoke(event, context);
+};

@@ -6,7 +6,9 @@
     "type": "module",
     "scripts": {
         "reinstall": "rm -rf ./node_modules && npm install",
-        "test": "c8 --reporter=lcov --reporter=text mocha --timeout 5000 --exclude 'test/alexa-skill-test.cjs'"
+        "test": "c8 --reporter=lcov --reporter=text mocha --timeout 5000 --exclude 'test/alexa-skill-test.cjs'",
+        "lambda:zip": "zip -r /tmp/dayCounter.zip node_modules/ package* *.js",
+        "lambda:deploy": "npm run lambda:zip && aws lambda update-function-code --function-name dayCounter --zip-file fileb:///tmp/dayCounter.zip"
     },
     "repository": {
         "type": "git",
