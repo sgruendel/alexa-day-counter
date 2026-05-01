@@ -24,9 +24,9 @@
         "ask-sdk-core": "^2.14.0",
         "ask-sdk-model": "^1.86.0",
         "dynamoose": "^4.1.5",
-        "i18next": "^26.0.6",
+        "i18next": "^26.0.8",
         "i18next-sprintf-postprocessor": "^0.2.2",
-        "moment-timezone": "^0.6.1",
+        "moment-timezone": "^0.6.2",
         "winston": "^3.19.0"
     },
     "devDependencies": {
