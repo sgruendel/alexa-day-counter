@@ -24,7 +24,7 @@
         "ask-sdk-core": "^2.14.0",
         "ask-sdk-model": "^1.86.0",
         "dynamoose": "^4.2.0",
-        "i18next": "^26.3.1",
+        "i18next": "^26.3.2",
         "i18next-sprintf-postprocessor": "^0.2.2",
         "moment-timezone": "^0.6.2",
         "winston": "^3.19.0"
@@ -38,7 +38,7 @@
         "c8": "^11.0.0",
         "chai": "^6.2.2",
         "eslint": "^10.5.0",
-        "globals": "^17.6.0",
+        "globals": "^17.7.0",
         "mocha": "^11.7.6"
     }
 }
