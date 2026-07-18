@@ -1,44 +1,44 @@
 {
-    "name": "alexa-day-counter",
-    "version": "2.3.0",
-    "description": "Alexa Skill for persistent counting of events per day",
-    "main": "index.js",
-    "type": "module",
-    "scripts": {
-        "reinstall": "rm -rf ./node_modules && npm install",
-        "test": "c8 --reporter=lcov --reporter=text mocha --timeout 5000 --exclude 'test/alexa-skill-test.cjs'",
-        "lambda:zip": "zip -r /tmp/dayCounter.zip node_modules/ package* *.js",
-        "lambda:deploy": "npm run lambda:zip && aws lambda update-function-code --function-name dayCounter --zip-file fileb:///tmp/dayCounter.zip"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/sgruendel/alexa-day-counter.git"
-    },
-    "author": "Stefan Gründel",
-    "license": "GPL-3.0",
-    "bugs": {
-        "url": "https://github.com/sgruendel/alexa-day-counter/issues"
-    },
-    "homepage": "https://github.com/sgruendel/alexa-day-counter#readme",
-    "dependencies": {
-        "ask-sdk-core": "^2.14.0",
-        "ask-sdk-model": "^1.86.0",
-        "dynamoose": "^4.2.0",
-        "i18next": "^26.3.4",
-        "i18next-sprintf-postprocessor": "^0.2.2",
-        "moment-timezone": "^0.6.2",
-        "winston": "^3.19.0"
-    },
-    "devDependencies": {
-        "@eslint/js": "^10.0.1",
-        "@types/chai": "^5.2.3",
-        "@types/mocha": "^10.0.9",
-        "@types/node": "^24.13.3",
-        "alexa-skill-test-framework": "^1.2.4",
-        "c8": "^11.0.0",
-        "chai": "^6.2.2",
-        "eslint": "^10.6.0",
-        "globals": "^17.7.0",
-        "mocha": "^11.7.6"
-    }
+  "name": "alexa-day-counter",
+  "version": "2.3.0",
+  "description": "Alexa Skill for persistent counting of events per day",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "reinstall": "rm -rf ./node_modules && npm install",
+    "test": "c8 --reporter=lcov --reporter=text mocha --timeout 5000 --exclude 'test/alexa-skill-test.cjs'",
+    "lambda:zip": "zip -r /tmp/dayCounter.zip node_modules/ package* *.js",
+    "lambda:deploy": "npm run lambda:zip && aws lambda update-function-code --function-name dayCounter --zip-file fileb:///tmp/dayCounter.zip"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sgruendel/alexa-day-counter.git"
+  },
+  "author": "Stefan Gründel",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/sgruendel/alexa-day-counter/issues"
+  },
+  "homepage": "https://github.com/sgruendel/alexa-day-counter#readme",
+  "dependencies": {
+    "ask-sdk-core": "^2.14.0",
+    "ask-sdk-model": "^1.86.0",
+    "dynamoose": "^4.2.0",
+    "i18next": "^26.3.4",
+    "i18next-sprintf-postprocessor": "^0.2.2",
+    "moment-timezone": "^0.6.2",
+    "winston": "^3.19.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/chai": "^5.2.3",
+    "@types/mocha": "^10.0.9",
+    "@types/node": "^24.13.3",
+    "alexa-skill-test-framework": "^1.2.4",
+    "c8": "^11.0.0",
+    "chai": "^6.2.2",
+    "eslint": "^10.6.0",
+    "globals": "^17.7.0",
+    "mocha": "^11.7.6"
+  }
 }
