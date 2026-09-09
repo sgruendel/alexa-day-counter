@@ -6,7 +6,7 @@
     "type": "module",
     "scripts": {
         "reinstall": "rm -rf ./node_modules && npm install",
-        "test": "c8 --reporter=lcov --reporter=text mocha --timeout 5000 --exclude 'test/alexa-skill-test.cjs'",
+        "test": "node --env-file-if-exists=.env ./node_modules/c8/bin/c8.js --reporter=lcov --reporter=text mocha --timeout 5000 --file test/setup.js",
         "lambda:zip": "zip -r /tmp/dayCounter.zip node_modules/ package* *.js",
         "lambda:deploy": "npm run lambda:zip && aws lambda update-function-code --function-name dayCounter --zip-file fileb:///tmp/dayCounter.zip"
     },
@@ -34,7 +34,6 @@
         "@types/chai": "^5.2.3",
         "@types/mocha": "^10.0.9",
         "@types/node": "^24.13.3",
-        "alexa-skill-test-framework": "^1.2.4",
         "c8": "^12.0.0",
         "chai": "^6.2.2",
         "eslint": "^10.9.1",

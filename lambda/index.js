@@ -2,6 +2,8 @@ import Alexa from 'ask-sdk-core';
 import i18next from 'i18next';
 import sprintf from 'i18next-sprintf-postprocessor';
 import winston from 'winston';
+
+import { SKILL_ID } from './config.js';
 import * as handlers from './handlers.js';
 
 const logger = winston.createLogger({
@@ -13,8 +15,6 @@ const logger = winston.createLogger({
     ],
     exitOnError: false,
 });
-
-const SKILL_ID = 'amzn1.ask.skill.d3ee5865-d4bb-4076-b13d-fbef1f7e0216';
 
 const languageStrings = {
     de: {
@@ -167,7 +167,7 @@ const CancelAndStopIntentHandler = {
 
         const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
         const speechOutput = requestAttributes.t('STOP_MESSAGE');
-        return handlerInput.responseBuilder.speak(speechOutput).getResponse();
+        return handlerInput.responseBuilder.speak(speechOutput).withShouldEndSession(true).getResponse();
     },
 };
 
@@ -186,7 +186,7 @@ const SessionEndedRequestHandler = {
         }
 
         logger.debug('session ended', request);
-        return handlerInput.responseBuilder.getResponse();
+        return handlerInput.responseBuilder.withShouldEndSession(true).getResponse();
     },
 };
 
