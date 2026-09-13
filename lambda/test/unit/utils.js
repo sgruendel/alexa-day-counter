@@ -2,7 +2,7 @@ import { expect } from 'chai';
 
 import moment from 'moment-timezone';
 
-import * as utils from '../utils.js';
+import * as utils from '../../utils.js';
 
 describe('utils', () => {
     describe('#calculateFromToDateKeys()', () => {
