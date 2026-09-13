@@ -1,0 +1,40 @@
+name: Node.js CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+permissions:
+  contents: read
+
+jobs:
+  offline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      matrix:
+        timezone: [UTC, Europe/Berlin]
+    env:
+      TZ: ${{ matrix.timezone }}
+    defaults:
+      run:
+        working-directory: lambda
+    steps:
+      - uses: actions/checkout@v7
+      - uses: jdx/mise-action@v4
+      - uses: actions/cache@v6
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('lambda/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-
+      - run: mise exec -- npm ci
+      - run: mise exec -- npm run lint
+      - run: mise exec -- npm test
+      - uses: actions/upload-artifact@v7
+        if: ${{ always() && matrix.timezone == 'UTC' }}
+        with:
+          name: runtime-coverage
+          path: lambda/coverage/

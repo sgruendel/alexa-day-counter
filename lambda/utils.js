@@ -131,7 +131,7 @@ export function calculateDateKey(slots, now = moment()) {
 
     // filter out anything that doesn't give a specific date, see
     // https://developer.amazon.com/de/docs/custom-skills/slot-type-reference.html#date
-    if (!dateStr.match(/[0-9][0-9][0-9][0-9]\-[0-9][0-9]\-[0-9][0-9]/)) {
+    if (!dateStr.match(/[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]/)) {
         return null;
     }
 

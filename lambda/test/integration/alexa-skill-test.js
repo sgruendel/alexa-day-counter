@@ -1,8 +1,8 @@
 import { expect } from 'chai';
 
-import { handler } from '../index.js';
-import { intentRequest, launchRequest, sessionEndedRequest, slot, USER_ID } from './helpers/alexa.js';
-import { resetCounts } from './setup.js';
+import { handler } from '../../index.js';
+import { intentRequest, launchRequest, sessionEndedRequest, slot, USER_ID } from '../helpers/alexa.js';
+import { resetCounts } from '../setup.js';
 
 function speech(responseEnvelope) {
     return responseEnvelope.response.outputSpeech.ssml;

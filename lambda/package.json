@@ -6,14 +6,24 @@
     "type": "module",
     "scripts": {
         "reinstall": "rm -rf ./node_modules && npm install",
-        "test": "node --env-file-if-exists=.env ./node_modules/c8/bin/c8.js --reporter=lcov --reporter=text mocha --timeout 5000 --file test/setup.js",
-        "lambda:zip": "zip -r /tmp/dayCounter.zip node_modules/ package* *.js",
-        "lambda:deploy": "npm run lambda:zip && aws lambda update-function-code --function-name dayCounter --zip-file fileb:///tmp/dayCounter.zip"
+        "test:unit": "node --import ./test/env.js ./node_modules/mocha/bin/mocha.js --timeout=7000 --file test/setup.js \"test/unit/**/*.js\"",
+        "test:integration": "node --import ./test/env.js ./node_modules/mocha/bin/mocha.js --timeout=7000 --file test/setup.js \"test/integration/**/*.js\"",
+        "test": "node --import ./test/env.js ./node_modules/c8/bin/c8.js mocha --timeout=7000 --file test/setup.js \"test/unit/**/*.js\" \"test/integration/**/*.js\"",
+        "lambda:zip": "rm -f /tmp/dayCounter.zip && zip -r /tmp/dayCounter.zip node_modules/ package* *.js",
+        "lambda:deploy": "npm run lambda:zip && aws lambda update-function-code --function-name dayCounter --zip-file fileb:///tmp/dayCounter.zip",
+        "model:deploy": "node --env-file-if-exists=.env scripts/deploy-model.js",
+        "lint": "eslint ."
     },
     "repository": {
         "type": "git",
         "url": "git+https://github.com/sgruendel/alexa-day-counter.git"
     },
+    "keywords": [
+        "alexa",
+        "counter",
+        "day-counter",
+        "tracking"
+    ],
     "author": "Stefan Gründel",
     "license": "GPL-3.0",
     "bugs": {
@@ -32,12 +42,34 @@
     "devDependencies": {
         "@eslint/js": "^10.0.1",
         "@types/chai": "^5.2.3",
-        "@types/mocha": "^10.0.9",
+        "@types/mocha": "^10.0.10",
         "@types/node": "^24.13.3",
         "c8": "^12.0.0",
         "chai": "^6.2.2",
         "eslint": "^10.10.0",
         "globals": "^17.12.0",
-        "mocha": "^12.0.0"
+        "mocha": "^12.0.1"
+    },
+    "c8": {
+        "all": true,
+        "include": [
+            "config.js",
+            "db.js",
+            "handlers.js",
+            "index.js",
+            "utils.js"
+        ],
+        "reporter": [
+            "lcov",
+            "text"
+        ],
+        "check-coverage": true,
+        "lines": 90,
+        "statements": 90,
+        "functions": 90,
+        "branches": 85
+    },
+    "engines": {
+        "node": "24.x"
     }
 }
