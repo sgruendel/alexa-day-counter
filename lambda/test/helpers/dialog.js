@@ -26,13 +26,19 @@ export function parseDialogOutput(output, expectedTurns) {
     }
 
     const turns = [...completed.values()];
+    let retryableError;
     for (const [index, turn] of turns.entries()) {
         const error = turn.result?.error;
         if (error) {
-            throw new SimulationError(
+            const simulationError = new SimulationError(
                 `Turn ${index + 1}: ${error.message}`,
                 error.message === 'An unexpected error occurred.',
             );
+            if (simulationError.retryable) {
+                retryableError ??= simulationError;
+                continue;
+            }
+            throw simulationError;
         }
         if (turn.status !== 'SUCCESSFUL') {
             throw new SimulationError(`Turn ${index + 1}: simulation status ${turn.status}`);
@@ -44,6 +50,10 @@ export function parseDialogOutput(output, expectedTurns) {
         if (!hasSpeech) {
             throw new SimulationError(`Turn ${index + 1}: missing Alexa speech`);
         }
+    }
+
+    if (retryableError) {
+        throw retryableError;
     }
 
     if (turns.length !== expectedTurns) {
@@ -65,11 +75,11 @@ export async function runDialog(replayFile, {
     if (!skillId) {
         throw new Error('SKILL_ID is required for deployed Alexa tests');
     }
-    if (!profile) {
-        throw new Error('ASK_PROFILE is required for deployed Alexa tests');
+    if (!profile || profile === 'default') {
+        throw new Error('ASK_PROFILE must name a dedicated, non-default profile for deployed Alexa tests');
     }
 
-    const replay = JSON.parse(await readFile(replayFile, 'utf8'));
+    const { allowRetry = true, ...replay } = JSON.parse(await readFile(replayFile, 'utf8'));
     const expectedTurns = replay.userInput.filter(input => !input.startsWith('.')).length;
     if (!expectedTurns) {
         throw new Error('A replay must contain at least one utterance');
@@ -82,7 +92,8 @@ export async function runDialog(replayFile, {
 
     try {
         await writeFile(inputFile, JSON.stringify({ ...replay, skillId }));
-        for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+        const attempts = allowRetry ? maxAttempts : 1;
+        for (let attempt = 1; attempt <= attempts; attempt += 1) {
             const remaining = Math.floor(deadline - performance.now());
             if (remaining <= 0) {
                 throw new Error('ASK dialog deadline exceeded');
@@ -116,7 +127,7 @@ export async function runDialog(replayFile, {
                 return parseDialogOutput(JSON.parse(await readFile(outputFile, 'utf8')), expectedTurns);
             } catch (error) {
                 const retryable = error instanceof SimulationError && error.retryable;
-                if (!retryable || attempt === maxAttempts) {
+                if (!retryable || attempt === attempts) {
                     error.message += `\nASK diagnostics:\n${stderr ?? ''}${stdout ?? ''}`;
                     throw error;
                 }

@@ -6,7 +6,7 @@ import { promisify } from 'node:util';
 
 import { expect } from 'chai';
 
-import { verifyTurns } from '../ask.js';
+import { summarizeTurns, verifyTurns } from '../ask.js';
 import { parseDialogOutput, runDialog } from '../helpers/dialog.js';
 
 const successfulTurn = ({
@@ -65,6 +65,7 @@ describe('dialog runner', () => {
         inspect(command, args, options);
         const replay = JSON.parse(await readFile(tempInput, 'utf8'));
         expect(replay.skillId).to.equal('test-skill');
+        expect(replay).to.not.have.property('allowRetry');
         await writeFile(args[args.indexOf('--save-skill-io') + 1], JSON.stringify(responses));
         return { stdout: '', stderr: '' };
     };
@@ -114,6 +115,21 @@ describe('dialog runner', () => {
         expect(attempts).to.equal(1);
     });
 
+    it('prioritizes non-retryable errors over an earlier transient error', () => {
+        expect(() =>
+            parseDialogOutput(
+                output(
+                    {
+                        status: 'FAILED',
+                        result: { error: { message: 'An unexpected error occurred.' } },
+                    },
+                    { status: 'FAILED', result: { error: { message: 'Invalid response' } } },
+                ),
+                2,
+            ),
+        ).to.throw('Turn 2: Invalid response');
+    });
+
     it('deduplicates repeated polls by simulation ID', () => {
         const turn = { ...successfulTurn(), id: 'one' };
         expect(parseDialogOutput(output({ id: 'one', status: 'IN_PROGRESS' }, turn, turn), 1)).to.have.length(1);
@@ -152,6 +168,30 @@ describe('dialog runner', () => {
             }),
         );
         expect(attempts).to.equal(2);
+        expect(error.message).to.contain('unexpected error');
+    });
+
+    it('does not retry a state-changing replay', async () => {
+        await writeFile(
+            replayFile,
+            JSON.stringify({ locale: 'de-DE', allowRetry: false, userInput: ['set counter', '.quit'] }),
+        );
+        let attempts = 0;
+        const run = fakeRun(
+            output({ status: 'FAILED', result: { error: { message: 'An unexpected error occurred.' } } }),
+        );
+        const error = await rejection(
+            runDialog(replayFile, {
+                skillId: 'test-skill',
+                profile: 'test-profile',
+                retryDelayMs: 1,
+                run: (...args) => {
+                    attempts += 1;
+                    return run(...args);
+                },
+            }),
+        );
+        expect(attempts).to.equal(1);
         expect(error.message).to.contain('unexpected error');
     });
 
@@ -205,5 +245,31 @@ describe('dialog runner', () => {
         expect((await rejection(runDialog(replayFile, { skillId: 'test-skill' }))).message).to.contain(
             'ASK_PROFILE',
         );
+        expect(
+            (await rejection(runDialog(replayFile, { skillId: 'test-skill', profile: 'default' }))).message,
+        ).to.contain('non-default');
+    });
+
+    it('summarizes diagnostics without exposing the request envelope', () => {
+        const turn = successfulTurn();
+        turn.result.skillExecutionInfo.invocations[0].invocationRequest.body.context = {
+            System: { apiAccessToken: 'secret-token' },
+        };
+
+        const summary = summarizeTurns([turn]);
+        expect(summary).to.deep.equal([
+            {
+                turn: 1,
+                status: 'SUCCESSFUL',
+                speech: 'OK',
+                intents: [
+                    {
+                        name: 'QueryCounterIntent',
+                        slots: { date: '2020-03-03' },
+                    },
+                ],
+            },
+        ]);
+        expect(JSON.stringify(summary)).to.not.contain('secret-token');
     });
 });

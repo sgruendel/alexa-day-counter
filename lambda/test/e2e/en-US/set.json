@@ -1,6 +1,7 @@
 {
   "locale": "en-US",
   "type": "text",
+  "allowRetry": false,
   "userInput": [
     "start daily counter and set the counter to fifty for march fourth 2020",
     ".quit"

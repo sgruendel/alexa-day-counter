@@ -9,6 +9,29 @@ function caption(result) {
         .join(' ');
 }
 
+export function summarizeTurns(turns) {
+    return turns.map((turn, index) => {
+        const result = turn.result;
+        const invocations = result.skillExecutionInfo?.invocations ?? [];
+        const intents = invocations
+            .map(invocation => invocation.invocationRequest?.body?.request)
+            .filter(request => request?.type === 'IntentRequest')
+            .map(request => ({
+                name: request.intent.name,
+                slots: Object.fromEntries(
+                    Object.entries(request.intent.slots ?? {}).map(([name, slot]) => [name, slot.value]),
+                ),
+            }));
+
+        return {
+            turn: index + 1,
+            status: turn.status,
+            speech: caption(result),
+            intents,
+        };
+    });
+}
+
 /** Assert the speech and skill request/response contract of every dialog turn. */
 export function verifyTurns(turns, expectations) {
     expect(turns, 'dialog turns').to.have.length(expectations.length);

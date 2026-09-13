@@ -42,13 +42,17 @@ deploy code or models themselves, so they are intentionally excluded from ordina
 
 The runner validates resolved intents, normalized slots, localized speech, and the Lambda response for every step. It
 allows two attempts only for incomplete output or Alexa's known transient simulation error, bounds every ASK process,
-and removes temporary replay and output files.
+and removes temporary replay and output files. Retries are disabled for set and increase steps so an uncertain ASK
+result cannot apply the same state change twice.
 
 To replay one utterance for diagnostics, run from `lambda/`:
 
 ```bash
 mise exec -- node --env-file-if-exists=.env test/run-dialog.js -r test/e2e/de-DE/query.json
 ```
+
+The diagnostic command prints only turn status, speech, intent names, and slot values. It never prints raw ASK request
+envelopes or API access tokens.
 
 ## Before release: device checks
 

@@ -1,6 +1,7 @@
 {
   "locale": "de-DE",
   "type": "text",
+  "allowRetry": false,
   "userInput": [
     "starte tageszähler und setze den zähler für den dritten märz 2020 auf vierzig",
     ".quit"
