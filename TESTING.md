@@ -6,7 +6,7 @@ Run the commands below through `mise exec --` from `lambda/` after `mise exec --
 | Command | Scope | External access |
 | --- | --- | --- |
 | `mise exec -- npm test` | Unit and local integration tests, with runtime coverage thresholds | None |
-| `mise exec -- npm run test:unit` | Date and date-range calculations | None |
+| `mise exec -- npm run test:unit` | Date calculations and dialog-runner behavior | None |
 | `mise exec -- npm run test:integration` | Lambda handler and ASK SDK with an in-memory DynamoDB substitute | None |
 | `mise exec -- npm run test:e2e` | German and US English workflows against the development skill | Alexa, DynamoDB |
 | `mise exec -- npm run lint` | ESLint checks | None |
