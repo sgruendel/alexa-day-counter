@@ -51,8 +51,8 @@ To replay one utterance for diagnostics, run from `lambda/`:
 mise exec -- node --env-file-if-exists=.env test/run-dialog.js -r test/e2e/de-DE/query.json
 ```
 
-The diagnostic command prints only turn status, speech, intent names, and slot values. It never prints raw ASK request
-envelopes or API access tokens.
+The diagnostic command prints only turn status, speech, intent names, and slot values. Process failures report only
+controlled exit metadata. Raw ASK request envelopes, CLI streams, and API access tokens are never printed.
 
 ## Before release: device checks
 

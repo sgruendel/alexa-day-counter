@@ -15,6 +15,16 @@ export class SimulationError extends Error {
     }
 }
 
+function askProcessError(error) {
+    const code = typeof error.code === 'string' || typeof error.code === 'number' ? error.code : 'unknown';
+    const signal = typeof error.signal === 'string' ? error.signal : 'none';
+    const failure = new Error(`ASK CLI failed (code: ${code}, signal: ${signal}, killed: ${Boolean(error.killed)})`);
+    failure.code = error.code;
+    failure.signal = error.signal;
+    failure.killed = error.killed;
+    return failure;
+}
+
 /** Return every completed turn; retain the final poll for each simulation ID. */
 export function parseDialogOutput(output, expectedTurns) {
     const completed = new Map();
@@ -100,35 +110,38 @@ export async function runDialog(replayFile, {
             }
 
             await writeFile(outputFile, JSON.stringify({ invocations: [] }));
-            const { stdout, stderr } = await run(
-                'ask',
-                [
-                    'dialog',
-                    '--locale',
-                    replay.locale ?? 'de-DE',
-                    '--stage',
-                    'development',
-                    '--profile',
-                    profile,
-                    '--replay',
-                    inputFile,
-                    '--save-skill-io',
-                    outputFile,
-                ],
-                {
-                    encoding: 'utf8',
-                    timeout: Math.min(attemptTimeoutMs, remaining),
-                    killSignal: 'SIGKILL',
-                    maxBuffer: 4 * 1024 * 1024,
-                },
-            );
+            try {
+                await run(
+                    'ask',
+                    [
+                        'dialog',
+                        '--locale',
+                        replay.locale ?? 'de-DE',
+                        '--stage',
+                        'development',
+                        '--profile',
+                        profile,
+                        '--replay',
+                        inputFile,
+                        '--save-skill-io',
+                        outputFile,
+                    ],
+                    {
+                        encoding: 'utf8',
+                        timeout: Math.min(attemptTimeoutMs, remaining),
+                        killSignal: 'SIGKILL',
+                        maxBuffer: 4 * 1024 * 1024,
+                    },
+                );
+            } catch (error) {
+                throw askProcessError(error);
+            }
 
             try {
                 return parseDialogOutput(JSON.parse(await readFile(outputFile, 'utf8')), expectedTurns);
             } catch (error) {
                 const retryable = error instanceof SimulationError && error.retryable;
                 if (!retryable || attempt === attempts) {
-                    error.message += `\nASK diagnostics:\n${stderr ?? ''}${stdout ?? ''}`;
                     throw error;
                 }
                 if (deadline - performance.now() <= retryDelayMs) {

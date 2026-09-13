@@ -205,7 +205,8 @@ describe('dialog runner', () => {
             runDialog(replayFile, {
                 skillId: 'test-skill',
                 profile: 'test-profile',
-                run: async (command, args) => {
+                run: async (...runArgs) => {
+                    const args = runArgs[1];
                     attempts += 1;
                     tempInput = args[args.indexOf('--replay') + 1];
                     await writeFile(args[args.indexOf('--save-skill-io') + 1], '{');
@@ -215,6 +216,31 @@ describe('dialog runner', () => {
         );
         expect(error).to.be.instanceOf(SyntaxError);
         expect(attempts).to.equal(1);
+    });
+
+    it('reports only controlled metadata when the ASK process fails', async () => {
+        const error = await rejection(
+            runDialog(replayFile, {
+                skillId: 'test-skill',
+                profile: 'test-profile',
+                run: async (...runArgs) => {
+                    const args = runArgs[1];
+                    tempInput = args[args.indexOf('--replay') + 1];
+                    const processError = new Error('Command failed with secret-token');
+                    processError.code = 2;
+                    processError.signal = null;
+                    processError.killed = false;
+                    processError.stdout = '{"apiAccessToken":"secret-token"}';
+                    processError.stderr = 'secret-token';
+                    throw processError;
+                },
+            }),
+        );
+
+        expect(error.message).to.equal('ASK CLI failed (code: 2, signal: none, killed: false)');
+        expect(error).to.not.have.property('stdout');
+        expect(error).to.not.have.property('stderr');
+        expect(JSON.stringify(error)).to.not.contain('secret-token');
     });
 
     it('kills a stalled subprocess and cleans up its replay files', async () => {
