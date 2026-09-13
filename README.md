@@ -8,9 +8,8 @@ Alexa Skill for persistent counting of events per day.
 
 ## Configuration
 
-Commands are run from the `lambda/` directory. Copy `.env.example` to `.env` and set `SKILL_ID` to the Alexa skill
-ID. The local file is ignored by Git. The deployed Lambda function must provide the same variable in its environment
-configuration.
+The deployed Lambda function must provide `SKILL_ID` in its environment configuration. Offline tests inject a
+test-only value automatically and do not require deployment configuration.
 
 ## Testing
 
