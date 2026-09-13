@@ -13,7 +13,8 @@ Run the commands below through `mise exec --` from `lambda/` after `mise exec --
 ## Offline tests and coverage
 
 Offline commands preload `test/env.js`, which sets a dummy skill ID and keeps local checks independent of deployment
-configuration. `test/setup.js` replaces the DynamoDB model operations used by the handlers with an in-memory store.
+configuration; they do not read `.env`. `test/setup.js` replaces the DynamoDB model operations used by the handlers
+with an in-memory store.
 
 `mise exec -- npm test` includes unexecuted runtime files in coverage and enforces at least 90% line, statement, and
 function coverage and 85% branch coverage. Reports are written to `lambda/coverage/`.
