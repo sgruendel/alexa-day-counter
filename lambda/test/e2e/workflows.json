@@ -1,0 +1,54 @@
+{
+  "de-DE": [
+    {
+      "replay": "de-DE/set.json",
+      "intent": "SetCounterIntent",
+      "slots": { "count": "40", "date": "2020-03-03" },
+      "speech": "Der Zähler steht jetzt auf 40 für 2020-03-03."
+    },
+    {
+      "replay": "de-DE/increase.json",
+      "intent": "IncreaseCounterIntent",
+      "slots": { "count": "2", "date": "2020-03-03" },
+      "speech": "Der Zähler steht jetzt auf 42 für 2020-03-03."
+    },
+    {
+      "replay": "de-DE/query.json",
+      "intent": "QueryCounterIntent",
+      "slots": { "date": "2020-03-03" },
+      "speech": "Der Zähler steht auf 42 für 2020-03-03."
+    },
+    {
+      "replay": "de-DE/sum.json",
+      "intent": "QuerySumIntent",
+      "slots": { "date": "2020-03-03" },
+      "speech": "Die Summe ist 42 von 2020-03-03 bis 2020-03-03."
+    }
+  ],
+  "en-US": [
+    {
+      "replay": "en-US/set.json",
+      "intent": "SetCounterIntent",
+      "slots": { "count": "50", "date": "2020-03-04" },
+      "speech": "The counter is now at 50 for 2020-03-04."
+    },
+    {
+      "replay": "en-US/increase.json",
+      "intent": "IncreaseCounterIntent",
+      "slots": { "count": "3", "date": "2020-03-04" },
+      "speech": "The counter is now at 53 for 2020-03-04."
+    },
+    {
+      "replay": "en-US/query.json",
+      "intent": "QueryCounterIntent",
+      "slots": { "date": "2020-03-04" },
+      "speech": "The counter is at 53 for 2020-03-04."
+    },
+    {
+      "replay": "en-US/sum.json",
+      "intent": "QuerySumIntent",
+      "slots": { "date": "2020-03-04" },
+      "speech": "The sum is 53 from 2020-03-04 to 2020-03-04."
+    }
+  ]
+}
