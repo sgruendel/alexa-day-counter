@@ -37,20 +37,29 @@ export function verifyTurns(turns, expectations) {
     expect(turns, 'dialog turns').to.have.length(expectations.length);
     for (const [index, expected] of expectations.entries()) {
         const result = turns[index].result;
-        expect(caption(result), `turn ${index + 1} speech`).to.equal(expected.speech);
+        const speech = caption(result);
+        if (expected.speech) {
+            expect(speech, `turn ${index + 1} speech`).to.equal(expected.speech);
+        }
+        if (expected.speechIncludes) {
+            expect(speech, `turn ${index + 1} speech`).to.contain(expected.speechIncludes);
+        }
 
         const invocations = result.skillExecutionInfo?.invocations ?? [];
-        const intentInvocation = invocations
-            .filter(invocation => invocation.invocationRequest?.body?.request?.type === 'IntentRequest')
+        const requestType = expected.requestType ?? 'IntentRequest';
+        const requestInvocation = invocations
+            .filter(invocation => invocation.invocationRequest?.body?.request?.type === requestType)
             .at(-1);
-        expect(intentInvocation, `turn ${index + 1} skill invocation`).to.exist;
+        expect(requestInvocation, `turn ${index + 1} ${requestType} skill invocation`).to.exist;
 
-        const request = intentInvocation.invocationRequest.body.request;
-        expect(request.intent.name, `turn ${index + 1} intent`).to.equal(expected.intent);
-        for (const [name, value] of Object.entries(expected.slots ?? {})) {
-            expect(request.intent.slots?.[name]?.value, `turn ${index + 1} ${name} slot`).to.equal(value);
+        const request = requestInvocation.invocationRequest.body.request;
+        if (expected.intent) {
+            expect(request.intent.name, `turn ${index + 1} intent`).to.equal(expected.intent);
+            for (const [name, value] of Object.entries(expected.slots ?? {})) {
+                expect(request.intent.slots?.[name]?.value, `turn ${index + 1} ${name} slot`).to.equal(value);
+            }
         }
-        expect(intentInvocation.invocationResponse?.body?.response, `turn ${index + 1} skill response`).to.exist;
+        expect(requestInvocation.invocationResponse?.body?.response, `turn ${index + 1} skill response`).to.exist;
     }
 }
 

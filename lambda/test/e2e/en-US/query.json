@@ -2,7 +2,8 @@
   "locale": "en-US",
   "type": "text",
   "userInput": [
-    "ask daily counter for the count on march fourth 2020",
+    "open daily counter",
+    "the count on march fourth 2020",
     ".quit"
   ]
 }

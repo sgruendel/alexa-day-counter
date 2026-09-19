@@ -3,7 +3,8 @@
   "type": "text",
   "allowRetry": false,
   "userInput": [
-    "start daily counter and increase by three for march fourth 2020",
+    "open daily counter",
+    "increase by three for march fourth 2020",
     ".quit"
   ]
 }

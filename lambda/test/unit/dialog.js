@@ -12,6 +12,7 @@ import { parseDialogOutput, runDialog } from '../helpers/dialog.js';
 const successfulTurn = ({
     caption = 'OK',
     intent = 'QueryCounterIntent',
+    requestType = 'IntentRequest',
     slots = { date: { value: '2020-03-03' } },
 } = {}) => ({
     status: 'SUCCESSFUL',
@@ -21,7 +22,11 @@ const successfulTurn = ({
             invocations: [
                 {
                     invocationRequest: {
-                        body: { request: { type: 'IntentRequest', intent: { name: intent, slots } } },
+                        body: {
+                            request: requestType === 'IntentRequest'
+                                ? { type: requestType, intent: { name: intent, slots } }
+                                : { type: requestType },
+                        },
                     },
                     invocationResponse: { body: { response: {} } },
                 },
@@ -91,6 +96,15 @@ describe('dialog runner', () => {
             },
         ]);
         expect(() => verifyTurns(turns, [{ speech: 'Wrong', intent: 'QueryCounterIntent' }])).to.throw();
+    });
+
+    it('validates launch turns without requiring an intent', () => {
+        verifyTurns([successfulTurn({ caption: 'Welcome to the skill', requestType: 'LaunchRequest' })], [
+            {
+                requestType: 'LaunchRequest',
+                speechIncludes: 'Welcome',
+            },
+        ]);
     });
 
     it('fails an earlier error even when the final poll succeeds', async () => {

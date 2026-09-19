@@ -3,7 +3,8 @@
   "type": "text",
   "allowRetry": false,
   "userInput": [
-    "starte tageszähler und setze den zähler für den dritten märz 2020 auf vierzig",
+    "öffne tageszähler",
+    "setze den zähler am dritten märz 2020 auf vierzig",
     ".quit"
   ]
 }
