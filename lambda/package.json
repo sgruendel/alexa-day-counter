@@ -12,6 +12,7 @@
         "lambda:zip": "rm -f /tmp/dayCounter.zip && zip -r /tmp/dayCounter.zip node_modules/ package* *.js",
         "lambda:deploy": "npm run lambda:zip && aws lambda update-function-code --function-name dayCounter --zip-file fileb:///tmp/dayCounter.zip",
         "model:deploy": "node --env-file-if-exists=.env scripts/deploy-model.js",
+        "test:e2e": "node --env-file-if-exists=.env ./node_modules/mocha/bin/mocha.js --timeout=360000 \"test/e2e/**/*.js\"",
         "lint": "eslint ."
     },
     "repository": {

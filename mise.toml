@@ -1,2 +1,3 @@
 [tools]
 node = "24"
+"npm:ask-cli" = { version = "2.30.7", allow_low_downloads = true }

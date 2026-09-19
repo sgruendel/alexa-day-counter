@@ -1,0 +1,10 @@
+{
+  "locale": "de-DE",
+  "type": "text",
+  "allowRetry": false,
+  "userInput": [
+    "öffne tageszähler",
+    "erhöhe den zähler um zwei am dritten märz 2020",
+    ".quit"
+  ]
+}

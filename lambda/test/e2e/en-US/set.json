@@ -1,0 +1,10 @@
+{
+  "locale": "en-US",
+  "type": "text",
+  "allowRetry": false,
+  "userInput": [
+    "open daily counter",
+    "set the counter to fifty for march fourth 2020",
+    ".quit"
+  ]
+}
