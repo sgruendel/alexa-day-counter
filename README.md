@@ -1,8 +1,9 @@
 # alexa-day-counter
 
-[![CI][ci-badge]][ci-workflow]
-[![Node.js 24][node-badge]][node-version]
-[![License: GPL-3.0][license-badge]][license]
+[![CI](https://github.com/sgruendel/alexa-day-counter/actions/workflows/node.js.yaml/badge.svg?branch=master)](https://github.com/sgruendel/alexa-day-counter/actions/workflows/node.js.yaml)
+[![Depfu](https://badges.depfu.com/badges/b53a5844adbe45cd2f9017a4b0434a5b/count.svg)](https://depfu.com/github/sgruendel/alexa-day-counter?project_id=37846)
+[![Node.js 24](https://img.shields.io/badge/Node.js-24-339933?logo=nodedotjs&logoColor=white)](mise.toml)
+[![License: GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-blue.svg)](LICENSE)
 
 Alexa Skill for persistent counting of events per day.
 
@@ -41,10 +42,3 @@ See [TESTING.md](TESTING.md) for the individual suites and CI setup.
   There could be a feature to count for a specific thing. Like add 20 to pushups, add I to cup of water, but it does
   what it says it will, so good enough.
 - Export charts in S3 and show them as a response card: <https://www.npmjs.com/package/chartjs-node>
-
-[ci-badge]: https://github.com/sgruendel/alexa-day-counter/actions/workflows/node.js.yaml/badge.svg?branch=master
-[ci-workflow]: https://github.com/sgruendel/alexa-day-counter/actions/workflows/node.js.yaml
-[license-badge]: https://img.shields.io/badge/license-GPL--3.0-blue.svg
-[license]: LICENSE
-[node-badge]: https://img.shields.io/badge/Node.js-24-339933?logo=nodedotjs&logoColor=white
-[node-version]: mise.toml
