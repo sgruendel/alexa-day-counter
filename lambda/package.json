@@ -37,7 +37,7 @@
         "dynamoose": "^4.2.0",
         "i18next": "^26.4.2",
         "i18next-sprintf-postprocessor": "^0.2.2",
-        "moment-timezone": "^0.6.4",
+        "moment-timezone": "^0.6.5",
         "winston": "^3.19.0"
     },
     "devDependencies": {
@@ -47,7 +47,7 @@
         "@types/node": "^24.13.3",
         "c8": "^12.0.0",
         "chai": "^6.3.0",
-        "eslint": "^10.11.0",
+        "eslint": "^10.12.0",
         "globals": "^17.13.0",
         "mocha": "^12.0.3"
     },
